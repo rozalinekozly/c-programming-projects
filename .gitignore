@@ -3,6 +3,6 @@
 !*/
 !dummy.md
 !.myfuncs
-!.h
+!*.h
 !dir
 !.gitignore
