@@ -96,6 +96,9 @@ int TestPower(int* arr, int size)
             return 0;
         }
   }
+  
+    printf("TEST PASSED\n\n");
+            return 1;
 }
 
 
