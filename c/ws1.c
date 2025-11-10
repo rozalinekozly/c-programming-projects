@@ -31,20 +31,24 @@ void Swap(int* a, int* b)
 
 int TestSwap(int* a, int* b)
 {
-    printf("Before: a = %d, b = %d - ", *a, *b);
-    Swap(a, b);
-    printf("After: a = %d, b = %d - ", *a, *b);
+  int old_a_val = *a;
+  int old_b_val = *b;
+  
+	printf("Before: a = %d, b = %d - ", *a, *b);
+	
+	Swap(a, b);
+	printf("After: a = %d, b = %d - ", *a, *b);
 
-    if (*a != *b)
-      {
-          printf("TEST PASSED\n\n");
-          return 1;
-      }
-    else
-      {
-          printf("TEST FAILED\n\n");
-          return 0;
-      }
+	if ((*a == old_b_val) && (*b == old_a_val))
+	{
+		printf("TEST PASSED\n\n");
+		return 1;
+	}
+	else
+	{
+		printf("TEST FAILED\n\n");
+		return 0;
+	}
     
 }
 
