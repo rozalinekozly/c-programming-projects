@@ -1,11 +1,13 @@
-#include <stdio.h>
-#include <math.h>
+#include <stdio.h> /* standard library input and output */
+#include <math.h> /* included to use pow function for the tests */
 
-float Power(int n);
-int Flip(int num);
-void Swap(int* a, int* b);
-int PrintHelloHex(void);
+  /* functions */
+float Power(int n); /* function to calculate 10 to the power of a given integer */
+int Flip(int num); /* function that flips the order of a given integer */
+void Swap(int* a, int* b); /* function that swaps between 2 integers */
+int PrintHelloHex(void); /* function that prints "Hello World!" using hex values */
 
+  /* testers */
 int TestPower(int* arr,int size);
 int TestFlip(int* , int* ,int);
 int TestSwap(int* , int* );
@@ -26,18 +28,15 @@ void Swap(int* a, int* b)
   tmp = *a;
   *a = *b;
   *b = tmp;
-
 }
 
 int TestSwap(int* a, int* b)
 {
   int old_a_val = *a;
   int old_b_val = *b;
-  
-	printf("Before: a = %d, b = %d - ", *a, *b);
-	
-	Swap(a, b);
-	printf("After: a = %d, b = %d - ", *a, *b);
+  Swap(a, b);
+  printf("Before: a = %d, b = %d - ", old_a_val, old_b_val);
+  printf("After: a = %d, b = %d - ", *a, *b);
 
 	if ((*a == old_b_val) && (*b == old_a_val))
 	{
@@ -57,13 +56,13 @@ float Power(int n)
 {
    float result = 1;
    float multiplier = 10;
-   if(n == 0) return 1;
-   if(n < 0) 
+   if (n == 0) return 1;
+   if (n < 0) 
      {
         multiplier = 0.1;
         n = n * (-1);
      }
-   while(n > 0)
+   while (n > 0)
      {
        result *= multiplier;
        n--;
@@ -77,28 +76,26 @@ float Power(int n)
 int TestPower(int* arr, int size)
 {
     int i;
-    double my_result, lib_result;
+    double result, lib_result;
   
    for(i = 0; i < size;i++)
    {
    
-       my_result = Power(arr[i]);
+       result = Power(arr[i]);
        lib_result = pow(10, arr[i]);
-      printf("power(%d) - ",arr[i]);
-      if (fabs(my_result - lib_result) < 0.0001)
+       printf("power(%d) = %f ",arr[i],result);
+       if (fabs(result - lib_result) > 0.0001)
         {
-            printf("TEST PASSED\n\n");
-            return 1;
-        }
-      else
-        {
-            printf("TEST FAILED\n\n");
+            printf(" - TEST FAILED\n\n");
             return 0;
+        }
+        else
+        {
+            printf(" - TEST PASSED\n");
         }
   }
   
-    printf("TEST PASSED\n\n");
-            return 1;
+  return 1;
 }
 
 
@@ -107,7 +104,7 @@ int TestPower(int* arr, int size)
 int Flip(int num)
 {
    int flipped = 0;
-   while(num != 0)
+   while (num != 0)
      {
          flipped *= 10;
          flipped += (num % 10);
@@ -124,7 +121,7 @@ int TestFlip(int* input, int* expected, int size)
 {
    int i;
    int result;
-   for(i = 0; i< size; i++)
+   for(i = 0 ; i< size ; i++)
     {
           result = Flip(input[i]);
           printf("flip(%d) = %d - ", input[i], result);
