@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "String.h"
 /* srcpy copies from src to dest including '\0'.
    According to it's man page, strcpy doen't check NULL/lengths

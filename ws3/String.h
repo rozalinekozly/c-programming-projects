@@ -10,5 +10,17 @@ According to it's man page, strcpy doen't check NULL/lengths
    3- dst type is const (segmentation fault & undefined behaviour)  */
 char* StrCpy(char* dst, const char* src);
 
+/* strncpy copies up to n chars from src to dst.
+   - legal : |dst| >= n, src & dst valid (non-NULL)
+   - risky :
+       1- |dst| < n may cause overflow
+       2- src = NULL or dst = NULL then segmentation fault
+       3- |src| >= n → no '\0' added may cause undefined       
+       behaviour later  
+*/
 
+
+
+
+char* StrnCpy(char* dst, const char* src, size_t n);
 #endif 
