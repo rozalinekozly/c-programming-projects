@@ -19,7 +19,8 @@ char* StrCpy(char* dst, const char* src)
    }
    
    *dst = '\0'; /* strcpy copies the \0 char too*/
-   return copied_string;
+   dst = copied_string;
+   return dst;
 
 }
 
