@@ -28,7 +28,7 @@ size_t TestStrSpn(void);
 
 size_t TestIsPalendrome(void);
 void TestSevenBoom(void);
-void TestWhiteSpaceReview(void);
+size_t TestWhiteSpaceReview(void);
 
 
 
@@ -593,25 +593,52 @@ void TestSevenBoom(void)
 
 
 
-void TestWhiteSpaceReview(void)
+size_t TestWhiteSpaceReview(void)
 {
-    char test1[] = "   hi   world   ";
-    char test2[] = "hello";
-    char test3[] = "   \t\t   ";
-    char test4[] = "a   b\t\tc";
-    char test5[] = " no leading ";
-    char test6[] = "\t\tTabs\t here\t";
-    char test7[] = "  hi";
-    char test8[] = "bye  ";
-    
-     printf(YELLOW "\t-----TESTING WHiteSpaceReview FUNCTION: -----\n");
-    printf(WHITE"Test 1: \"%s\" --> \"%s\"\n", test1, WhiteSpaceReview(test1));
-    printf("Test 2: \"%s\" --> \"%s\"\n", test2, WhiteSpaceReview(test2));
-    printf("Test 3: \"%s\" --> \"%s\"\n", test3, WhiteSpaceReview(test3));
-    printf("Test 4: \"%s\" --> \"%s\"\n", test4, WhiteSpaceReview(test4));
-    printf("Test 5: \"%s\" --> \"%s\"\n", test5, WhiteSpaceReview(test5));
-    printf("Test 6: \"%s\" --> \"%s\"\n", test6, WhiteSpaceReview(test6));
-    printf("Test 7: \"%s\" --> \"%s\"\n", test7, WhiteSpaceReview(test7));
-    printf("Test 8: \"%s\" --> \"%s\"\n", test8, WhiteSpaceReview(test8));
+    int status = 1;
+    int i = 0;
+
+    char tests[][50] = {
+        "   hi   world   ",
+        "hello",
+        "   \t\t   ",
+        "a   b\t\tc",
+        " no leading ",
+        "\t\tTabs\t here\t",
+        "  hi",
+        "bye  "
+    };
+
+    char expected[][50] = {
+        "hi world",
+        "hello",
+        "",
+        "a b\tc",
+        "no leading",
+        "Tabs\there",
+        "hi",
+        "bye"
+    };
+
+    size_t num_tests = sizeof(tests) / sizeof(tests[0]);
+
+    for (i = 0; i < num_tests; ++i)
+    {
+        WhiteSpaceReview(tests[i]);
+
+        if (strcmp(tests[i], expected[i]) != 0)
+        {
+            printf("FAILED on test %d\nInput: \"%s\"\nExpected: \"%s\"\nGot: \"%s\"\n\n",
+                   i + 1, tests[i], expected[i], tests[i]);
+            status = 0;
+        }
+    }
+
+    if (status)
+    {
+        printf("PASSED\n");
+    }
+
+    return status;
 }
 
