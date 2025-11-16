@@ -1,3 +1,9 @@
+/*******************************************
+* ROZALINE KOZLY
+* REVIWER : GIL
+* DATE 16-11-2025
+********************************************/
+
 #include <stdio.h> /* printing */
 #include <string.h> /*to compare with libarary functions*/
 #include <stdlib.h> /* malloc*/
