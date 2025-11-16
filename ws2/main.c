@@ -1,12 +1,14 @@
 #include <stdio.h> /* printing */
-#include <string.h>
-#include <stdlib.h>
+#include <string.h> /*to compare with libarary functions*/
+#include <stdlib.h> /* malloc*/
 #include <stddef.h>
-#include <strings.h>
+#include <strings.h> /* to compare with library functions*/
 #include "String.h" /* headers */
 
 
-#define MAX_LEN 200
+#define MAX_LEN 200 /* max length of an input (all functions assume they recived a valid input) */
+
+/* declarations */
 size_t TestStrCpy(void);
 size_t TestStrnCpy(void);
 size_t TestStrnCmp(void);
@@ -37,12 +39,11 @@ int main()
 	counter += TestStrnCat();
 	counter += TestStrStr();
 	counter += TestStrSpn();
-	 TestIsPalendrome();
+	printf(PINK "\t-----TESTING RESULTS: -----\n");
+	printf(PINK"\tPASSED %lu TESTS\n\tout of 10\n\n", counter);
+         TestIsPalendrome();
 	TestSevenBoom();
-	
 	TestWhiteSpaceReview();
-	
-	printf(PINK"PASSED %lu TESTS\n", counter);
 	return 0;
  
 }
@@ -205,7 +206,7 @@ size_t TestStrnCmp(void)
 }
 
 
-size_t TestStrCaseCmp()
+size_t TestStrCaseCmp(void)
 {
     size_t i = 0;
     const char* s1[] = {"hello", "HELLO", "abc", "ABC",
@@ -246,7 +247,7 @@ size_t TestStrCaseCmp()
 }
 
 
-size_t TestStrChr()
+size_t TestStrChr(void)
 {
     size_t i = 0;
     size_t test_res = 0;
@@ -283,7 +284,7 @@ size_t TestStrChr()
     return 1;
 }
 
-size_t TestStrDup()
+size_t TestStrDup(void)
 {
     size_t i = 0;
     const char* src[] = {"hello", "world", "Infinty Labs R&D",
@@ -337,7 +338,7 @@ size_t TestStrDup()
     return 1;
 }
 
-size_t TestStrCat()
+size_t TestStrCat(void)
 {
     size_t i = 0;
     size_t test_res = 0;
@@ -395,7 +396,7 @@ size_t TestStrCat()
     return 1;
 }
 
-size_t TestStrnCat()
+size_t TestStrnCat(void)
 {
     size_t i = 0;
     size_t test_res = 0;
@@ -457,7 +458,7 @@ size_t TestStrnCat()
     return 1;
 }
 
-size_t TestStrStr()
+size_t TestStrStr(void)
 {
     size_t i = 0;
     size_t test_res = 0;
@@ -498,7 +499,7 @@ size_t TestStrStr()
     return 1;
 }
 
-size_t TestStrSpn()
+size_t TestStrSpn(void)
 {
     size_t i = 0;
     size_t test_res = 0;
@@ -539,7 +540,7 @@ size_t TestStrSpn()
 
 
 
-size_t TestIsPalendrome()
+size_t TestIsPalendrome(void)
 {
     char* inputs[] = {"", "a", "aa", "ab", "aba", "abba", "abcba", "abcca", "12321", "123421"};
     size_t expected[]     = {1,1,1,0,1, 1, 1, 0, 1,  0  };
@@ -567,7 +568,7 @@ size_t TestIsPalendrome()
     
 }
 
-void TestSevenBoom()
+void TestSevenBoom(void)
 {
    printf(YELLOW "\t-----TESTING 7BOOM FUNCTION: -----\n");
     printf(WHITE "Test 1: SevenBoom(1, 20)\n");
@@ -586,7 +587,7 @@ void TestSevenBoom()
 
 
 
-void TestWhiteSpaceReview()
+void TestWhiteSpaceReview(void)
 {
     char test1[] = "   hi   world   ";
     char test2[] = "hello";

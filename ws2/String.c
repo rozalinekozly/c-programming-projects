@@ -1,9 +1,8 @@
 #include <stddef.h> /* using size_t data type */
-#include <string.h>
-#include <strings.h>
-#include "String.h" /* header file */
-#include <stdlib.h>
+#include <string.h> /* used strlen() */
+#include <stdlib.h> /* strdup used malloc*/
 #include <stdio.h> /* seven boom uses printf */
+#include "String.h" /* my declarations*/
 
 #define SEVEN 7
 
