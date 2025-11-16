@@ -1,4 +1,3 @@
-#include <stddef.h>
 #ifndef STRING_H
 #define STRING_H
 
@@ -11,6 +10,7 @@
 #define PINK          "\033[1;95m"
 
 
+size_t StrLen(const char* str);
 
 /* Undefined behaviour if:
  * 1 - dst buffer is too small

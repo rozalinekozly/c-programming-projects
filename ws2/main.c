@@ -1,7 +1,7 @@
 #include <stdio.h> /* printing */
 #include <string.h> /*to compare with libarary functions*/
 #include <stdlib.h> /* malloc*/
-#include <stddef.h>
+#include <stddef.h> /*size_t type */
 #include <strings.h> /* to compare with library functions*/
 #include "String.h" /* headers */
 
@@ -40,7 +40,7 @@ int main()
 	counter += TestStrStr();
 	counter += TestStrSpn();
 	printf(PINK "\t-----TESTING RESULTS: -----\n");
-	printf(PINK"\tPASSED %lu TESTS\n\tout of 10\n\n", counter);
+	printf(PINK"\tPASSED %lu TESTS\n \tout of 10 \n", counter);
          TestIsPalendrome();
 	TestSevenBoom();
 	TestWhiteSpaceReview();
@@ -482,14 +482,14 @@ size_t TestStrStr(void)
         res  = StrStr(str1[i], str2[i]);
         lib_res = strstr(str1[i], str2[i]);
 
-        if (res == lib_res)
+        if (res == lib_res) /* points to same address -> success */
         {
             ++test_res;
         }
         else
         {
             printf(RED " - FAILED\n");
-            printf(RED "  my_res : %s\n",res);
+            printf(RED "  res : %s\n",res);
             printf(RED "  lib_res: %s\n",lib_res);
             return 0;
         }

@@ -1,15 +1,35 @@
+/*******************************************
+*
+*
+********************************************/
 #include <stddef.h> /* using size_t data type */
 #include <string.h> /* used strlen() */
-#include <stdlib.h> /* strdup used malloc*/
+#include <stdlib.h> /* strdup uses malloc */
 #include <stdio.h> /* seven boom uses printf */
 #include "String.h" /* my declarations*/
-
+#include <assert.h> /* for asserts */
 #define SEVEN 7
+
+size_t StrLen(const char* str)
+{
+  size_t len = 0;
+  assert(NULL != str);
+  while('\0' != *str)
+  {
+    ++len;
+  }
+  
+  return len;
+
+}
+
 
 char* StrCpy(char* dst, const char* src)
 {
    char* head = dst; /*placement to hold head of the string*/
    
+   assert(NULL != dst);
+   assert(NULL != src);
    while(*src != '\0')
    {
    	*dst = *src;
@@ -28,6 +48,10 @@ char* StrnCpy(char* dst, const char* src, size_t n)
     size_t counter = 0;
     char* head = dst;
 
+    assert(NULL != dst);
+    assert(NULL != src);
+    assert(StrLen(dest) <= n);
+    
     /* copy up to n chars or until \0 */
     while ((*src != '\0') && (counter < n))
     {
@@ -48,10 +72,47 @@ char* StrnCpy(char* dst, const char* src, size_t n)
     return head;
 }
 
+
+int StrCmp(const char *str1, const char *str2)
+{
+	int diff = 0;
+	size_t i = 0;
+	
+	assert(NULL !=str1);
+	assert(NULL !=str2);
+	
+	while('\0' != *str1 && '\0' != *str2)
+	{
+		diff = str1[i] - str2[i];
+		if(diff != 0) 
+		{
+			return diff;
+		}
+		
+		++i;
+		
+	}
+	
+	if('\0' == *str1)
+	{
+	  return (*str1);
+	}
+	else
+	{
+	  return (0 - *str2);
+	}
+	
+	return 0;
+}
+
 int StrnCmp(const char *str1, const char *str2, size_t n)
 {
 	int diff = 0;
 	size_t i = 0;
+	
+	assert(NULL !=str1);
+	assert(NULL !=str2);
+	
 	while(n>0)
 	{
 		diff = str1[i] - str2[i];
@@ -113,7 +174,7 @@ int StrCaseCmp(const char* s1, const char* s2)
 char* StrChr(const char *str, int ch)
 {
 
-	  char* iterator = (char*) str; 
+	char* iterator = (char*) str; 
 
 	while('\0' != (*iterator))
 	{
@@ -138,7 +199,6 @@ char* StrChr(const char *str, int ch)
 char* StrDup(const char* string)
 {
 	char* duplicate_string = NULL;
-	
 	size_t i  = 0;
 	duplicate_string = (char*)malloc(strlen(string)+1);
 	if(NULL == duplicate_string) 
@@ -152,7 +212,7 @@ char* StrDup(const char* string)
 		i++;	
 	}
 	
-	duplicate_string[i] = '\0';
+	StrCpy(duplicate_string,string);
 	return duplicate_string;
 
 }
@@ -160,21 +220,16 @@ char* StrDup(const char* string)
 char* StrCat(char *dest, const char *src)
 {
 	char* dest_traverser = (char*)dest;
-	char* src_traverser = (char*)src;
 	
+	assert(NULL != dest);
+        assert(NULL != src);
+        
 	while('\0' != (*dest_traverser))
 	{	++dest_traverser;
 	
 	}
 	
-	while('\0' != (*src_traverser))
-	{
-		*(dest_traverser) = *(src_traverser);
-		++dest_traverser;
-		++src_traverser;
-	}
-	
-	*(dest_traverser) = '\0';
+	StrCpy(dest_traverser, src);
 	
 	return dest;
 
@@ -183,8 +238,11 @@ char* StrCat(char *dest, const char *src)
 char* StrnCat(char *dest, const char *src, size_t n)
 {
     char* dest_traverser = dest;
-    const char* src_traverser = src;
-	
+    char* src_traverser = (char*)src;
+    
+    assert(NULL != dest);
+    assert(NULL != src);
+    
     while (*dest_traverser != '\0')
     {
         ++dest_traverser;
@@ -211,21 +269,21 @@ char* StrStr(const char *s1, const char *s2)
     size_t str2_len = strlen(s2);
     int strcmp_res = -1;
 
-    if (*s2 == '\0')
+    if ('\0' == *s2)
     {
         return (char*)s1;
     }
 
-    while (*traverse_s1 != '\0')
+    while ('\0' != *traverse_s1 )
     {
-        traverse_s1 = strchr(traverse_s1, first_letter_of_s2);
-        if (traverse_s1 == NULL)
+        traverse_s1 = StrChr(traverse_s1, first_letter_of_s2);
+        if (NULL == traverse_s1 )
         {
             return NULL;
         }
 
-        strcmp_res = strncmp(traverse_s1, s2, str2_len);
-        if (strcmp_res == 0)
+        strcmp_res = StrnCmp(traverse_s1, s2, str2_len);
+        if (0 == strcmp_res)
         {
             return traverse_s1;
         }
@@ -240,9 +298,9 @@ size_t StrSpn(const char* str1, const char* str2)
 {
     char* traverse_s1 = (char*)str1;
     char* traverse_s2 = (char*)str2;
-    size_t occ_len = 0;
+    size_t seq_len = 0;
     
-    while (*traverse_s1 != '\0')
+    while ('\0' != *traverse_s1)
     {
         traverse_s2 = (char*)str2;
 
@@ -250,7 +308,7 @@ size_t StrSpn(const char* str1, const char* str2)
         {
             if (*traverse_s1 == *traverse_s2)
             {
-                ++occ_len;
+                ++seq_len;
                 break;
             }
             ++traverse_s2;
@@ -258,13 +316,13 @@ size_t StrSpn(const char* str1, const char* str2)
         
         if (*traverse_s2 == '\0')
         {
-            return occ_len;
+            return seq_len;
         }
 
         ++traverse_s1;
     }
 
-    return occ_len;
+    return seq_len;
 }
 
 
