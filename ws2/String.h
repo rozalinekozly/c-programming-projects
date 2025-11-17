@@ -6,110 +6,213 @@
 #ifndef STRING_H
 #define STRING_H
 
-#define RESET         "\033[0m"
-#define RED           "\033[1;91m"
-#define WHITE         "\033[1;97m"
-#define CYAN          "\033[1;96m"
-#define GREEN         "\033[1;92m"
-#define YELLOW        "\033[1;93m"
-#define PINK          "\033[1;95m"
 
-
+/*------------------------------------------------------
+ * StrLen
+ * 
+ * Description:
+ *   Returns the length of a null-terminated C-string.
+ *
+ * Return Values:
+ *   Success: number of characters before the '\0'.
+ *   Failure: no failure return value (never returns error).
+ *
+ * Undefined Behaviour:
+ *   Passing a NULL pointer or a non-null-terminated string
+ *   results in undefined behaviour, same as the standard strlen().
+ *-----------------------------------------------------*/
 size_t StrLen(const char* str);
 
-/* Undefined behaviour if:
- * 1 - dst buffer is too small
- * 2 - src or dst are NULL
- * 3 - src and dst overlap
- * 4 - dst points to read-only memory (in other words ;string literal)
- * if used correctly then this function makes sure to return a valid 
- * string (ends with \0).
- */
+
+/*------------------------------------------------------
+ * StrCmp
+ *
+ * Description:
+ *   Compares two null-terminated strings lexicographically.
+ *
+ * Return Values:
+ *   Success: negative/zero/positive according to strcmp().
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or non-null-terminated strings is undefined,
+ *   same as the standard strcmp().
+ *-----------------------------------------------------*/
+int StrCmp(const char *s1, const char *s2);
+
+
+/*------------------------------------------------------
+ * StrCpy
+ *
+ * Description:
+ *   Copies src (including '\0') into dst.
+ *
+ * Return Values:
+ *   Success: pointer to dst.
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL pointers or overlapping buffers is undefined,
+ *   same as the standard strcpy().
+ *-----------------------------------------------------*/
 char* StrCpy(char* dst, const char* src);
 
-/* strncpy copies up to n chars from src to dst.
-   - legal : |dst| >= n, src & dst valid (non-NULL)
-   - risky :
-       1- |dst| < n may cause overflow
-       2- src = NULL or dst = NULL then segmentation fault
-       3- |src| >= n → no '\0' added may cause undefined       
-       behaviour later  
-*/
 
+/*------------------------------------------------------
+ * StrnCpy
+ *
+ * Description:
+ *   Copies up to n characters from src to dst.
+ *   Pads with '\0' if src is shorter than n.
+ *
+ * Return Values:
+ *   Success: pointer to dst.
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or overlapping buffers is undefined.
+ *   If src is longer than n, the resulting dst is not
+ *   null-terminated, matching the behaviour of strncpy().
+ *-----------------------------------------------------*/
 char* StrnCpy(char* dst, const char* src, size_t n);
 
-/* Undefined behaviour if:
- * 1 - dst buffer contains fewer than n empty slots
- * 2 - src / dst are NULL
- * 3 - src and dst overlap
- * 4 - dst points to read-only memory (string literal)
+
+/*------------------------------------------------------
+ * StrnCmp
  *
- * Behaviour summary according to the man page:
- * - Copies at most n characters from src into dst.
- * - If src is shorter than n, pads the remaining bytes with '\0'
- *   until exactly n bytes have been written.
- * - If src is at least n slots long, copies exactly n bytes and does NOT
- *   append a terminating '\0'. In this case dst is NOT guaranteed to be
- *   a valid C-string.
- */
+ * Description:
+ *   Compares up to n characters of two strings.
+ *
+ * Return Values:
+ *   Success: negative/zero/positive according to strncmp().
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or non-null-terminated strings results
+ *   in undefined behaviour (same as strncmp()).
+ *-----------------------------------------------------*/
 int StrnCmp(const char *str1, const char *str2, size_t n);
 
-/* StrCaseCmp compares two strings case-insensitively.
- * Returns 0 if equal, <0 if s1<s2, >0 if s1>s2 ignoring case.
+
+/*------------------------------------------------------
+ * StrCaseCmp
  *
- * Undefined behaviour if:
- * 1. s1 or s2 are NULL.
- * 2. The memory regions overlap.
- */
+ * Description:
+ *   Case-insensitive lexicographic comparison.
+ *
+ * Return Values:
+ *   Success: negative/zero/positive according to strcasecmp().
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL pointers or non-null-terminated strings
+ *   results in undefined behaviour.
+ *-----------------------------------------------------*/
 int StrCaseCmp(const char *s1, const char *s2);
 
-/*  StrChr function takes as an arguments a pointer to a string and a character  
-    and returns a pointer to the first occurrence of the specified character  
-    within the string if it did not found it it returns NULL */
+
+/*------------------------------------------------------
+ * StrChr
+ *
+ * Description:
+ *   Returns a pointer to the first occurrence of character ch in str.
+ *
+ * Return Values:
+ *   Success: pointer to the found character (including '\0').
+ *   Failure: NULL if ch does not appear in str.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or non-null-terminated strings is undefined,
+ *   same as the standard strchr().
+ *-----------------------------------------------------*/
 char* StrChr(const char* str, int ch);
 
 
-/*  StrDup function dynamically allocates a space to put a string content in it 
-    and it copies the content.. */
+/*------------------------------------------------------
+ * StrDup
+ *
+ * Description:
+ *   Allocates memory and duplicates the given string.
+ *
+ * Return Values:
+ *   Success: pointer to newly allocated copy.
+ *   Failure: NULL if malloc fails.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or a non-null-terminated string is undefined,
+ *   same as strdup().
+ *-----------------------------------------------------*/
 char* StrDup(const char *string);
 
-/* StrCat function concatinate the two strings it's given .
-   The behavior of strcat() is undefined if:
-   - the destination array is not large enough for the contents of both src and 
-     dest and the terminating null character
-   - if the string overlaps.
-   - if either dest or src is not a pointer to a null-terminated byte string.*/
 
+/*------------------------------------------------------
+ * StrCat
+ *
+ * Description:
+ *   Appends src to the end of dest.
+ *
+ * Return Values:
+ *   Success: pointer to dest.
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or overlapping buffers is undefined.
+ *   dest must have enough space, exactly like strcat().
+ *-----------------------------------------------------*/
 char* StrCat(char *dest, const char *src);
-/* StrnCat function, catenate the first n letters from src to dest
-*/
+
+
+/*------------------------------------------------------
+ * StrnCat
+ *
+ * Description:
+ *   Appends up to n characters from src to dest.
+ *
+ * Return Values:
+ *   Success: pointer to dest.
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or overlapping buffers is undefined.
+ *   dest must have enough space, same as strncat().
+ *-----------------------------------------------------*/
 char* StrnCat (char *dest, const char *src, size_t n);
 
-/* StrStr takes 2 arguments a string and a subsequnce string 
-    we should return the part of the the string starting from the first  
-    occurance of the substring(as a whole)
-    if not found return NULL */
+
+/*------------------------------------------------------
+ * StrStr
+ *
+ * Description:
+ *   Finds the first occurrence of substring s2 in s1.
+ *
+ * Return Values:
+ *   Success: pointer to the first match.
+ *   Failure: NULL if s2 does not appear in s1.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or non-null-terminated strings is undefined,
+ *   same as strstr().
+ *-----------------------------------------------------*/
 char* StrStr (const char *s1, const char *s2);
 
 
-
-/* StrSpn takes as an argument two strings where the second argument (str2) 
-   acts as the "bank of letters" and str1 is the data, it's return value is 
-   the length of the sequence (starting from first letter of str1) that 
-   contains letters from str2 (the bank) only */
+/*------------------------------------------------------
+ * StrSpn
+ *
+ * Description:
+ *   Returns the length of the initial segment of str1
+ *   consisting only of characters from str2.
+ *
+ * Return Values:
+ *   Success: the length of the matching prefix.
+ *   Failure: no failure return value.
+ *
+ * Undefined Behaviour:
+ *   Passing NULL or non-null-terminated strings is undefined,
+ *   matching the behaviour of strspn().
+ *-----------------------------------------------------*/
 size_t StrSpn(const char *str1, const char *str2);
 
-
-
-char* StrTok(char *str, const char *delim);
-
-/*practice questions in the worksheet*/
-/* return values 0 = is not a palindrom, 1 = a palindrome */
-size_t IsPalindrome(char* str);
-
-void SevenBoom (int start, int end);
-
-char* WhiteSpaceReview(char* str);
 
 
 #endif
