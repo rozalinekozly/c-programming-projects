@@ -1,6 +1,6 @@
 #include <stdio.h> /* printf() */
 #include <string.h> /* strlen() */
-#include <stdlib.h> /* malloc and free */
+#include <stdlib.h> /* malloc and free and size_t type */
 #include <ctype.h> /* tolower */
 #include "ws3.h" /* define COLS*/
 
@@ -14,7 +14,9 @@
 #define YELLOW        "\033[1;93m"
 
 
-int Sum2D(int arr[][COLS], size_t rows);
+/* functions declarations */
+void RowSum2D(int arr[][COLS], size_t rows, int res[]);
+
 void PrintEnvVarInLowerCase(char *envp[]);
 size_t GetEnvSize(char *envp[]);
 char **AllocateEnvCopy(size_t size);
@@ -23,41 +25,37 @@ char **CloneEnvToLower(char *envp[]);
 void PrintEnv(char *envp[]);
 void FreeEnv(char *envp[]);
 
-int Sum2D(int arr[][COLS], size_t rows)
+void RowSum2D(int arr[][COLS], size_t rows, int res[])
 {
     size_t i = 0;
     size_t j = 0;
-    int sum = 0;
+  
 
     for (i = 0; i < rows; ++i)
     {
         for (j = 0; j < COLS; ++j)
         {
-            sum += arr[i][j];
+            res[i] += arr[i][j];
         }
+          
     }
-
-    return sum;
 }
 
 
-int JosephusCircularArray(int n)
+size_t JosephusCircularArray(size_t n)
 {
-    int* arr = NULL;
-    int alive = n;
-    int i = 0; /* current soldier holding sword */
-    int k; /* loop iterator */
+    size_t* arr = NULL;
+    size_t alive = n;
+    size_t i = 0; /* current soldier holding sword */
+    size_t k; /* loop iterator */
+    size_t victim = 0;
     
     if (0 == n)
     {
         return 0;
     }
-    if (n < 0)
-    {
-        return -1;
-    }
 
-    arr = (int*)malloc(n * sizeof(int));
+    arr = (size_t*)malloc(n * sizeof(size_t));
     if (!arr)
     {
         return -1;
@@ -71,7 +69,7 @@ int JosephusCircularArray(int n)
 
     while (alive > 1)
     {
-        int victim = (i + 1) % n;
+        victim = (i + 1) % n;
 
         /* find next alive (victim) */
         while (arr[victim] == 0)
@@ -84,7 +82,7 @@ int JosephusCircularArray(int n)
 
         /* new sword holder: next alive after victim */
         i = (victim + 1) % n;
-        while (arr[i] == 0)
+        while (0 == arr[i])
         {
             i = (i + 1) % n;
         }
@@ -112,8 +110,6 @@ void PrintDataTypeSizes(void)
     printf("\tlong: %lu bytes\n", (unsigned long)sizeof(long));
     printf("\tunsigned long: %lu bytes\n", (unsigned long)sizeof(unsigned long));
 
-    
-
     printf("\tfloat: %lu bytes\n", (unsigned long)sizeof(float));
     printf("\tdouble: %lu bytes\n", (unsigned long)sizeof(double));
 
@@ -132,7 +128,7 @@ void PrintEnvVarInLowerCase(char *envp[])
 
     copy = CloneEnvToLower(envp); /* create an array of strings , fill them with relevant strings (callee duty to free)*/
 
-    if (copy == NULL)
+    if (NULL == copy)
     {
         printf(RED"Memory allocation failure in printEnv\n");
         return;
@@ -142,17 +138,52 @@ void PrintEnvVarInLowerCase(char *envp[])
     FreeEnv(copy); /* free malloced memory*/
 }
 
-/* this function returns number of env vars*/
-size_t GetEnvSize(char *envp[])
+char** CloneEnvToLower(char* envp[])
 {
-    size_t count = 0;
+    size_t size = 0;
+    char** copy = NULL;
+    size_t i = 0;
+    size_t j = 0;
 
-    while (envp[count] != NULL)
+    size = GetEnvSize(envp); /* size = number of env vars*/
+    copy = AllocateEnvCopy(size); /* mallocs a pointer to pointer with sizeof size */
+    /* check if malloc worked */
+    if (NULL == copy)
     {
-        count++;
+        return NULL;
     }
 
-    return count + 1;
+    for (i = 0 ; envp[i] != NULL ; i++)
+    {
+        copy[i] = ToLowerString(envp[i]); /* mallocs a string and puts the lower case string in it */
+
+        /* if malloc failed - free everything! */
+        if (NULL == copy[i])
+        {
+            for (j = 0; j < i; j++)
+            {
+                free(copy[j]);
+            }
+            free(copy);
+            return NULL;
+        }
+    }
+
+    copy[i] = NULL; /* add NULL to know it ended (for printing) */
+    return copy;
+}
+
+/* this function returns number of env vars*/
+size_t GetEnvSize(char* envp[])
+{
+    size_t size = 0;
+
+    while (NULL != envp[size])
+    {
+        ++size;
+    }
+
+    return size + 1; /* null at the end */
 }
 
 /* malloc*/
@@ -187,39 +218,7 @@ char* ToLowerString(const char* src)
     return dest;
 }
 
-char** CloneEnvToLower(char* envp[])
-{
-    size_t size = 0;
-    char** copy = NULL;
-    size_t i = 0;
-    size_t j = 0;
 
-    size = GetEnvSize(envp);
-
-    copy = AllocateEnvCopy(size);
-    if (NULL == copy)
-    {
-        return NULL;
-    }
-
-    for (i = 0 ; envp[i] != NULL ; i++)
-    {
-        copy[i] = ToLowerString(envp[i]);
-
-        if (copy[i] == NULL)
-        {
-            for (j = 0; j < i; j++)
-            {
-                free(copy[j]);
-            }
-            free(copy);
-            return NULL;
-        }
-    }
-
-    copy[i] = NULL;
-    return copy;
-}
 
 /* prints the array*/
 void PrintEnv(char* lowered_envp[])
@@ -235,7 +234,7 @@ void PrintEnv(char* lowered_envp[])
 void FreeEnv(char* envp[])
 {
     size_t i = 0;
-    while (envp[i] != NULL)
+    while (NULL !=  envp[i])
     {
         free(envp[i]);
         i++;
