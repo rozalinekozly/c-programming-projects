@@ -1,8 +1,10 @@
-#include <stdio.h> /* printf */
-#include <string.h> /**/
-#include <stdlib.h>
-#include <ctype.h>
-#include "ws3.h"
+#include <stdio.h> /* printf() */
+#include <string.h> /* strlen() */
+#include <stdlib.h> /* malloc and free */
+#include <ctype.h> /* tolower */
+#include "ws3.h" /* define COLS*/
+
+
 
 /*colors used in printing */		
 #define RED           "\033[1;91m"
@@ -10,6 +12,16 @@
 #define CYAN          "\033[1;96m"
 #define GREEN         "\033[1;92m"
 #define YELLOW        "\033[1;93m"
+
+
+int Sum2D(int arr[][COLS], size_t rows);
+void PrintEnvVarInLowerCase(char *envp[]);
+size_t GetEnvSize(char *envp[]);
+char **AllocateEnvCopy(size_t size);
+char *ToLowerString(const char *src);
+char **CloneEnvToLower(char *envp[]);
+void PrintEnv(char *envp[]);
+void FreeEnv(char *envp[]);
 
 int Sum2D(int arr[][COLS], size_t rows)
 {
@@ -31,7 +43,7 @@ int Sum2D(int arr[][COLS], size_t rows)
 
 int JosephusCircularArray(int n)
 {
-    int *arr = NULL;
+    int* arr = NULL;
     int alive = n;
     int i = 0; /* current soldier holding sword */
     int k; /* loop iterator */
@@ -118,18 +130,19 @@ void PrintEnvVarInLowerCase(char *envp[])
 {
     char** copy = NULL; /* array to hold lower case env vars*/
 
-    copy = CloneEnvToLower(envp);
+    copy = CloneEnvToLower(envp); /* create an array of strings , fill them with relevant strings (callee duty to free)*/
 
     if (copy == NULL)
     {
-        printf(RED"Memory allocation failure\n");
+        printf(RED"Memory allocation failure in printEnv\n");
         return;
     }
 
-    PrintEnv(copy);
-    FreeEnv(copy);
+    PrintEnv(copy); /* print strings */
+    FreeEnv(copy); /* free malloced memory*/
 }
 
+/* this function returns number of env vars*/
 size_t GetEnvSize(char *envp[])
 {
     size_t count = 0;
@@ -142,19 +155,21 @@ size_t GetEnvSize(char *envp[])
     return count + 1;
 }
 
+/* malloc*/
 char** AllocateEnvCopy(size_t size)
 {
     return (char**)malloc(size * sizeof(char*));
 }
 
-char* ToLowerString(const char *src)
+/* function that creates a string that contains lowered case env vars */
+char* ToLowerString(const char* src)
 {
     size_t len = 0;
     char* dest = NULL;
     size_t i = 0;
 
-    len = strlen(src);
-    dest = (char *)malloc(len + 1);
+   len = strlen(src);
+    dest = (char*)malloc(len + 1); /* because string is const and cant be changed*/
 
     if (!dest)
     {
@@ -163,6 +178,7 @@ char* ToLowerString(const char *src)
 
     for (i = 0; i < len; i++)
     {
+      
         dest[i] = (char)tolower((unsigned char)src[i]);
     }
 
@@ -181,7 +197,7 @@ char** CloneEnvToLower(char* envp[])
     size = GetEnvSize(envp);
 
     copy = AllocateEnvCopy(size);
-    if (NULL != copy)
+    if (NULL == copy)
     {
         return NULL;
     }
@@ -205,7 +221,7 @@ char** CloneEnvToLower(char* envp[])
     return copy;
 }
 
-
+/* prints the array*/
 void PrintEnv(char* lowered_envp[])
 {
     size_t i = 0;
@@ -215,7 +231,7 @@ void PrintEnv(char* lowered_envp[])
         i++;
     }
 }
-
+/*frees the array*/
 void FreeEnv(char* envp[])
 {
     size_t i = 0;

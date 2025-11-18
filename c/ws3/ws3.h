@@ -34,13 +34,6 @@ Undefined: Passing NULL instead of a valid envp array.
 void PrintEnvVarInLowerCase(char *envp[]);
 
 
-int Sum2D(int arr[][COLS], size_t rows);
-void PrintEnvVarInLowerCase(char *envp[]);
-size_t GetEnvSize(char *envp[]);
-char **AllocateEnvCopy(size_t size);
-char *ToLowerString(const char *src);
-char **CloneEnvToLower(char *envp[]);
-void PrintEnv(char *envp[]);
-void FreeEnv(char *envp[]);
+
 #endif /* __WS3_H__ */
 

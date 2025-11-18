@@ -13,6 +13,7 @@
 #define YELLOW        "\033[1;93m"
 
 #define NUM_OF_TESTS 2
+
 size_t TestJosephus(void);
 size_t TestSum2D(void);
 void PrintDataTypeSizes(void);
