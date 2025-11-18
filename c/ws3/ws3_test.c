@@ -1,3 +1,8 @@
+/******************************************
+* submitter: Rozaline Kozly
+* reviewer : Nimrod Keren
+* version : 2
+*******************************************/
 #include "ws3.h"
 #include <assert.h>
 #include <stdio.h>
