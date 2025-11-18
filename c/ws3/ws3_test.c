@@ -1,3 +1,8 @@
+/******************************************
+* submitter: Rozaline Kozly
+* reviewer : Nimrod Keren
+* version : 2
+*******************************************/
 #include "ws3.h"
 #include <assert.h>
 #include <stdio.h>
@@ -13,6 +18,7 @@
 #define YELLOW        "\033[1;93m"
 
 #define NUM_OF_TESTS 2
+
 size_t TestJosephus(void);
 size_t TestSum2D(void);
 void PrintDataTypeSizes(void);
@@ -22,7 +28,7 @@ void PrintEnvVarInLowerCase(char**);
 int main(int argc, char *argv[], char *envp[])
 {
     size_t counter = 0;
-    UNUSED(argc);/* compiler treat thoese as warnings (for not using them) so */
+    UNUSED(argc);/* compiler treat thoese as warnings (for not using them) so */ 
     UNUSED(argv);/* we silent them */
     
 
@@ -56,22 +62,37 @@ size_t TestSum2D()
         {3,3,3},
         {1,1,1}
     };
-
+    
+    int res1[2] = {0,0};
+    int exp1[2] = {3,3};
+    int res2[3] = {0,0,0};
+    int exp2[3] = {6,9,3};
+    size_t i = 0;
 
     printf(YELLOW "\t-----TESTING Sum2D FUNCTION: -----\n");
+    RowSum2D(arr1,2,res1);
+    RowSum2D(arr2,3,res2);
     
     /* Test 1 */
-    if (Sum2D(arr1, 2) != 6)
+    for(i = 0 ; i < 2 ; i++)
     {
-        printf(RED"\t\tTestSum2D FAILED on arr1\n");
-        return 0;
+       if(res1[i] != exp1[i])
+       {
+               printf(RED"\t\tTestSum2D FAILED on arr1 res1 = %d exp2= %d a\n", res1[i], exp2[i]);
+               return 0;  
+       }
+    
     }
-
+    
     /* Test 2 */
-    if (Sum2D(arr2, 3) != 18)
+ for(i = 0 ; i < 3 ; i++)
     {
-        printf(RED"\t\tTestSum2D FAILED on arr2\n");
-        return 0;
+       if(res2[i] != exp2[i])
+       {
+               printf(RED"\t\tTestSum2D FAILED on arr2\n");
+               return 0;  
+       }
+    
     }
 
     printf(GREEN"\n\t\tAll tests passed.\n\n");
