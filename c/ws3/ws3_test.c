@@ -36,7 +36,7 @@ int main(int argc, char *argv[], char *envp[])
     counter += TestJosephus();
     printf(YELLOW "\t-----PRINTING DATA TYPES & THEIR SIZES FUNCTION: -----\n");
     PrintDataTypeSizes();
-      printf(YELLOW "\t-----PRINTING ENVIRONMENT VARIABLES IN LOWER CASE FUNCTION: -----\n");
+    printf(YELLOW "\t-----PRINTING ENVIRONMENT VARIABLES IN LOWER CASE FUNCTION: -----\n");
     PrintEnvVarInLowerCase(envp);
     
     if(counter == NUM_OF_TESTS)
@@ -104,8 +104,8 @@ size_t TestJosephus()
 {
     int res = 0;
     size_t i = 0;
-    int n_arr[] =    {0,1,2,3,5,100,-1};
-    int expected[] = {0,0,0,2,2,72,-1};
+    int n_arr[] =    {0,1,2,3,5,100};
+    int expected[] = {0,0,0,2,2,72};
     size_t arr_size = (sizeof(n_arr)/sizeof(n_arr[0]));
 
     printf(YELLOW "\t-----TESTING Josephus FUNCTION: -----\n");

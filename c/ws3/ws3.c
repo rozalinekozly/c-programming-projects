@@ -7,6 +7,7 @@
 #include <stdlib.h> /* malloc and free and size_t type */
 #include <ctype.h> /* tolower */
 #include "ws3.h" /* define COLS*/
+#include <stddef.h> /* in order to be able to use ptrdiff_t type */
 
 
 
@@ -34,7 +35,10 @@ void RowSum2D(int arr[][COLS], size_t rows, int res[])
     size_t i = 0;
     size_t j = 0;
   
-
+       for(i = 0 ; i < rows ; i++)
+    {
+    	res[i] = 0;
+    }
     for (i = 0; i < rows; ++i)
     {
         for (j = 0; j < COLS; ++j)
@@ -48,7 +52,7 @@ void RowSum2D(int arr[][COLS], size_t rows, int res[])
 
 size_t JosephusCircularArray(size_t n)
 {
-    size_t* arr = NULL;
+    size_t* arr = (size_t*)malloc(n * sizeof(size_t));
     size_t alive = n;
     size_t i = 0; /* current soldier holding sword */
     size_t k; /* loop iterator */
@@ -59,10 +63,11 @@ size_t JosephusCircularArray(size_t n)
         return 0;
     }
 
-    arr = (size_t*)malloc(n * sizeof(size_t));
-    if (!arr)
+    
+    if (NULL == arr)
     {
-        return -1;
+       printf(RED" MALLOC FAILED\n");
+        return 0;
     }
 
     /* initialize all alive */
@@ -167,8 +172,10 @@ char** CloneEnvToLower(char* envp[])
             for (j = 0; j < i; j++)
             {
                 free(copy[j]);
+                copy[j] = NULL;
             }
             free(copy);
+            copy = NULL;
             return NULL;
         }
     }
@@ -241,6 +248,7 @@ void FreeEnv(char* envp[])
     while (NULL !=  envp[i])
     {
         free(envp[i]);
+        envp[i] = NULL;
         i++;
     }
 
