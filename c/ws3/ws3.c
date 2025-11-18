@@ -1,3 +1,7 @@
+/**************************
+* rozaline kozly
+*
+***************************/
 #include <stdio.h> /* printf() */
 #include <string.h> /* strlen() */
 #include <stdlib.h> /* malloc and free and size_t type */
