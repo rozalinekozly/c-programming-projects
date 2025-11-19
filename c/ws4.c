@@ -1,11 +1,11 @@
 /***************************
 * Submitter: Rozaline Kozly
 * Reviewer : Steve Evushenko
-* Date: 19 Nov 2025
-* Version 2
+* Date: 19  Nov  2025
+* Version 2.0
 ****************************/
-#include <stdio.h> /* getchar() */
-#include <stdlib.h> /* exit(); - to force quitting from the callee , system function */
+#include <stdio.h> 	/* getchar() */
+#include <stdlib.h>  	/* exit(); - to force quitting from the callee , system function */
 
 /* special constant used characters */
 #define ESC 27
@@ -61,8 +61,8 @@ int main()
 /* implementation using if-else */
 void DetectLettersIfElse()
 {
-	char c = INITIALIZING_VAL; /* character to hold current char */
-        int ret = INITIALIZING_VAL; /* return value from system function */
+        char c = INITIALIZING_VAL;	         /* character to hold current char */
+        int ret = INITIALIZING_VAL; 	/* return value from system function */
          
 	ret = system("stty -icanon -echo"); /* configure bash to disable echo and icanon */
 	
@@ -71,9 +71,9 @@ void DetectLettersIfElse()
 		exit(FAILED_BASH_OP);
 	}
 	
-	while (PLAY_UNTIL_ESC_ENTERED) /* keep reading characters until an ESC key pressed */
+	while (PLAY_UNTIL_ESC_ENTERED) 	/* keep reading characters until an ESC key pressed */
 	{
-	         c = getchar(); /* c holds the characters red from terminal */
+	         c = getchar(); 		/* c holds the characters red from terminal */
 	         
 	         if (ESC == c)
 	         {
@@ -115,14 +115,14 @@ void DetectLettersCaseSwitch()
 /* implementation using LUT */
 void DetectLettersLUT()
 {
-	void (*functions[ASCII_RANGE])(); /* declare an array of pointers on functions size = 256 = ASCII values range (unsigned) */
-	size_t i = INITIALIZING_VAL; /* iterator on function's cells */
-	int c = INITIALIZING_VAL; /* character to hold read char from pipe(terminal) */
+	void (*functions[ASCII_RANGE])(); 		/* declare an array of pointers on functions size = 256 = ASCII values range (unsigned) */
+	size_t i = INITIALIZING_VAL; 		/* iterator on function's cells */
+	int c = INITIALIZING_VAL; 			/* character to hold read char from pipe(terminal) */
 	
 	/* initializing array */
 	for (i = 0 ; i < ASCII_RANGE ; i++)
 	{
-	      functions[i] = func3; /* initialize all functions */
+	      functions[i] = func3; 		/* initialize all functions */
 	}
 	
 	functions[CHAR1] = func1;
@@ -147,12 +147,12 @@ static void func2()
 }
 static void func3() 
 {
-	/* do nothing */
+     /* do nothing */
  	return;
 }
 static void func4() 
 {
-	int ret = system("stty icanon echo"); /* perform proper exiting */
+	int ret = system("stty icanon echo");         /* perform proper exiting */
 	if (SUCCESSED_BASH_OP != ret)
 	{
 		printf(RED"command execution did not complete successfully");
