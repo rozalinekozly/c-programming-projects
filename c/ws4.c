@@ -1,24 +1,43 @@
 #include <stdio.h> /* getchar() */
 #include <stdlib.h> /* exit(); - to force quitting from the callee */
 
+/* special constant used characters */
 #define ESC 27
 #define CHAR1 'A'
 #define CHAR2 'T'
+#define ASCII_RANGE 256
 
+/* defining colors for printing */
+#define YELLOW        "\033[1;93m"
+#define CYAN          "\033[1;96m"
+#define WHITE         "\033[1;97m"
+
+/* macros to print to string*/
+#define A_PRESSED(X) printf(X "A-Pressed\n"); /* X = color */
+#define T_PRESSED(X) printf(X "T-Pressed\n");
+
+/* declaring on functions */
 void DetectLettersIfElse();
 void DetectLettersCaseSwitch();
-
 void DetectLettersLUT();
-void func1();
-void func2();
-void func3(); /* AN EMPTY FUNCTION */
-void func4(); /* esc program */
+
+/* aux functions (internal functions for LUT implementation) */
+static void func1(); /* A_PRESSED*/
+static void func2();/* T_PRESSED */
+static void func3(); /* AN EMPTY FUNCTION */
+static void func4(); /* esc program */
 
 
 int main()
 {
+	printf(WHITE  "\nRunning the program using if-else implementation\n\tPress any key\n");
+	DetectLettersIfElse();
 	
-	DetectLettersLUT();
+	printf(WHITE  "\nRunning the program using switch-case implementation\n\tPress any key\n");
+         DetectLettersCaseSwitch();
+         
+         printf(WHITE "\nRunning the program using LUT implementation\n\tPress any key\n");
+         DetectLettersLUT();
 	
 	return 0;
 
@@ -29,23 +48,22 @@ void DetectLettersIfElse()
 {
 	char c = ' ';
 	
-	while(1)
+	while(1) /* keep reading characters until a ESC key pressed */
 	{
-	
-	         c = getchar();
+	         c = getchar(); /* c holds the characters red from terminal */
+	         
 	         if(ESC == c)
 	         {
 	         	break;
 	         }
 		else if(CHAR1 == c) 
 		{
-			printf("A-Pressed\n");
+			 A_PRESSED(YELLOW)
 		}
 		else if(CHAR2 == c) 
 		{
-			printf("T-Pressed\n");
+			T_PRESSED(CYAN);
 		}
-	
 	
 	}
 
@@ -53,9 +71,7 @@ void DetectLettersIfElse()
 
 
 void DetectLettersCaseSwitch()
-{
-
-	
+{	
 	while(1)
 	{
 	         
@@ -63,52 +79,49 @@ void DetectLettersCaseSwitch()
 	         
 	        {
 			case ESC:
-			
 			 return;
 			 break;
 		        
 			case CHAR1:
-			
-			 printf("A-Pressed\n");
-			 
-			 break;
+			 A_PRESSED(YELLOW) 
+		          break;
 			 
 			case CHAR2:
-			
-			printf("T-Pressed\n");
-			
+			T_PRESSED(CYAN);
 			 break;
 		 }
 	}
 }
 
 
-void func1()
+static void func1()
 {
-	printf("A-Pressed\n");
+	A_PRESSED(YELLOW)
 
 }
-void func2()
+static void func2()
 {
-	printf("T-Pressed\n");
+	T_PRESSED(CYAN);
 }
-void func3() /* AN EMPTY FUNCTION */
+static void func3() 
 {
- 	return; /* do nothing*/
+	/* do nothing */
+ 	return;
 }
-void func4() /* esc program */
+static void func4() 
 {
+	/* esc program */
 	exit(0);
 }
 
+
 void DetectLettersLUT()
 {
-	void (*functions[256])();
-	size_t i = 0;
-	int c = ' ';
+	void (*functions[ASCII_RANGE])(); /* decalre an array of pointers on functions size = 256 = ASCII values range (unsigned) */
+	size_t i = 0; /* iterator on function's cells */
+	int c = ' '; /* character to hold read char from pipe(terminalt) */
 	
 	/* intializing array */
-	
 	for(i = 0 ; i < 256 ; i++)
 	{
 		if( i == 'A')
@@ -132,11 +145,9 @@ void DetectLettersLUT()
 	
 	
 	while(1)
-	{
-	
+	{	
 	         c = getchar();
-	         functions[c]();
-	         
+	         functions[c]();         
 	}
 	         
 
