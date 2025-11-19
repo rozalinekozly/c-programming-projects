@@ -27,10 +27,6 @@
 /* macros to print to string */
 #define A_PRESSED(X) printf(X "A-Pressed\n"); /* X = color */
 #define T_PRESSED(X) printf(X "T-Pressed\n");
-#define DISABLE_ICANON system("stty -icanon"); 
-#define DISABLE_ECHO  system("stty -echo"); 
-#define ENABLE_ICANON  system("stty icanon"); 
-#define ENABLE_ECHO  system("stty echo"); 
 
 /* declaring on functions */
 /* all the 3 functions perform the same thing;
@@ -105,11 +101,11 @@ void DetectLettersCaseSwitch()
 			return;
 			break; /* this break is not reachable - but for the consistency and conventions I will keep it */
 		        
-			case CHAR1:
+			case CHAR1: /* A */
 			A_PRESSED(YELLOW) 
 		        break;
 			 
-			case CHAR2:
+			case CHAR2: /* T */
 			T_PRESSED(CYAN);
 			 break;
 		 }
@@ -129,6 +125,7 @@ void DetectLettersLUT()
 	      functions[i] = func3; 		/* initialize all functions */
 	}
 	
+	/* special characters defines */
 	functions[CHAR1] = func1;
 	functions[CHAR2] = func2;
         functions[ESC] = func4;
