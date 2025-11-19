@@ -1,10 +1,9 @@
 /***************************
-*
-*
-*
-*
+* Submitter: Rozaline Kozly
+* Reviewer : Steve Evushenko
+* Date: 19 Nov 2025
+* Version 2
 ****************************/
-
 #include <stdio.h> /* getchar() */
 #include <stdlib.h> /* exit(); - to force quitting from the callee , system function */
 
@@ -13,6 +12,11 @@
 #define CHAR1 'A'
 #define CHAR2 'T'
 #define ASCII_RANGE 256
+#define PLAY_UNTIL_ESC_ENTERED 1
+#define INITIALIZING_VAL 0 
+#define SUCCESSED_BASH_OP 0
+#define FAILED_BASH_OP 1
+#define PROGRAM_ENDED_IN_SUCCESS 0
 
 /* defining colors for printing */
 #define YELLOW        "\033[1;93m"
@@ -20,11 +24,15 @@
 #define WHITE         "\033[1;97m"
 #define RED           "\033[1;91m"
 
-/* macros to print to string*/
+/* macros to print to string */
 #define A_PRESSED(X) printf(X "A-Pressed\n"); /* X = color */
 #define T_PRESSED(X) printf(X "T-Pressed\n");
 
 /* declaring on functions */
+/* all the 3 functions perform the same thing;
+   print A-PRESSED / T-PRESSED in case A or T
+   keys entered by the user, it does it in an environment 
+   where echo (printing to the terminal) and icanon are disabled (line based -> character based) */
 void DetectLettersIfElse();
 void DetectLettersCaseSwitch();
 void DetectLettersLUT();
@@ -33,77 +41,69 @@ void DetectLettersLUT();
 static void func1(); /* A_PRESSED*/
 static void func2();/* T_PRESSED */
 static void func3(); /* AN EMPTY FUNCTION */
-static void func4(); /* esc program */
+static void func4(); /* escape function */
 
 
 int main()
 {
-
-	printf(WHITE  "\nRunning the program using if-else implementation\n\tPress any key (press ESC to go to next implementation)\n");
+	printf(WHITE "\nRunning the program using if-else implementation\n\tPress any key (press ESC to go to next implementation)\n");
 	DetectLettersIfElse();
 	
-	printf(WHITE  "\nRunning the program using switch-case implementation\n\tPress any key (press ESC to go to next implementation)\n");
-         DetectLettersCaseSwitch();
+	printf(WHITE "\nRunning the program using switch-case implementation\n\tPress any key (press ESC to go to next implementation)\n");
+        DetectLettersCaseSwitch();
          
-         printf(WHITE "\nRunning the program using LUT implementation\n\tPress any key (press ESC to go to next implementation)\n");
-         DetectLettersLUT();
+        printf(WHITE "\nRunning the program using LUT implementation\n\tPress any key (press ESC to go to next implementation)\n");
+        DetectLettersLUT();
          
- 
-	return 0;
-
+	return PROGRAM_ENDED_IN_SUCCESS;
 }
 
-
+/* implementation using if-else */
 void DetectLettersIfElse()
 {
-	char c = ' ';
-         int ret = 0;
+	char c = INITIALIZING_VAL; /* character to hold current char */
+        int ret = INITIALIZING_VAL; /* return value from system function */
          
-	ret = system("stty -icanon -echo");
+	ret = system("stty -icanon -echo"); /* configure bash to disable echo and icanon */
 	
-	if(0 != ret)
+	if(SUCCESSED_BASH_OP != ret)
 	{
-		printf(RED"command execution did not complete successfully");
-		exit(1);
+		exit(FAILED_BASH_OP);
 	}
 	
-	while(1) /* keep reading characters until a ESC key pressed */
+	while (PLAY_UNTIL_ESC_ENTERED) /* keep reading characters until an ESC key pressed */
 	{
 	         c = getchar(); /* c holds the characters red from terminal */
 	         
-	         if(ESC == c)
+	         if (ESC == c)
 	         {
 	         	break;
 	         }
-		else if(CHAR1 == c) 
+		else if (CHAR1 == c) 
 		{
 			 A_PRESSED(YELLOW)
 		}
-		else if(CHAR2 == c) 
+		else if (CHAR2 == c) 
 		{
 			T_PRESSED(CYAN);
 		}
-	
 	}
-
 }
 
-
+/* implementation using switch-case */
 void DetectLettersCaseSwitch()
 {	
-	while(1)
-	{
-	         
-	        switch(getchar())
-	         
+	while (PLAY_UNTIL_ESC_ENTERED)
+	{      
+	   switch (getchar())
 	        {
 			case ESC:
-			 return;
-			 break;
+			return;
+			break;
 		        
 			case CHAR1:
-			 A_PRESSED(YELLOW) 
-		          break;
+			A_PRESSED(YELLOW) 
+		        break;
 			 
 			case CHAR2:
 			T_PRESSED(CYAN);
@@ -112,11 +112,34 @@ void DetectLettersCaseSwitch()
 	}
 }
 
+/* implementation using LUT */
+void DetectLettersLUT()
+{
+	void (*functions[ASCII_RANGE])(); /* declare an array of pointers on functions size = 256 = ASCII values range (unsigned) */
+	size_t i = INITIALIZING_VAL; /* iterator on function's cells */
+	int c = INITIALIZING_VAL; /* character to hold read char from pipe(terminal) */
+	
+	/* initializing array */
+	for (i = 0 ; i < ASCII_RANGE ; i++)
+	{
+	      functions[i] = func3; /* initialize all functions */
+	}
+	
+	functions[CHAR1] = func1;
+	functions[CHAR2] = func2;
+        functions[ESC] = func4;
+	
+	while (PLAY_UNTIL_ESC_ENTERED)
+	{	
+	         c = getchar();
+	         functions[c]();         
+	}
+}
 
+/* aux functions */
 static void func1()
 {
 	A_PRESSED(YELLOW)
-
 }
 static void func2()
 {
@@ -129,53 +152,14 @@ static void func3()
 }
 static void func4() 
 {
-	int ret = system("stty icanon echo");
-	        if(0 != ret)
+	int ret = system("stty icanon echo"); /* perform proper exiting */
+	if (SUCCESSED_BASH_OP != ret)
 	{
 		printf(RED"command execution did not complete successfully");
-		exit(1);
+		exit(FAILED_BASH_OP);
 	}
-	exit(0);
+	exit(PROGRAM_ENDED_IN_SUCCESS);
 	
-}
-
-
-void DetectLettersLUT()
-{
-	void (*functions[ASCII_RANGE])(); /* decalre an array of pointers on functions size = 256 = ASCII values range (unsigned) */
-	size_t i = 0; /* iterator on function's cells */
-	int c = ' '; /* character to hold read char from pipe(terminalt) */
-	
-	/* intializing array */
-	for(i = 0 ; i < 256 ; i++)
-	{
-		if( i == 'A')
-		{
-			functions[i] = func1;
-		}
-		else if( i == 'T')
-		{
-			functions[i] = func2;
-		}
-		else if( i == ESC)
-		{
-			functions[i] = func4;
-		}
-		else
-		{
-			functions[i] = func3;
-		}
-	
-	}
-	
-	
-	while(1)
-	{	
-	         c = getchar();
-	         functions[c]();         
-	}
-	         
-
 }
 
 
