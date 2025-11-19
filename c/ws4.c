@@ -6,7 +6,7 @@
 ****************************/
 
 #include <stdio.h> /* getchar() */
-#include <stdlib.h> /* exit(); - to force quitting from the callee */
+#include <stdlib.h> /* exit(); - to force quitting from the callee , system function */
 
 /* special constant used characters */
 #define ESC 27
@@ -18,6 +18,7 @@
 #define YELLOW        "\033[1;93m"
 #define CYAN          "\033[1;96m"
 #define WHITE         "\033[1;97m"
+#define RED           "\033[1;91m"
 
 /* macros to print to string*/
 #define A_PRESSED(X) printf(X "A-Pressed\n"); /* X = color */
@@ -37,15 +38,17 @@ static void func4(); /* esc program */
 
 int main()
 {
-	printf(WHITE  "\nRunning the program using if-else implementation\n\tPress any key\n");
+
+	printf(WHITE  "\nRunning the program using if-else implementation\n\tPress any key (press ESC to go to next implementation)\n");
 	DetectLettersIfElse();
 	
-	printf(WHITE  "\nRunning the program using switch-case implementation\n\tPress any key\n");
+	printf(WHITE  "\nRunning the program using switch-case implementation\n\tPress any key (press ESC to go to next implementation)\n");
          DetectLettersCaseSwitch();
          
-         printf(WHITE "\nRunning the program using LUT implementation\n\tPress any key\n");
+         printf(WHITE "\nRunning the program using LUT implementation\n\tPress any key (press ESC to go to next implementation)\n");
          DetectLettersLUT();
-	
+         
+ 
 	return 0;
 
 }
@@ -54,6 +57,15 @@ int main()
 void DetectLettersIfElse()
 {
 	char c = ' ';
+         int ret = 0;
+         
+	ret = system("stty -icanon -echo");
+	
+	if(0 != ret)
+	{
+		printf(RED"command execution did not complete successfully");
+		exit(1);
+	}
 	
 	while(1) /* keep reading characters until a ESC key pressed */
 	{
@@ -117,8 +129,14 @@ static void func3()
 }
 static void func4() 
 {
-	/* esc program */
+	int ret = system("stty icanon echo");
+	        if(0 != ret)
+	{
+		printf(RED"command execution did not complete successfully");
+		exit(1);
+	}
 	exit(0);
+	
 }
 
 
