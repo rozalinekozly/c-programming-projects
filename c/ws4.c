@@ -27,6 +27,10 @@
 /* macros to print to string */
 #define A_PRESSED(X) printf(X "A-Pressed\n"); /* X = color */
 #define T_PRESSED(X) printf(X "T-Pressed\n");
+#define DISABLE_ICANON system("stty -icanon"); 
+#define DISABLE_ECHO  system("stty -echo"); 
+#define ENABLE_ICANON  system("stty icanon"); 
+#define ENABLE_ECHO  system("stty echo"); 
 
 /* declaring on functions */
 /* all the 3 functions perform the same thing;
@@ -99,7 +103,7 @@ void DetectLettersCaseSwitch()
 	        {
 			case ESC:
 			return;
-			break;
+			break; /* this break is not reachable - but for the consistency and conventions I will keep it */
 		        
 			case CHAR1:
 			A_PRESSED(YELLOW) 
@@ -132,7 +136,7 @@ void DetectLettersLUT()
 	while (PLAY_UNTIL_ESC_ENTERED)
 	{	
 	         c = getchar();
-	         functions[c]();         
+	         functions[(unsigned char) c ]();         
 	}
 }
 
