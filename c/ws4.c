@@ -1,3 +1,10 @@
+/***************************
+*
+*
+*
+*
+****************************/
+
 #include <stdio.h> /* getchar() */
 #include <stdlib.h> /* exit(); - to force quitting from the callee */
 
