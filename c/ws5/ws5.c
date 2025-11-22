@@ -1,3 +1,9 @@
+/*******************************************************
+* submitter: rozaline kozly
+* reviewer: steve
+* version: 1
+* date: 23/11/2025
+*******************************************************/
 #include <stdio.h>    /* printf(), fopen(), fclose() */
 #include <string.h>   /* strlen() , strncmp() */
 #include <stdlib.h>  	/* malloc(),free() */
