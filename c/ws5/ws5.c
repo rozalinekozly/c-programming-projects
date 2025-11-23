@@ -1,3 +1,10 @@
+/************************************
+* submitter: rozaline kozly
+* reviewer: steve
+* 23 - nov - 2025
+* version 2 (post review)
+* worksheet 5
+*************************************/
 #include <stdio.h>    /* printf(), fopen(), fclose() */
 #include <string.h>   /* strlen() , strncmp() */
 #include <stdlib.h>  	/* malloc(),free() */
