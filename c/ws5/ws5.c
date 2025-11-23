@@ -1,9 +1,3 @@
-/*******************************************************
-* submitter: rozaline kozly
-* reviewer: steve
-* version: 1
-* date: 23/11/2025
-*******************************************************/
 #include <stdio.h>    /* printf(), fopen(), fclose() */
 #include <string.h>   /* strlen() , strncmp() */
 #include <stdlib.h>  	/* malloc(),free() */
@@ -241,8 +235,14 @@ static void Prepend(void)
     buffer = (char*)malloc(size + 1);
     if (!buffer)
     {
-        fclose(fopen_ret_val);
-        return_status = FAILED_ALLOC;
+       if (!fclose(fopen_ret_val))
+       {
+          return_status = FAILED_CLOSING_FILE;
+        }
+        else 
+        {
+          return_status = FAILED_ALLOC;
+        }
         return;
     }
 
@@ -259,6 +259,7 @@ static void Prepend(void)
     if (!fopen_ret_val)
     {
         free(buffer);
+        buffer = NULL;
         return_status = FAILED_OPEN_FILE;
         return;
     }
@@ -268,6 +269,7 @@ static void Prepend(void)
 
     fclose(fopen_ret_val);
     free(buffer);
+    buffer = NULL;
     return_status = SUCCESS;
 }
 
@@ -283,8 +285,14 @@ static void Append(void)
 
     if (fputs(curr_str_frm_input, fopen_ret_val) == EOF)
     {
-        fclose(fopen_ret_val);
-        return_status = FAILED_WRITE_FILE;
+         if (!fclose(fopen_ret_val))
+         {
+            return_status = FAILED_CLOSING_FILE;
+         }
+        else
+         {
+            return_status = FAILED_WRITE_FILE;
+         }
         return;
     }
 
@@ -316,4 +324,5 @@ static void InitializeAndPrintMe(void)
         arr[i].func_ptr(arr[i].num);
     }
 }
+
 
