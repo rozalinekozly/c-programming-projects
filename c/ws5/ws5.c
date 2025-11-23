@@ -46,8 +46,8 @@ static size_t func_name() \
 #define PREPEND "<"
 #define NOTHING ""
 /* true and false */
-#define TRUE 0
-#define FALSE 1
+#define TRUE 1
+#define FALSE 0
 
 /* error types numerations */
 typedef enum return_status
@@ -100,7 +100,7 @@ static void Print(int x);
 
 /* global static variables */
 static return_status_t return_status = SUCCESS;
-static char* file_name;
+static char* file_name = NULL;
 static char curr_str_frm_input[MAX_LEN];
 
 static handler_t handlers[HANDLERS_SIZE] = { {REMOVE, IsRemove,Remove}, {COUNT,IsCount,Count}, {EXIT, IsExit,Exit},{PREPEND, IsPrepend,Prepend},
@@ -110,6 +110,10 @@ static print_me_t arr[PRINT_ME_SIZE];
 
 int main(int argc , char* argv[])
 {
+    if(2 > argc)
+    {
+      return return_status;
+    }
     file_name = argv[1];
     UNUSED(argc);
 
@@ -207,7 +211,7 @@ static void Count(void)
         if (c == '\n') count++;
     }
 
-    if (!fclose(fopen_ret_val))
+    if (SUCCESS != fclose(fopen_ret_val))
     {
         return_status = FAILED_CLOSING_FILE;
     }
@@ -242,7 +246,7 @@ static void Prepend(void)
     buffer = (char*)malloc(size + 1);
     if (!buffer)
     {
-       if (!fclose(fopen_ret_val))
+       if (SUCCESS != fclose(fopen_ret_val))
        {
           return_status = FAILED_CLOSING_FILE;
         }
@@ -253,14 +257,17 @@ static void Prepend(void)
         return;
     }
 
-    if (!fread(buffer, 1, size, fopen_ret_val))
+    if (size != fread(buffer, 1, size, fopen_ret_val))
     {
         return_status = FAILED_READ_FILE;
         return;
     }
 
     buffer[size] = '\0';
-    fclose(fopen_ret_val);
+    if(SUCCESS != fclose(fopen_ret_val))
+    {
+      return_status = FAILED_CLOSING_FILE;
+    }
 
     fopen_ret_val = fopen(file_name, "w");
     if (!fopen_ret_val)
@@ -273,11 +280,15 @@ static void Prepend(void)
 
     fputs(newtext, fopen_ret_val);
     fputs(buffer, fopen_ret_val);
-
-    fclose(fopen_ret_val);
+    
     free(buffer);
     buffer = NULL;
-    return_status = SUCCESS;
+
+    if(SUCCESS != fclose(fopen_ret_val))
+    {
+       return_status = FAILED_OPEN_FILE;
+    }
+
 }
 
 static void Append(void)
@@ -292,7 +303,7 @@ static void Append(void)
 
     if (fputs(curr_str_frm_input, fopen_ret_val) == EOF)
     {
-         if (!fclose(fopen_ret_val))
+         if (SUCCESS != fclose(fopen_ret_val))
          {
             return_status = FAILED_CLOSING_FILE;
          }
@@ -303,12 +314,11 @@ static void Append(void)
         return;
     }
 
-    if (!fclose(fopen_ret_val))
-    {
-        return_status = FAILED_CLOSING_FILE;
-    }
+   if (SUCCESS != fclose(fopen_ret_val))
+   {
+       return_status = FAILED_CLOSING_FILE;
+  }
 
-    return_status = SUCCESS;
 }
 
 static void Print(int x)
