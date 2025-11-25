@@ -177,7 +177,7 @@ static bool_ty IsSetBitsReqInNum(unsigned int num, size_t set_bits_required)
                2- sizeof(y) > sizeof(long)
                3- x < 0 or y < 0
 ****************************************/
-long pow2 (unsigned int x, unsigned int y)
+long Pow2 (unsigned int x, unsigned int y)
 {
   return SHIFT_LEFT(x, y);
 }
@@ -193,7 +193,7 @@ static size_t TestPow2()
 
     for (i = 0; i < 5; i++)
     {
-        long result = pow2(x_vals[i], y_vals[i]);
+        long result = Pow2(x_vals[i], y_vals[i]);
 
         if (result != expected[i])
         {
@@ -325,19 +325,19 @@ unsigned int AddOneBinary(unsigned int num)
 
 static size_t TestAddOneBinary()
 {
-    unsigned long arr[]      = {0, 1, 2, 3, 7, 8, 15, 16};
-    unsigned long expected[] = {1, 2, 3, 4, 8, 9, 16, 17};
+    unsigned int arr[]      = {0, 1, 2, 3, 7, 8, 15, 16};
+    unsigned int expected[] = {1, 2, 3, 4, 8, 9, 16, 17};
 
     size_t i = 0;
     size_t size = sizeof(arr) / sizeof(arr[0]);
 
     for (i = 0; i < size; ++i)
     {
-        unsigned long result = AddOneBinary(arr[i]);
+        unsigned int result = AddOneBinary(arr[i]);
 
         if (result != expected[i])
         {
-            printf("TestAddOneBinary FAILED at index %lu: input=%lu expected=%lu got=%lu\n",
+            printf("TestAddOneBinary FAILED at index %lu: input=%u expected=%u got=%u\n",
                    i, arr[i], expected[i], result);
 
             return FAILED;
@@ -481,10 +481,10 @@ static size_t TestByteMirrorWithoutLoop()
   Returns:     TRUE  if both bits are on
                FALSE otherwise
 *************************************************/
-bool_ty IsBitSet(unsigned char num, size_t digit_index)
+bool_ty IsBitOn(unsigned char num, size_t digit_index)
 {
-   int bit = LSB_MASK(SHIFT_RIGHT(num, digit_index));
-   if(ON == bit)
+   int bit_value = LSB_MASK(SHIFT_RIGHT(num, digit_index));
+   if(ON == bit_value)
    {
     return TRUE;
    }
@@ -494,7 +494,7 @@ bool_ty IsBitSet(unsigned char num, size_t digit_index)
 bool_ty CheckBothBitsOn(unsigned char num)
 {
   
-  if(IsBitSet(num,2) == TRUE && IsBitSet(num,6) == TRUE )
+  if(IsBitOn(num,2) == TRUE && IsBitOn(num,6) == TRUE )
   {
       return TRUE;
   }
@@ -534,7 +534,7 @@ static size_t TestCheckBothBitsOn()
 
 bool_ty CheckAtLeastOneBitOn(unsigned char num)
 {
-  if(IsBitSet(num,2) == TRUE || IsBitSet(num,6) == TRUE )
+  if(IsBitOn(num,2) == TRUE || IsBitOn(num,6) == TRUE )
   {
       return TRUE;
   }
@@ -572,18 +572,18 @@ static size_t TestCheckAtLeastOneBitOn()
 
 void SwapBetweenBites(unsigned char* num)
 {
-   int bit1 = IsBitSet(*num, 3);
+   int bit_at_3 = IsBitOn(*num, 3);
   
-   int bit2 = IsBitSet(*num, 5);
+   int bit_at_5 = IsBitOn(*num, 5);
 
-   unsigned char num1 = SHIFT_LEFT(bit1, 5);
-   unsigned char num2 = SHIFT_LEFT(bit2, 3);
+   unsigned char shifted_bit_to_5 = SHIFT_LEFT(bit_at_3, 5);
+   unsigned char shifted_bit_to_3 = SHIFT_LEFT(bit_at_5, 3);
    
    *num = TURN_OFF_3RD_INDEX(*num); 
 
    *num = TURN_OFF_5TH_INDEX(*num);
    
-   *num = (*num | num1 | num2);
+   *num = (*num | shifted_bit_to_5  | shifted_bit_to_3);
 }
 
 static size_t TestSwapBetweenBites()
@@ -800,12 +800,13 @@ void PrintFloatBits(float num)
 {
     unsigned int bits = 0;
     int i = 0;
+    unsigned int mask = 1;
     
     memcpy(&bits, &num, sizeof(unsigned int));
    
     for (i = 31 ; i >= 0 ; --i)
     {
-        unsigned int mask = 1 << i;
+        mask = 1 << i;
 
         if (bits & mask)
         {
