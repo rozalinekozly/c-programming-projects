@@ -72,7 +72,7 @@ unsigned int AddOneBinary(unsigned int);
 static size_t TestAddOneBinary();
 
 /**** question 4 ****/
-static bool_ty IsSetBitsReqInNum(unsigned int, size_t); /* aux function */
+static bool_ty IsSetBitsReqInNum(unsigned int, size_t); 	 /* aux function */
 void PrintBinaryWithThreeSetBits(unsigned int*, size_t);
 static size_t TestPrintBinaryWithThreeSetBits();
 
@@ -85,7 +85,8 @@ static size_t TestByteMirror();
 static size_t TestByteMirrorWithoutLoop();
 
 /**** question 6 ****/
-bool_ty CheckBothBitsOn(unsigned char);
+bool_ty IsBitOn(unsigned char, size_t); 			/* aux function*/
+bool_ty CheckBothBitsOn(unsigned char);	
 bool_ty CheckAtLeastOneBitOn(unsigned char);
 void SwapBetweenBites(unsigned char*);
 static size_t TestCheckBothBitsOn();
@@ -483,7 +484,7 @@ static size_t TestByteMirrorWithoutLoop()
 *************************************************/
 bool_ty IsBitOn(unsigned char num, size_t digit_index)
 {
-   int bit_value = LSB_MASK(SHIFT_RIGHT(num, digit_index));
+   size_t bit_value = LSB_MASK(SHIFT_RIGHT(num, digit_index));
    if(ON == bit_value)
    {
     return TRUE;
@@ -572,9 +573,9 @@ static size_t TestCheckAtLeastOneBitOn()
 
 void SwapBetweenBites(unsigned char* num)
 {
-   int bit_at_3 = IsBitOn(*num, 3);
+   size_t bit_at_3 = IsBitOn(*num, 3);
   
-   int bit_at_5 = IsBitOn(*num, 5);
+   size_t bit_at_5 = IsBitOn(*num, 5);
 
    unsigned char shifted_bit_to_5 = SHIFT_LEFT(bit_at_3, 5);
    unsigned char shifted_bit_to_3 = SHIFT_LEFT(bit_at_5, 3);
@@ -800,7 +801,7 @@ void PrintFloatBits(float num)
 {
     unsigned int bits = 0;
     int i = 0;
-    unsigned int mask = 1;
+    unsigned int mask = 0;
     
     memcpy(&bits, &num, sizeof(unsigned int));
    
