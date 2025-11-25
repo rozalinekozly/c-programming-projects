@@ -1,8 +1,8 @@
 /**********************
 * submitter : Rozaline kozly
-* reviewer: Nimrod 
+* reviewer: Nimrod Keren
 * date : 24 - nov - 25
-* version: 1 
+* version: 2 
 * worksheet 6 (bitwise)
 ***********************/
 #include <stdio.h> /* printf */
