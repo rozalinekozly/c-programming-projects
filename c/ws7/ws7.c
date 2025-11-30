@@ -3,7 +3,7 @@ submitter : rozaline kozly
 reviewer : shir 
 version 2
 worksheet 8 (struct)
-branch ws8
+branch ws7 - 
 ****************************************/
 #include <stdio.h>          /*  printf          */
 #include <stdlib.h>         /* malloc,   free  */
