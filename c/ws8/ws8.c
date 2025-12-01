@@ -44,7 +44,7 @@ typedef struct
 
 /* ----------------------------------------- functions declarations -----------------------------------------------------*/
 int ReadStudent(FILE *fp, student_ty *s);
-int WriteStudent(FILE *fp, student_ty *s)
+int WriteStudent(FILE *fp, student_ty *s);
 
 int ReadGrades(FILE *fp, grades_ty *g);
 int WriteGrades(FILE *fp, grades_ty *g);
@@ -65,7 +65,7 @@ ssize_t CheckIfEqual(student_ty* s1, student_ty* s2);
 /* implementation */
 int WriteStudent(FILE *fp,  student_ty *s)
 {
-    fwrite(s->first_name, NAME_LEN, 1, fp);
+    fwrite(s->first_name, NAME_LEN, 1, fp) 
     fwrite(s->last_name, NAME_LEN, 1, fp);
 
     /* serialize nested struct */
@@ -107,28 +107,28 @@ int WriteReal(FILE *fp, real_ty *r)
 
 int ReadGrades(FILE *fp,  grades_ty *g)
 {
-    fread(&g->sports, sizeof(float), 1, fp);
+    if (fread(&g->sports, sizeof(float), 1, fp) != sizeof(float)) return -1;
     /* nested struct */
-    ReadHumanitarian(fp, &g-> humanities);
-    ReadReal(fp, &g-> real);
+    if (ReadHumanitarian(fp, &g-> humanities) != 0) return -1;
+    if( ReadReal(fp, &g-> real) != 0) return -1;
 
     return 0;
 }
 
 int ReadHumanitarian(FILE *fp, humanitarian_ty *h)
 {
-    fread(&h->history, sizeof(float), 1, fp);
-    fread(&h->literature, sizeof(float), 1, fp);
-    fread(&h->geography, sizeof(float), 1, fp);
+   if (fread(&h->history, sizeof(float), 1, fp) != sizeof(float)) return -1;
+   if (fread(&h->literature, sizeof(float), 1, fp) != sizeof(float)) return -1;
+   if (fread(&h->geography, sizeof(float), 1, fp) != sizeof(float)) return -1;
     
     return 0;
 }
 
 int ReadReal(FILE *fp, real_ty *r)
 {
-       fread(&r->math, sizeof(float), 1, fp);
-       fread(&r->physics, sizeof(float), 1, fp);
-       fread(&r->chemistry, sizeof(float), 1, fp);
+       if (fread(&r->math, sizeof(float), 1, fp) != sizeof(float)) return -1;
+       if (fread(&r->physics, sizeof(float), 1, fp) != sizeof(float)) return -1;
+       fread(&r->chemistry, sizeof(float), 1, fp) != sizeof(float)) return -1;
        return 0;
 }
 
