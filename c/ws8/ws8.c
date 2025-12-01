@@ -110,7 +110,7 @@ int ReadGrades(FILE *fp,  grades_ty *g)
     if (fread(&g->sports, sizeof(float), 1, fp) != 1) return -1;
     /* nested struct */
     if (ReadHumanitarian(fp, &g-> humanities) != 0) return -1;
-    if( ReadReal(fp, &g-> real) != 0) return -1;
+    if ( ReadReal(fp, &g-> real) != 0) return -1;
 
     return 0;
 }
@@ -196,12 +196,12 @@ int main(void)
 
 ssize_t CheckIfEqual(student_ty* s1, student_ty* s2)   /* #include <sys/types.h> */
 {
-    if(strcmp(s1 -> first_name,s2 -> first_name) != 0 )  printf("FAILED first name s1 = %s s2 = %s\n", s1 -> first_name, s2 -> first_name);
-    if(strcmp(s1 -> last_name, s2 -> last_name ) != 0)  printf("FAILED last name\n");
-    if( s1 -> grades.humanities.history != s2 -> grades.humanities.history )  printf("FAILED human grade ur %f supposed %f \n",s1 -> grades.humanities.history, 
+    if (strcmp(s1 -> first_name,s2 -> first_name) != 0 )  printf("FAILED first name s1 = %s s2 = %s\n", s1 -> first_name, s2 -> first_name);
+    if (strcmp(s1 -> last_name, s2 -> last_name ) != 0)  printf("FAILED last name\n");
+    if ( s1 -> grades.humanities.history != s2 -> grades.humanities.history )  printf("FAILED human grade ur %f supposed %f \n",s1 -> grades.humanities.history, 
     s2 -> grades.humanities.history);
-    if( s1 -> grades.real.math != s2 -> grades.real.math )  printf("FAILED real grade\n");
-    if( s1 -> grades.sports != s2 -> grades.sports )  printf("FAILED sports grade\n");
+    if ( s1 -> grades.real.math != s2 -> grades.real.math )  printf("FAILED real grade\n");
+    if ( s1 -> grades.sports != s2 -> grades.sports )  printf("FAILED sports grade\n");
     
     return 0;
 }
