@@ -134,23 +134,23 @@ void TestSizeOfMacros()
     size_t s_tmp;
     int i_tmp;
     
-    if( SIZEOF_VAR(i_tmp) != sizeof(i_tmp))
+    if (SIZEOF_VAR(i_tmp) != sizeof(i_tmp))
     {
         printf("FAILED at sizeof int var\n");
     }
-     if( SIZEOF_VAR(f_tmp) != sizeof(f_tmp))
+     if (SIZEOF_VAR(f_tmp) != sizeof(f_tmp))
     {
         printf("FAILED at sizeof int var\n");
     }
-     if( SIZEOF_VAR(s_tmp) != sizeof(s_tmp))
+     if (SIZEOF_VAR(s_tmp) != sizeof(s_tmp))
     {
         printf("FAILED at sizeof int var\n");
     }
-     if( SIZEOF_TYPE(int) != sizeof(int))
+     if (SIZEOF_TYPE(int) != sizeof(int))
     {
         printf("FAILED at sizeof int var\n");
     }
-        if( SIZEOF_TYPE(element_ty) != sizeof(element_ty))
+    if (SIZEOF_TYPE(element_ty) != sizeof(element_ty))
     {
         printf("FAILED at sizeof int var\n");
     }
@@ -199,7 +199,7 @@ static void AddString(element_ty *e, int n)
   sprintf(buf, "%d", n);
 
   newp = (void*)realloc(e->data, strlen(e->data) + strlen(buf) + 1);
-  if(NULL == newp)
+  if (NULL == newp)
   {
       e -> Add = EmptyFunction;
       e -> Print = EmptyFunction;
@@ -207,8 +207,8 @@ static void AddString(element_ty *e, int n)
       return; 
   }
   
-  e->data = newp;
-  strcat(e->data, buf);
+  e -> data = newp;
+  strcat(e -> data, buf);
 }
 
 static void PrintString(element_ty *e)
