@@ -65,7 +65,7 @@ ssize_t CheckIfEqual(student_ty* s1, student_ty* s2);
 /* implementation */
 int WriteStudent(FILE *fp,  student_ty *s)
 {
-    fwrite(s->first_name, NAME_LEN, 1, fp) 
+    fwrite(s->first_name, NAME_LEN, 1, fp) ;
     fwrite(s->last_name, NAME_LEN, 1, fp);
 
     /* serialize nested struct */
@@ -128,7 +128,7 @@ int ReadReal(FILE *fp, real_ty *r)
 {
        if (fread(&r->math, sizeof(float), 1, fp) != sizeof(float)) return -1;
        if (fread(&r->physics, sizeof(float), 1, fp) != sizeof(float)) return -1;
-       fread(&r->chemistry, sizeof(float), 1, fp) != sizeof(float)) return -1;
+       if  (fread(&r->chemistry, sizeof(float), 1, fp) != sizeof(float)) return -1;
        return 0;
 }
 
@@ -139,13 +139,13 @@ int ReadStudent(FILE *fp, student_ty *s)
     if(fread(s->last_name, NAME_LEN, 1, fp) == 0) return -1;
 
     /* deserialize nested struct */
-    ReadGrades(fp, &s->grades);
+    if( ReadGrades(fp, &s->grades) != 0) return -1;
     return 0;
 }
 
 /* ---------------- SAVE/LOAD WRAPPERS ---------------- */
 
-int SaveStudentToFile(const char *fn, const student_ty *s)
+int SaveStudentToFile( char *fn, student_ty *s)
 {
     FILE *fp = fopen(fn, "wb");
     
@@ -155,7 +155,7 @@ int SaveStudentToFile(const char *fn, const student_ty *s)
     return 0;
 }
 
-int LoadStudentFromFile(const char *fn, student_ty *s)
+int LoadStudentFromFile( char *fn, student_ty *s)
 {
     FILE *fp = fopen(fn, "rb");
 
@@ -164,29 +164,6 @@ int LoadStudentFromFile(const char *fn, student_ty *s)
     fclose(fp);
     return 0;
 }
-
-typedef struct
-{
-	float history;
-	float literature;
-	float geography;
-}humanitarian_ty;
-
-typedef struct
-{
-	float math;
-	float physics;
-	float chemistry;
-}real_ty;
-
-typedef struct
-{
-    float sports;
-    humanitarian_ty humanities;
-    real_ty real;
-} grades_ty;
-
-
 
 int main(void)
 {
@@ -221,8 +198,9 @@ ssize_t CheckIfEqual(student_ty* s1, student_ty* s2)   /* #include <sys/types.h>
 {
     if(strcmp(s1 -> first_name,s2 -> first_name) != 0 )  printf("FAILED first name s1 = %s s2 = %s\n", s1 -> first_name, s2 -> first_name);
     if(strcmp(s1 -> last_name, s2 -> last_name ) != 0)  printf("FAILED last name\n");
-    if( s1 -> grades.humanities.history != s2 -> grades.humanities.history )  printf("FAILED human gr\n");
-    if( s1 -> grades.real.math != s2 -> grades.real.math )  printf("FAILED real grad\n");
+    if( s1 -> grades.humanities.history != s2 -> grades.humanities.history )  printf("FAILED human grade ur %f supposed %f \n",s1 -> grades.humanities.history, 
+    s2 -> grades.humanities.history);
+    if( s1 -> grades.real.math != s2 -> grades.real.math )  printf("FAILED real grade\n");
     if( s1 -> grades.sports != s2 -> grades.sports )  printf("FAILED sports grade\n");
     
     return 0;
