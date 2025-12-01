@@ -3,6 +3,7 @@ submitter : rozaline kozly
 reviewer : shir 
 version 4
 worksheet 8 (struct)
+<<<<<<< HEAD
 branch ws7 -> merged into main
 ****************************************/
 #include <stdio.h> 		/*printf*/
@@ -265,8 +266,4 @@ void EmptyFunction()
     printf("\n something wrong happened in the way, botched element\n");
     return;
 }
-
-
-
-
 
