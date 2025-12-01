@@ -107,7 +107,7 @@ int WriteReal(FILE *fp, real_ty *r)
 
 int ReadGrades(FILE *fp,  grades_ty *g)
 {
-    if (fread(&g->sports, sizeof(float), 1, fp) != sizeof(float)) return -1;
+    if (fread(&g->sports, sizeof(float), 1, fp) != 1) return -1;
     /* nested struct */
     if (ReadHumanitarian(fp, &g-> humanities) != 0) return -1;
     if( ReadReal(fp, &g-> real) != 0) return -1;
@@ -117,18 +117,18 @@ int ReadGrades(FILE *fp,  grades_ty *g)
 
 int ReadHumanitarian(FILE *fp, humanitarian_ty *h)
 {
-   if (fread(&h->history, sizeof(float), 1, fp) != sizeof(float)) return -1;
-   if (fread(&h->literature, sizeof(float), 1, fp) != sizeof(float)) return -1;
-   if (fread(&h->geography, sizeof(float), 1, fp) != sizeof(float)) return -1;
+   if (fread(&h->history, sizeof(float), 1, fp) != 1) return -1;
+   if (fread(&h->literature, sizeof(float), 1, fp) != 1) return -1;
+   if (fread(&h->geography, sizeof(float), 1, fp) != 1) return -1;
     
     return 0;
 }
 
 int ReadReal(FILE *fp, real_ty *r)
 {
-       if (fread(&r->math, sizeof(float), 1, fp) != sizeof(float)) return -1;
-       if (fread(&r->physics, sizeof(float), 1, fp) != sizeof(float)) return -1;
-       if  (fread(&r->chemistry, sizeof(float), 1, fp) != sizeof(float)) return -1;
+       if (fread(&r->math, sizeof(float), 1, fp) != 1) return -1;
+       if (fread(&r->physics, sizeof(float), 1, fp) != 1) return -1;
+       if  (fread(&r->chemistry, sizeof(float), 1, fp) != 1) return -1;
        return 0;
 }
 
