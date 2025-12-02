@@ -1,11 +1,29 @@
 #include <string.h>           /* testing functions such as memset(), */
- #include <limits.h>
 #include <stdio.h>
 
  
-#define WORD_SIZE_BYTES          8
- 
+#define WORD_SIZE_BYTES                           8
 
+/*-- function declarations --*/
+/* memory functions  */
+void* MemSet(void* str, int value, size_t num);
+void* MemCpy (void* dest_str, const void* src, size_t num);
+static void* ReverseMemCpy (void* dest_str, const void* src, size_t num);
+void* MemMove(void* dest_str, const void* src_str, size_t num);
+
+/* testing functions */
+void TestMemSet();
+void TestMemCpy();
+void TestMemMove();
+
+ int main()
+ {
+       TestMemSet();
+       TestMemCpy();
+       TestMemMove();
+       return 0;
+ 
+ }
 /* MemSet (like memset lib function) it operates at the byte level.
    it fills a specified block of memory with a constant byte value */
 void* MemSet(void* str, int value, size_t num)
@@ -29,13 +47,13 @@ void* MemSet(void* str, int value, size_t num)
         num--;
     }
     
-    /* create a WORD size (8 bytes) filled with val */
-    for ( i = 0; i < sizeof(size_t); ++i)
+    /* create a WORD size (8 bytes) filled with val duplicated on size_t size block */
+    for ( i = 0; i < sizeof(size_t); i++)
     {
         fill_word |= ((size_t)val << (i * WORD_SIZE_BYTES));
     }
 
-    aligned_p = (size_t*)str_iterator; /* in order to iterate on str in WORD size */
+    aligned_p = (size_t*)str_iterator; /* in order to iterate on str in WORD size */ /* recheck this ! */
     while (num >= sizeof(size_t)) 
     {
         *aligned_p = fill_word;
@@ -106,10 +124,9 @@ void* MemCpy (void* dest_str, const void* src, size_t num)
     }
 
     return dest_str;
-
 }
 
-void* ReverseMemCpy (void* dest_str, const void* src, size_t num)
+static void* ReverseMemCpy (void* dest_str, const void* src, size_t num)
 {
    unsigned char* end_dest_iterator = (unsigned char*)((unsigned char*)dest_str + num - 1);   
    unsigned char* end_src_iterator = (unsigned char*)((unsigned char*)src + num - 1) ;   
@@ -151,23 +168,17 @@ void* ReverseMemCpy (void* dest_str, const void* src, size_t num)
     }
 
     return dest_str;
-
 }
-
-
-
 
 /*
   this functions copies num bytes from memory area src to memory area dest.
   the memory areas may overlap.
 */
-
 void* MemMove(void* dest_str, const void* src_str, size_t num)
 {
   int there_is_a_prefix_overlap_flg = 0;
   if((unsigned char*)src_str + num > (unsigned char*)dest_str)
   {
-      printf(" flag is on!\n");
       there_is_a_prefix_overlap_flg = 1; 
   }
   
@@ -184,19 +195,20 @@ void* MemMove(void* dest_str, const void* src_str, size_t num)
 
 static void TestMemSet()
 {
-            char buffer[30];
-            size_t i = 0;
-            memset(buffer, 3, 30);
-            for(i = 0 ; i < 30 ; i++)
-            {
-              printf("%lu = %d\n",i, buffer[i]);
-            }
-             MemSet(buffer, 4, 30);
-               for(i = 0 ; i < 30 ; i++)
-            {
-              printf("%lu = %d\n",i, buffer[i]);
-            }
-          return;
+      char buffer[30];
+      size_t i = 0;
+      memset(buffer, 3, 30);
+      
+      for(i = 0 ; i < 30 ; i++)
+      {
+        printf("%lu = %d\n",i, buffer[i]);
+      }
+       MemSet(buffer, 4, 30);
+         for(i = 0 ; i < 30 ; i++)
+      {
+        printf("%lu = %d\n",i, buffer[i]);
+      }
+  return;
 }
 
 static void TestMemCpy()
@@ -225,11 +237,4 @@ static void TestMemMove()
 
 
 }
- int main()
- {
-           TestMemSet();
-           TestMemCpy();
-           TestMemMove();
-           return 0;
- 
- }
+
