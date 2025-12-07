@@ -4,11 +4,11 @@ reviewer  : Nimrod
 worksheet : 9 (word boundary optimization)
 version   : 2
 date      : 7 Dec 2025
-stage     : merged to main and now sending it to mimir
+stage     : post mimr
 ----------------------------------------------------------------------------*/
 
 #include <stdio.h>	       /* printf() - for testing*/
-#include <string.h>    	       /* memset(), memcmp(), memmove() - to compare results*/
+#include <string.h>    	       /* strcpy(), strlen(), memset(), memcmp(), memmove() */
 #include <assert.h>	       /* assert() - for debugging */
 #include <limits.h>	       /* CHAR_BIT */
 
