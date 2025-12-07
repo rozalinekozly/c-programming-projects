@@ -120,7 +120,9 @@ void* MemCpy (void* dest_str, const void* src, size_t num)
     size_t* src_aligned_p = NULL;                                       /* word size pointer on src to read chunks */
     
     /* handling unaligned prefix */
-    while (num > 0 && ((unsigned long)dest_iterator % WORD_SIZE_BYTES != 0)) {
+    while (num > 0 &&  ( ((unsigned long)dest_iterator % WORD_SIZE_BYTES) != 0 || ((unsigned long)src_iterator  % WORD_SIZE_BYTES)  != 0 ))
+
+    {
         *dest_iterator = *src_iterator;
         ++dest_iterator;
         ++src_iterator;
@@ -183,7 +185,8 @@ static void* ReverseMemCpy (void* dest_str, const void* src, size_t num)
     size_t* src_aligned_p = NULL;
     
     /* handling unaligned prefix */
-    while (num > 0 && ((unsigned long)end_dest_iterator % WORD_SIZE_BYTES != 0)) {
+    while (num > 0 && ( ((unsigned long)end_dest_iterator % WORD_SIZE_BYTES != 0) || ((unsigned long)end_src_iterator % WORD_SIZE_BYTES != 0)))
+     {
         *end_dest_iterator = *end_src_iterator;
         --end_dest_iterator;
         --end_src_iterator;
