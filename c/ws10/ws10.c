@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer  : 
+reviewer  : no-body :'( 
 worksheet : 10 (atoi/itoa)
 version   : 1
 date      : 8 Dec 2025
-stage     : pre-review
+stage     : post-mimr
 ----------------------------------------------------------------------------*/
 #include <stdio.h>		/* printf() */
 #include <string.h>		/* strcmp() */
@@ -333,7 +333,7 @@ void PrintCharsInFirstAndSecondAndNotThird(char* arr1, size_t size1, char* arr2,
         }
     }
 
-    for (i = 0; i < 256; ++i)
+    for (i = 0; i < ASCII_TABLE_SIZE ; i++)
     {
         if (hist[i] == 2)
         {
@@ -365,11 +365,11 @@ static void TestItoa()
 {
     char buf[50];
     int inputs[] = {0, 123, -456, 98765, -1000000};
-    const char *expected[] = {"0", "123", "-456", "98765", "-1000000"};
-    size_t n = 5;
+    const char* expected[] = {"0", "123", "-456", "98765", "-1000000"};
+    size_t size = SIZEOF_ARR(inputs);
     size_t i;
 
-    for (i = 0; i < n; ++i)
+    for (i = 0; i < size ; i++)
     {
         Itoa(inputs[i], buf);
         if (strcmp(buf, expected[i]) == 0)
