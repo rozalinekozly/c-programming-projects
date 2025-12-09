@@ -1,8 +1,14 @@
+/*--------------------------------------------------------------------------
+submitter : Rozaline Kozly
+reviewer  : shir
+worksheet : 11 (ds - bit_array)
+version   : 1
+date      : 9 Dec 2025
+stage     : pre-review
+----------------------------------------------------------------------------*/
 #include <limits.h>			/* CHAR_BIT */
 #include <string.h>			/* strlen() */
 #include "../include/bit_array.h"
-
-
 
 #define BIT_ARR_SIZE				  (sizeof(bit_array_ty)*CHAR_BIT)
 #define UNUSED(x)				        (void)(x)
@@ -22,12 +28,9 @@
 #define ALTERNATE_32ON_32OFF_MASK(x)   	  ((x) & 0xFFFFFFFF00000000)      /*masking with 1(32 times) 0(32 times) */
 #define ALTERNATE_32OFF_32ON_MASK(x) 	  ((x) & 0xFFFFFFFF)	          /* masking with 0(32 times) 1(32 times) */
 
-
-
-
 /* macros for bit operations */
-#define SHIFT_RIGHT(x,y)             ((x) >> (y)) /* shifts x y bits to the right */
-#define SHIFT_LEFT(x,y)              ((x) << (y)) /* shifts x y bits to the left */
+#define SHIFT_RIGHT(x,y)           	       ((x) >> (y)) /* shifts x y bits to the right */
+#define SHIFT_LEFT(x,y)                    ((x) << (y)) /* shifts x y bits to the left */
 
 /*question 1*/
 bit_array_ty BitArraySetAll(bit_array_ty bit_array)
@@ -95,7 +98,7 @@ bit_array_ty BitArrayMirror(bit_array_ty bit_array)
 bit_array_ty BitArrayRotateRight(bit_array_ty bit_array, size_t num_of_rotations)
 {
 	num_of_rotations %= BIT_ARR_SIZE;
-	bit_array = SHIFT_RIGHT(bit_array, num_of_rotations) | SHIFT_LEFT(bit_array, BIT_ARR_SIZE - num_of_rotations);
+	bit_array = ((SHIFT_RIGHT(bit_array, num_of_rotations)) | (SHIFT_LEFT(bit_array, BIT_ARR_SIZE - num_of_rotations)));
 
 	return bit_array;
 
@@ -105,8 +108,8 @@ bit_array_ty BitArrayRotateRight(bit_array_ty bit_array, size_t num_of_rotations
 bit_array_ty BitArrayRotateLeft(bit_array_ty bit_array, size_t num_of_rotations)
 {
 	
-         num_of_rotations %= BIT_ARR_SIZE;
-	bit_array = SHIFT_LEFT(bit_array, num_of_rotations) | SHIFT_RIGHT(bit_array, BIT_ARR_SIZE - num_of_rotations);
+      num_of_rotations %= BIT_ARR_SIZE;
+	bit_array = (SHIFT_RIGHT(bit_array, BIT_ARR_SIZE - num_of_rotations)) | (SHIFT_LEFT(bit_array,num_of_rotations));
 
 	return bit_array;
 }
