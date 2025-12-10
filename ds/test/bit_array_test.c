@@ -126,7 +126,7 @@ void TestBitArraySetOff(void)
 {
     bit_array_ty tests[] =    {1, 2, 3, 5, 0};
     size_t bits_to_off[] =    {1, 0, 0, 0, 0};
-    bit_array_ty expected[] = {0, 2, 2, 4, 0};
+    bit_array_ty expected[] = {1, 2, 2, 4, 0};
     size_t i = 0;
     size_t tests_arr_size = SIZEOF_ARR(tests);
     size_t set_off_res = 0;
@@ -152,7 +152,7 @@ void TestBitArraySetBit(void)
     size_t i = 0;
     bit_array_ty tests_to_off[] = {1, 2, 3, 5, 0};
     size_t bits_to_off[] = {1, 0, 0, 0, 0};
-    bit_array_ty expected_off[] = {0, 2, 2, 4, 0};
+    bit_array_ty expected_off[] = {1, 2, 2, 4, 0};
     
     size_t tests_arr_size = SIZEOF_ARR(tests_to_on);
     size_t set_bit_res = 0;
