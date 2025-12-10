@@ -2,9 +2,9 @@
 submitter : Rozaline Kozly
 reviewer  : shir
 worksheet : 11 (ds - bit_array)
-version   : 1
-date      : 9 Dec 2025
-stage     : pre-review
+version   : 2
+date      : 10 Dec 2025
+stage     : post-review & pre-mimir
 ----------------------------------------------------------------------------*/
 #include <limits.h>			/* CHAR_BIT */
 #include <string.h>			/* strlen() */
