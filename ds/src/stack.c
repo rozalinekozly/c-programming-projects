@@ -41,7 +41,7 @@ stack_ty* StackCreate(size_t capacity, size_t element_size)
 	stack_ty* stack_p = NULL;
 	
 	/* already have 1 block in stack, so just malloc extra (capacity - 1) */
-	stack_p = malloc(sizeof(stack_ty) + (capacity - 1) * element_size);
+	stack_p = (stack_ty*) malloc(sizeof(stack_ty) + (capacity - 1) * element_size);
 
 	if (NULL == stack_p)
 	{
@@ -67,6 +67,7 @@ void StackDestroy(stack_ty* stack_p)
 void StackPush(stack_ty* stack_p, void* new_element)
 {
 	assert(NULL != stack_p);
+      assert(NULL != new_element);
 	assert(!FULL_CAPACITY_STK);
 	memcpy(CURRENT_EMPTY_PLACEMENT_IN_STK, new_element, stack_p -> element_size);
 	++NUMBER_OF_ELEMENTS_IN_STK;
@@ -88,11 +89,13 @@ void StackPop(stack_ty* stack_p)
 
 size_t StackSize(const stack_ty* stack_p)
 {
+      assert(NULL != stack_p);
 	return (NUMBER_OF_ELEMENTS_IN_STK);
 }
 
 int StackIsEmpty(const stack_ty* stack_p)
 {
+	assert(NULL != stack_p);
 	if (0 == StackSize(stack_p))
 	{
 		return TRUE;
@@ -102,6 +105,7 @@ int StackIsEmpty(const stack_ty* stack_p)
 
 size_t StackCapacity(const stack_ty* stack_p)
 {
+	assert(NULL != stack_p);
 	return (stack_p -> capacity);
 }
 
