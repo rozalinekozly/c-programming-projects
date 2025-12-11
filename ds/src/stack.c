@@ -2,9 +2,9 @@
 submitter : Rozaline Kozly
 reviewer  : steve
 worksheet : 12 (ds - stack)
-version   : 1
+version   : 2
 date      : 10 Dec 2025
-stage     : post-testing
+stage     : post-peer review
 ----------------------------------------------------------------------------*/
 #include <stdlib.h>			/* malloc(), free() */
 #include <string.h>			/* memcpy() */

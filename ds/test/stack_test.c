@@ -2,9 +2,9 @@
 submitter : Rozaline Kozly
 reviewer  : steve
 worksheet : 12 (ds - stack)
-version   : 6
+version   : 3
 date      : 10 Dec 2025
-stage     : post-testing
+stage     : post-peer review
 ----------------------------------------------------------------------------*/
 
 #include <stdio.h>          /* printf()     */
