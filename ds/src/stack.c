@@ -40,8 +40,10 @@ stack_ty* StackCreate(size_t capacity, size_t element_size)
 {
 	stack_ty* stack_p = NULL;
 	
-	stack_p = (stack_ty*)malloc(sizeof(stack_ty) + (capacity * element_size));
-	if(NULL == stack_p)
+	/* already have 1 block in stack, so just malloc extra (capacity - 1) */
+	stack_p = malloc(sizeof(stack_ty) + (capacity - 1) * element_size);
+
+	if (NULL == stack_p)
 	{
 		return NULL;
 	}
@@ -54,48 +56,33 @@ stack_ty* StackCreate(size_t capacity, size_t element_size)
 
 void StackDestroy(stack_ty* stack_p)
 {
-	size_t i = 0;
 	
-      if(NULL != stack_p)
-	{	/*remove all stack elements*/
-	      for(i = 0 ; i < NUMBER_OF_ELEMENTS_IN_STK  ; i++)
-	      {
-	      	StackPop(stack_p);
-	      }
+      if (NULL != stack_p)
+	{   
      		free(stack_p);
-     		/*prevent dangling pointer*/
      		stack_p = NULL;
 	}
 }
 
 void StackPush(stack_ty* stack_p, void* new_element)
 {
-	if(FULL_CAPACITY_STK)
-	{
-		/* do nothing */
-		return; 
-	}
+	assert(NULL != stack_p);
+	assert(!FULL_CAPACITY_STK);
 	memcpy(CURRENT_EMPTY_PLACEMENT_IN_STK, new_element, stack_p -> element_size);
 	++NUMBER_OF_ELEMENTS_IN_STK;
 }
 
 void* StackPeek(const stack_ty* stack_p)
 {
-	if(0 == NUMBER_OF_ELEMENTS_IN_STK)
-	{
-		/* nothing to read*/
-		return NULL;
-	}
+	assert(NULL != stack_p);
+	assert(0 != NUMBER_OF_ELEMENTS_IN_STK);
       return (void*)(CURRENT_ELEMENT_IN_STK);
 }
 
 void StackPop(stack_ty* stack_p)
 {
-	if(0 == NUMBER_OF_ELEMENTS_IN_STK)
-	{
-		/* do nothing */
-		return;
-	}
+	assert(NULL != stack_p);
+	assert(0 != NUMBER_OF_ELEMENTS_IN_STK);
 	--(NUMBER_OF_ELEMENTS_IN_STK);
 }
 
@@ -106,7 +93,7 @@ size_t StackSize(const stack_ty* stack_p)
 
 int StackIsEmpty(const stack_ty* stack_p)
 {
-	if(0 == StackSize(stack_p))
+	if (0 == StackSize(stack_p))
 	{
 		return TRUE;
 	}
