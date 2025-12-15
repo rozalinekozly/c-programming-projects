@@ -4,7 +4,7 @@ reviewer  : steve
 worksheet : 13 (ds - vector)
 version   : 1
 date      : 14 Dec 2025
-stage     : peer- review
+stage     : mimir review
 ----------------------------------------------------------------------------*/
 #include <assert.h>				/* assert()  */
 #include <string.h>				/* memcpy() */
