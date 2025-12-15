@@ -1,12 +1,13 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer  : ?
+reviewer  : Itay
 worksheet : 15 (ds - slist exercise)
 version   : 1
-date      : 14 Dec 2025
+date      : 15 Dec 2025
 stage     : intial
 ----------------------------------------------------------------------------*/
 #include <assert.h>							/* assert() */
+#include <stddef.h>						     /* NULL */
 #include "../include/slist_ex.h"
 
 
@@ -15,18 +16,25 @@ stage     : intial
 
 node_ty* Flip(node_ty* head)
 {
-	node_ty* next_node = head -> next;
-	node_ty* prev_node = head;
+	node_ty* next_node = NULL;
+	node_ty* prev_node = NULL;
+	node_ty* curr_node = head;
+	
 	assert(NULL != head);
 	
-	while(NULL != next_node)
+	curr_node = head;
+	next_node = head -> next;
+	
+	while(NULL != curr_node)
 	{
-		next_node -> next = prev_node;
-		prev_node = next_node;
-		next_node ->= next;
-	}
-	head = prev_node;
-	return head;
+		 next_node = curr_node -> next;
+      	 curr_node -> next = prev_node;
+      	 /* moving forward */
+       	 prev_node = curr_node;
+        	 curr_node = next_node;
+      }
+    
+    return prev_node;
 }
 
 
