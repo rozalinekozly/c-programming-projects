@@ -4,40 +4,69 @@ reviewer : nimrod
 worksheet : 14 (ds - slist)
 version : 2
 date : 14 Dec 2025
-stage : intial
+stage : peer-review
 ----------------------------------------------------------------------------*/
-#include <assert.h> /* assert() */
-#include <stdlib.h> /* malloc(), free() */
+#include <assert.h> 					/* assert() */
+#include <stdlib.h> 					/* malloc(), free() */
 #include "../include/slist.h"
 
 #define TRUE 1
 #define FALSE 0
 
-#define UNUSED(x) ((void)x)
-#define FREE(x) (free(x), x = NULL)
+#define UNUSED(x)			      ((void)x)
+#define FREE(x) 				(free(x), x = NULL)
 
+/*------------- aux functions (hidden from end-user)--------------------------*/
+/* conversion from iter to node pointer (adds an abstraction layer */
+static slist_node_ty* IterToNode(slist_iter_ty iter);
+/* sets the node's that iter points at to point as next at iter_next */
+static void IterSetNext(slist_iter_ty iter, slist_iter_ty iter_next);
+/* removes the node the iter points at */
+static void IterRemove(slist_iter_ty iter);
+/* returns is the passed iter points at the tail of the list */
+static int IsItTheTail(slist_iter_ty iter);
+/* sets new_tail as the tail of the the list (pointed at by the old tail data)*/
+static void SetNewTail(slist_iter_ty new_tail);
+/*----------------------------------------------------------------------------*/
 /* node strucutre */
 struct slist_node
 {
 	slist_node_ty* next;
 	void* data;
 };
-
 /* managing list strucutre */
 struct slist
 {
 	slist_node_ty* head;
 	slist_node_ty* tail;
 };
-
 /*--------------------------implementation-------------------------------------*/
-
-/* fuctions that translate from iter to node , hidden from the user */
 static slist_node_ty* IterToNode(slist_iter_ty iter)
 {
 	return (slist_node_ty*)iter;
 }
+static int IsItTheTail(slist_iter_ty iter)
+{
+	return (NULL == IterToNode(iter)->next);
+}
+/* set next pointer */
+static void IterSetNext(slist_iter_ty iter, slist_iter_ty iter_next)
+{
+	IterToNode(iter)->next = IterToNode(iter_next);
+}
 
+static void IterRemove(slist_iter_ty iter)
+{
+	slist_node_ty* node_p = IterToNode(iter);
+	assert(NULL != iter);
+	FREE(node_p);
+}
+
+static void SetNewTail(slist_iter_ty new_tail)
+{
+	assert(NULL == IterNext(new_tail));
+	((slist_ty*)IterGetData(new_tail))->tail = IterToNode(new_tail);
+}
 /*------------------setters and getters from iterator--------------------------*/
 /* getters */
 void* IterGetData(slist_iter_ty iter)
@@ -66,11 +95,6 @@ void IterSetData(slist_iter_ty iter, void* data)
 	IterToNode(iter)->data = data;
 }
 
-/* set next pointer */
-static void IterSetNext(slist_iter_ty iter, slist_iter_ty iter_next)
-{
-	IterToNode(iter)->next = IterToNode(iter_next);
-}
 
 /*this function provides the user a way to make iter points at next node in list */
 slist_iter_ty IterNext(slist_iter_ty iter)
@@ -82,11 +106,6 @@ slist_iter_ty IterNext(slist_iter_ty iter)
 int IterIsEqual(slist_iter_ty iter1, slist_iter_ty iter2)
 {
 	return (iter1 == iter2);
-}
-
-static int IsItTheTail(slist_iter_ty iter)
-{
-	return (NULL == IterToNode(iter)->next);
 }
 
 /* create */
@@ -134,20 +153,6 @@ size_t SListCount(const slist_ty* slist_p)
       return count;
 }
 
-/* destroy - remove */
-static void IterRemove(slist_iter_ty iter)
-{
-	slist_node_ty* node_p = IterToNode(iter);
-	assert(NULL != iter);
-	FREE(node_p);
-}
-
-static void SetNewTail(slist_iter_ty new_tail)
-{
-	assert(NULL == IterNext(new_tail));
-	((slist_ty*)IterGetData(new_tail))->tail = IterToNode(new_tail);
-}
-
 void SListDestroy(slist_ty* slist_p)
 {
 	slist_iter_ty curr_iter = NULL;
@@ -176,9 +181,7 @@ void SListDestroy(slist_ty* slist_p)
 slist_iter_ty SListRemove(slist_iter_ty iter)
 {
 	slist_iter_ty iter_next = NULL;
-
 	assert(FALSE == IsItTheTail(iter));
-
 	iter_next = IterNext(iter);
 
 	IterSetData(iter, IterGetData(iter_next));
@@ -229,7 +232,7 @@ void* new_data)
 /*-----------------------------search----------------------------------------*/
 slist_iter_ty SListFind(slist_iter_ty from, slist_iter_ty to, match_func_ty is_match, void* param)
 {
-assert(NULL != is_match);
+	assert(NULL != is_match);
 
 	while ((FALSE == IterIsEqual(from, to)) &&
 	(FALSE == is_match(IterGetData(from), param)))
@@ -243,7 +246,7 @@ assert(NULL != is_match);
 int SListForEach(slist_iter_ty from, slist_iter_ty to, action_func_ty action, void *param)
 {
 	int action_result = TRUE;
-
+	
 	assert(NULL != action);
 
 	while ((FALSE == IterIsEqual(from, to)) && (TRUE == action_result))

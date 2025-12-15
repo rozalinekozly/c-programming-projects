@@ -3,8 +3,8 @@ submitter : Rozaline Kozly
 reviewer : nimrod
 worksheet : 14 (ds - slist)
 version : 1
-date : 14 Dec 2025
-stage : testing
+date : 15 Dec 2025
+stage :  peer-review
 ----------------------------------------------------------------------------*/
 #include <assert.h>				      /* assert() */
 #include <stdio.h> 					/* printf() */
@@ -13,8 +13,7 @@ stage : testing
 #define TRUE 1
 #define FALSE 0
 
-static void TestSomething(void);
-
+static void Test(void);
 static void TestCreateDestroy(void);
 static void TestCount(void);
 static void TestInsertBefore(void);
@@ -27,14 +26,12 @@ static int ActionAdd(void* data, void* param);
 
 int main(void)
 {
-	TestSomething();
+	Test();
 	printf("All tests passed\n");
 	return 0;
 }
 
-/*---------------------------------driver------------------------------------*/
-
-static void TestSomething(void)
+static void Test(void)
 {
 	TestCreateDestroy();
 	TestCount();
@@ -188,7 +185,7 @@ static void TestForEach(void)
 	SListDestroy(list);
 }
 
-/*--------------------------------helpers------------------------------------*/
+/*--------------------------------aux------------------------------------*/
 
 static int MatchInt(const void* data, void* param)
 {
