@@ -8,11 +8,14 @@ stage     : intial
 ----------------------------------------------------------------------------*/
 #include <assert.h>							/* assert() */
 #include <stddef.h>						     /* NULL */
+#include <stdio.h> /*delete later*/
 #include "../include/slist_ex.h"
 
 
-#define TRUE    1
-#define FALSE   0
+#define TRUE   					    1
+#define FALSE  					    0
+
+#define UNUSED(x)					(void)(x)
 
 node_ty* Flip(node_ty* head)
 {
@@ -40,25 +43,41 @@ node_ty* Flip(node_ty* head)
 
 int HasLoop(const node_ty* head)
 {
-	node_ty* slow = head;
-	node_ty* fast = head;
+	node_ty* slow = (node_ty*)head;
+	node_ty* fast = (node_ty*)head;
 	
-	while(NULL != fast && NULL != fast -> next)
+	while(NULL != slow && NULL != fast && NULL != fast -> next)
 	{
-		if(slow == fast)
+		fast = fast -> next -> next;
+		slow = slow -> next;
+		if (slow == fast)
 		{
 			/*found a loop*/
 			return TRUE;
 		}
-		fast = fast -> next -> next;
-		slow = slow -> next;
 	}
 	
 	return FALSE;
-}
+} 
 
 node_ty* FindIntersection(node_ty* head_1, node_ty* head_2)
 {
+	node_ty* list_1_itr = head_1;
+	node_ty* list_2_itr = head_2;
 
+	
+	/* for each node in head_2 check if all the nodes in head_2 equal to it */
+	while (list_2_itr != NULL) 
+	{
+	  list_1_itr = head_1;
+        while (list_1_itr != NULL) 
+        {
 
+            if (list_1_itr == list_2_itr)
+                return list_2_itr;
+            list_1_itr = list_1_itr -> next;
+        }
+        list_2_itr = list_2_itr -> next;
+    }
+	return NULL;
 }
