@@ -58,7 +58,7 @@ void VectorDestroy(vector_ty* vec)
 	{
 		free(vec -> data);
 		vec -> data = NULL;
-		free(vec);
+		FREE(vec);
 	}
 }
 
@@ -91,6 +91,7 @@ int VectorPushBack(vector_ty* vec, void* data)
 void VectorPopBack(vector_ty* vec)
 {
 	assert(NULL != vec);
+	assert((vec -> size) > 0);
 	
 	--(vec -> size);
 }
@@ -127,7 +128,7 @@ int VectorShrinkToFit(vector_ty* vec)
 int VectorReserve(vector_ty* vec, size_t new_capacity)
 {
 	assert(NULL != vec);
-	
+	assert((vec -> size) <= new_capacity);
 	/*"new capcity represents number of new elements within the vector
          so in order to calculate the actual new capacity we multiply it's value
          with element_size of the vector this operation takes O(n)*/
