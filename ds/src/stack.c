@@ -9,7 +9,7 @@ stage     : pre-mimir
 #include <stdlib.h>			/* malloc(), free() */
 #include <string.h>			/* memcpy() */
 #include <assert.h>			/* assert() */
-#include "../include/stack.h"
+#include "stack.h"
 
 /* shortcuts, used for created stacks pointers of name "stack_p" */
 #define CURRENT_EMPTY_PLACEMENT_IN_STK		      ((stack_p -> stack) + (stack_p -> stack_size * stack_p -> element_size))

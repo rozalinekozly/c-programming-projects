@@ -12,7 +12,7 @@ stage     : pre-mimir
 #include <limits.h>         /* INT_MAX      */
 #include <math.h>           /* pow()        */
 
-#include "../include/stack.h"   /* header file (API) */
+#include "stack.h"   /* header file (API) */
 
 #define ASCII_SIZE   256
 #define CAPACITY     100
