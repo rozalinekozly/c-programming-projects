@@ -6,9 +6,9 @@ version : 2
 date : 16 Dec 2025
 stage :  mimir
 ----------------------------------------------------------------------------*/
-#include <assert.h>				      /* assert() */
-#include <stdio.h> 					/* printf() */
-#include "slist.h"
+#include <assert.h>		 /* assert() */
+#include <stdio.h> 		 /* printf() */
+#include "slist.h"             /* API */
 
 #define TRUE 1
 #define FALSE 0

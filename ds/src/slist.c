@@ -6,9 +6,9 @@ version : 2
 date : 16 Dec 2025
 stage : mimit
 ----------------------------------------------------------------------------*/
-#include <assert.h> 					/* assert() */
-#include <stdlib.h> 					/* malloc(), free() */
-#include "slist.h"
+#include <assert.h> 		/* assert() */
+#include <stdlib.h> 		/* malloc(), free() */
+#include "slist.h"            /* API */
 
 #define TRUE 1
 #define FALSE 0
