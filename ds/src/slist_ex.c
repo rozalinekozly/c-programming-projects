@@ -12,14 +12,24 @@ stage     : mimir
 
 #define TRUE   					    1
 #define FALSE  					    0
-
-#define UNUSED(x)					(void)(x)
-
 /*---------------------- aux functions ---------------------------------------*/
+/*
+	GoToNode(start-of-list, index-of-node-to-go-to)
+	purpose: to traverse over the list and return the node index 
+	with index-of-node-to-go-to.
+	return values: a pointer to the node with index.
+	if number of nodes of list < index-to-go-to then it returns
+	NULL .
+*/
 static node_ty* GoToNode(node_ty* head, size_t idx);
+/*
+	CountNodes(start-of-list)
+	purpose: to count number of nodes in a given list.
+	return values:size_t type, in case of NULL it returns zero.
+*/
 static size_t CountNodes(node_ty* head);
 
-
+/*---------------------- implementation ---------------------------------------*/
 node_ty* Flip(node_ty* head)
 {
 	node_ty* next_node = NULL;
@@ -91,11 +101,12 @@ node_ty* FindIntersection(node_ty* head_1, node_ty* head_2)
       }
       return NULL;
 }
-
+/*---------------------- aux implementation ----------------------------------*/
 static node_ty* GoToNode(node_ty* head, size_t idx)
 {
 	node_ty* itr = head;
-	while(idx > 0)
+	
+	while(idx > 0 && NULL != head)
 	{
 		itr = itr -> next;
 		--idx;

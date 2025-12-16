@@ -20,7 +20,7 @@ stage     : mimir
 /* data's array size */
 #define DATA_ARR_SIZE						10
 /* to make the values readable used for modulu */
-#define MAX_VAL						100
+#define MAX_VAL							100
 /*--------------------testing functions----------------------------------------*/
 static void TestFlip();
 static void TestHasLoop();
