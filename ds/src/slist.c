@@ -3,12 +3,12 @@ submitter : Rozaline Kozly
 reviewer : nimrod
 worksheet : 14 (ds - slist)
 version : 2
-date : 14 Dec 2025
-stage : peer-review
+date : 16 Dec 2025
+stage : mimit
 ----------------------------------------------------------------------------*/
 #include <assert.h> 					/* assert() */
 #include <stdlib.h> 					/* malloc(), free() */
-#include "../include/slist.h"
+#include "slist.h"
 
 #define TRUE 1
 #define FALSE 0
