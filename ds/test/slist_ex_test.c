@@ -6,20 +6,19 @@ version   : 1
 date      : 15 Dec 2025
 stage     : intial
 ----------------------------------------------------------------------------*/
-#include <stdio.h>						    /* printf() */
-#include <stdlib.h> 						    /* malloc(), free() */
-#include <assert.h>							/* assert() */
+#include <stdio.h>				     /* printf(), NULL */
+#include <stdlib.h> 				     /* malloc(), free(), rand() */
+#include <assert.h>				     /* assert() */
 /* to randomify data */
-#include <stdlib.h>						    /* rand() */
-#include <math.h>							    /* pow()   */
+#include <math.h>					      /* pow()   */
 
-#include "../include/slist_ex.h" /*replace it with "slist_ex.h"*/
+#include "slist_ex.h" 
 
-#define TRUE   					    1
-#define FALSE  					    0
+#define TRUE   						      1
+#define FALSE  						      0
 /*magic numbers */
 /* data's array size */
-#define DATA_ARR_SIZE					10
+#define DATA_ARR_SIZE						10
 /* to make the values readable used for modulu */
 #define MAX_VAL						100
 /*--------------------testing functions----------------------------------------*/
@@ -28,9 +27,9 @@ static void TestHasLoop();
 static void TestFindIntersection();
 /*-----------------aux functions for dealing with list------------------------*/
 /* printing list to the terminal */
-static void printList(node_ty*); 
+static void PrintList(node_ty*); 
 /* push to list (pushes to head)*/
-static void push(node_ty**, int*);
+static void Push(node_ty**, int*);
 /* function to generate random data */
 static void GenereateData(int* arr, size_t arr_size);
 /* function to generate a list from given array */
@@ -50,17 +49,17 @@ int main()
     	return 0;
 }
 /*---------------------- aux functions ----------------------------------------*/
-static void printList(node_ty* head) 
+static void PrintList(node_ty* head) 
 {
     node_ty* tmp = head;
-    while (tmp != NULL) {
+    while (NULL != tmp) {
         printf("%d -> ",*(int*) tmp->data);
         tmp = tmp->next;
     }
     printf("NULL\n");
 }
 
-static void push(node_ty** head_ref, int* new_data)
+static void Push(node_ty** head_ref, int* new_data)
  {
     node_ty* new_node = (node_ty*)malloc(sizeof(node_ty));
     new_node -> data = new_data;
@@ -73,7 +72,7 @@ static void GenereateData(int* arr, size_t arr_size)
     size_t i = 0;
      
     /* intialize data's array */
-    for(i = 0 ; i < arr_size ; i++)
+    for(i = 0 ; i < arr_size ; ++i)
     {
     	arr[i] = pow(-1,i)*(rand()%MAX_VAL);
     
@@ -84,9 +83,9 @@ static node_ty* GenerateListFrmArr(node_ty* head, int* arr, size_t arr_size)
 {
  	 size_t i = 0;
  	 
-  	for(i = 0 ; i < arr_size ; i++)
+  	for(i = 0 ; i < arr_size ; ++i)
   	{
-		push(&head, &arr[i]);
+		Push(&head, &arr[i]);
   	}
    	return head;
 }
@@ -106,7 +105,7 @@ static node_ty* GetTailNode(node_ty* head)
 {
 	/* in order not to lose the head*/
 	node_ty* tail = head;
-	assert(NULL != NULL);
+	
 	while(NULL != tail -> next)
 	{
 		tail = tail -> next;
@@ -137,10 +136,10 @@ static void TestFlip()
 	head = GenerateListFrmArr(head, arr, DATA_ARR_SIZE);
 	printf("flip:\n");
 	printf("Original list: ");
-	printList(head);
+	PrintList(head);
 	head = Flip(head);
 	printf("Flipped list: ");
-	printList(head);
+	PrintList(head);
 	FreeList(head);
 }
 
@@ -202,16 +201,17 @@ static void TestFindIntersection()
 	/* create list from given data's array */
 	head_1 = GenerateListFrmArr(head_1, arr_1, DATA_ARR_SIZE);	
 	head_2 = GenerateListFrmArr(head_2, arr_2, DATA_ARR_SIZE);
-		
+			
 	tail_2 = GetTailNode(head_2);
 	intersection_node = GetRandomNodeFromList(head_1, DATA_ARR_SIZE);
-	tail_2 -> next = intersection_node;
+	tail_2 -> next = intersection_node;		
 	
 	ret_node = FindIntersection(head_1, head_2);
+	
 	printf("find intersection \t\t");
 	if(ret_node != intersection_node)
 	{
-		printf("failed at finding the intersection node\n");
+		printf("FAILED\n");
 	}
 	else
 	{
@@ -221,8 +221,6 @@ static void TestFindIntersection()
 	tail_2 -> next = NULL;
 	FreeList(head_1);
 	FreeList(head_2);
-
-
 }
 
 

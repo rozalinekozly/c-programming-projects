@@ -6,16 +6,19 @@ version   : 1
 date      : 15 Dec 2025
 stage     : intial
 ----------------------------------------------------------------------------*/
-#include <assert.h>							/* assert() */
-#include <stddef.h>						     /* NULL */
-#include <stdio.h> /*delete later*/
-#include "../include/slist_ex.h"
-
+#include <assert.h>				/* assert() */
+#include <stddef.h>			      /* NULL */
+#include "slist_ex.h"
 
 #define TRUE   					    1
 #define FALSE  					    0
 
 #define UNUSED(x)					(void)(x)
+
+/*---------------------- aux functions ---------------------------------------*/
+static node_ty* GoToNode(node_ty* head, size_t idx);
+static size_t CountNodes(node_ty* head);
+
 
 node_ty* Flip(node_ty* head)
 {
@@ -24,9 +27,6 @@ node_ty* Flip(node_ty* head)
 	node_ty* curr_node = head;
 	
 	assert(NULL != head);
-	
-	curr_node = head;
-	next_node = head -> next;
 	
 	while(NULL != curr_node)
 	{
@@ -64,20 +64,55 @@ node_ty* FindIntersection(node_ty* head_1, node_ty* head_2)
 {
 	node_ty* list_1_itr = head_1;
 	node_ty* list_2_itr = head_2;
-
-	
-	/* for each node in head_2 check if all the nodes in head_2 equal to it */
-	while (list_2_itr != NULL) 
-	{
-	  list_1_itr = head_1;
-        while (list_1_itr != NULL) 
-        {
-
-            if (list_1_itr == list_2_itr)
-                return list_2_itr;
+      size_t count_1 = 0;
+      size_t count_2 = 0;
+      
+      count_1 = CountNodes(head_1);
+      count_2 = CountNodes(head_2);
+      
+      if(count_1 > count_2)
+      {
+      	list_1_itr = GoToNode(head_1, count_1 - count_2);
+      }
+      else
+      {
+      	list_2_itr = GoToNode(head_2, count_2 - count_1);        
+      }
+      
+      while(list_1_itr != NULL && list_2_itr != NULL)
+      {
+      	if (list_1_itr == list_2_itr)
+             {
+             	return list_2_itr;
+             }
             list_1_itr = list_1_itr -> next;
-        }
-        list_2_itr = list_2_itr -> next;
-    }
-	return NULL;
+            list_2_itr = list_2_itr -> next;
+      
+      }
+      return NULL;
 }
+
+static node_ty* GoToNode(node_ty* head, size_t idx)
+{
+	node_ty* itr = head;
+	while(idx > 0)
+	{
+		itr = itr -> next;
+		--idx;
+	}
+	return itr;
+}
+
+static size_t CountNodes(node_ty* head)
+{
+	size_t count = 0;
+	node_ty* itr = head;
+	
+	while(NULL != itr)
+	{
+		++count;
+		itr = itr -> next;
+	}
+	return count;
+}
+
