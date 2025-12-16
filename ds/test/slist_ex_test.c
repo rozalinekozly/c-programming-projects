@@ -3,8 +3,8 @@ submitter : Rozaline Kozly
 reviewer  : Itay
 worksheet : 15 (ds - slist exercise)
 version   : 1
-date      : 15 Dec 2025
-stage     : intial
+date      : 16 Dec 2025
+stage     : mimir
 ----------------------------------------------------------------------------*/
 #include <stdio.h>				     /* printf(), NULL */
 #include <stdlib.h> 				     /* malloc(), free(), rand() */
