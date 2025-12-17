@@ -67,7 +67,7 @@ int QueueEnqueue(queue_ty* queue_p, void* data)
 	dummy = SListEndIter(queue_p->slist);
 	res = SlistInsertBefore(queue_p->slist, dummy, data);
 
-	return IterIsEqual(res, dummy) ? FAILED : SUCCESS;
+	return SListIterIsEqual(res, dummy) ? FAILED : SUCCESS;
 }
 
 
@@ -89,7 +89,7 @@ void* QueuePeek(const queue_ty* queue_p)
 	assert(NULL != queue_p);
 	assert(0 == QueueIsEmpty(queue_p));
 
-	return IterGetData(SListBeginIter(queue_p->slist));
+	return SListIterGetData(SListBeginIter(queue_p->slist));
 }
 
 
@@ -98,7 +98,7 @@ int QueueIsEmpty(const queue_ty* queue_p)
 {
 	assert(NULL != queue_p);
 
-	return IterIsEqual(SListBeginIter(queue_p->slist), SListEndIter(queue_p->slist));
+	return SListIterIsEqual(SListBeginIter(queue_p->slist), SListEndIter(queue_p->slist));
 }
 
 
