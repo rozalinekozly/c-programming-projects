@@ -27,6 +27,7 @@ static void IterRemove(slist_iter_ty iter);
 static int IsItTheTail(slist_iter_ty iter);
 /* sets new_tail as the tail of the the list (pointed at by the old tail data)*/
 static void SetNewTail(slist_iter_ty new_tail);
+void TurnToDummy(slist_iter_ty, slist_ty*);
 /*----------------------------------------------------------------------------*/
 /* node strucutre */
 struct slist_node
@@ -66,6 +67,12 @@ static void SetNewTail(slist_iter_ty new_tail)
 {
 	assert(NULL == IterNext(new_tail));
 	((slist_ty*)SListIterGetData(new_tail))->tail = IterToNode(new_tail);
+}
+void TurnToDummy(slist_iter_ty iter, slist_ty* slist)
+{
+	SListIterSetData(iter, slist);
+	IterSetNext(iter, NULL);
+
 }
 /*------------------setters and getters from iterator--------------------------*/
 /* getters */
@@ -261,11 +268,19 @@ int SListForEach(slist_iter_ty from, slist_iter_ty to, action_func_ty action, vo
 
 void SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
 {
+	slist_iter_ty list2_head = SListBeginIter(slist_p_2);
+	slist_iter_ty list1_dummy = SListEndIter(slist_p_1);
+	
+	IterSetNext(list1_dummy, SListIterNext(SListBeginIter(slist_p_2)));
+	SListIterSetData(list1_dummy, SListIterGetData(list2_head));
+	TurnToDummy(list2_head, slist_p_2);
+	
+	slist_p_1 -> tail = slist_p_2->tail;
+	slist_p_2 -> head = list2_head;
+	slist_p_2 -> tail = list2_head;
 
-	slist_iter_ty list1_tail = slist_p_1 -> tail;
-	slist_p_1 -> tail = slist_p_2 -> head;
-	IterSetNext(list1_tail, slist_p_1 -> tail);
-	SListRemove(list1_tail);
-	slist_p_1 -> tail = slist_p_2 -> tail;
-	slist_p_2 -> head = slist_p_2 -> tail;
 }
+
+
+
+
