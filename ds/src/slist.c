@@ -9,7 +9,7 @@ stage : peer-review
 #include <assert.h> 					/* assert() */
 #include <stdlib.h> 					/* malloc(), free() */
 #include "slist.h"
-
+#include <stdio.h> /*delete later*/
 #define TRUE 1
 #define FALSE 0
 
@@ -181,11 +181,11 @@ void SListDestroy(slist_ty* slist_p)
 slist_iter_ty SListRemove(slist_iter_ty iter)
 {
 	slist_iter_ty iter_next = NULL;
-	assert(FALSE == IsItTheTail(iter));
+	
 	iter_next = SListIterNext(iter);
-
 	SListIterSetData(iter, SListIterGetData(iter_next));
 	IterSetNext(iter, SListIterNext(iter_next));
+	
 
 	if (TRUE == IsItTheTail(iter_next))
 	{
@@ -258,12 +258,13 @@ int SListForEach(slist_iter_ty from, slist_iter_ty to, action_func_ty action, vo
 	return action_result;
 }
 
-void* SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
+void SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
 {
+
 	slist_iter_ty list1_tail = slist_p_1 -> tail;
 	slist_p_1 -> tail = slist_p_2 -> head;
+	IterSetNext(list1_tail, slist_p_1 -> tail);
 	SListRemove(list1_tail);
 	slist_p_1 -> tail = slist_p_2 -> tail;
 	slist_p_2 -> head = slist_p_2 -> tail;
-
 }
