@@ -56,13 +56,12 @@ int HasLoop(const node_ty* head)
 	node_ty* slow = (node_ty*)head;
 	node_ty* fast = (node_ty*)head;
 	
-	while(NULL != slow && NULL != fast && NULL != fast -> next)
+	while(NULL != fast && NULL != fast -> next)
 	{
 		fast = fast -> next -> next;
 		slow = slow -> next;
 		if (slow == fast)
 		{
-			/*found a loop*/
 			return TRUE;
 		}
 	}
@@ -89,17 +88,12 @@ node_ty* FindIntersection(node_ty* head_1, node_ty* head_2)
       	list_2_itr = GoToNode(head_2, count_2 - count_1);        
       }
       
-      while(list_1_itr != NULL && list_2_itr != NULL)
+      while(list_1_itr != list_2_itr)
       {
-      	if (list_1_itr == list_2_itr)
-             {
-             	return list_2_itr;
-             }
-            list_1_itr = list_1_itr -> next;
-            list_2_itr = list_2_itr -> next;
-      
+		list_1_itr = list_1_itr->next;
+		list_2_itr = list_2_itr->next;		   
       }
-      return NULL;
+      return list_1_itr;
 }
 /*---------------------- aux implementation ----------------------------------*/
 static node_ty* GoToNode(node_ty* head, size_t idx)
