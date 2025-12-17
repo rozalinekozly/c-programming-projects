@@ -96,5 +96,10 @@ slist_iter_ty SListFind(slist_iter_ty from, slist_iter_ty to,
 int SListForEach( slist_iter_ty from, slist_iter_ty to, 
 				  action_func_ty action,  void *param);
 
-
+/*
+	SListAppend(ptr-to-list1, ptr-to-list2);
+	purpose: concate list2 with list1 and empty list2
+	return value: void, it performs the changes on the arguments 
+*/
+void* SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2);
 #endif /* __SLIST_H__ */
