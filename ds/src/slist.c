@@ -182,6 +182,7 @@ slist_iter_ty SListRemove(slist_iter_ty iter)
 {
 	slist_iter_ty iter_next = NULL;
 	
+	assert(FALSE == IsItTheTail(iter));
 	iter_next = SListIterNext(iter);
 	SListIterSetData(iter, SListIterGetData(iter_next));
 	IterSetNext(iter, SListIterNext(iter_next));
