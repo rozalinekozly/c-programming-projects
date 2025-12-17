@@ -101,5 +101,5 @@ int SListForEach( slist_iter_ty from, slist_iter_ty to,
 	purpose: concate list2 with list1 and empty list2
 	return value: void, it performs the changes on the arguments 
 */
-void* SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2);
+void SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2);
 #endif /* __SLIST_H__ */
