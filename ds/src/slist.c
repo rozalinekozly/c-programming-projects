@@ -278,6 +278,8 @@ void SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
 	slist_p_1 -> tail = slist_p_2->tail;
 	slist_p_2 -> head = list2_head;
 	slist_p_2 -> tail = list2_head;
+	
+	SListIterSetData(slist_p_1 -> tail, slist_p_1);
 
 }
 
