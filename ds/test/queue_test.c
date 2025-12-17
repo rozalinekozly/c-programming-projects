@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer : ??
+reviewer : oshi
 worksheet : 17 (ds - queue)
 version : 1
-date : 16 Dec 2025
-stage : writing code
+date : 17 Dec 2025
+stage : peer-review
 ------------------------------------------------------------------------------*/
 #include <stdio.h>		/* printf(), NULL */
 #include <stdlib.h> 		/* malloc(), free(), rand() */

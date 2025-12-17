@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer : ??
+reviewer : oshi
 worksheet : 16 (ds - queue)
-version : 1
+version : 2
 date : 17 Dec 2025
-stage : writing code
+stage : peer-review
 ----------------------------------------------------------------------------*/
 #include <assert.h> 	/* assert() */
 #include <stdlib.h> 	/* malloc(), free() */
