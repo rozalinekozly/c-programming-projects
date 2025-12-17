@@ -41,6 +41,7 @@ int main()
 	TestQueueEnqueueDequeuePeek();
 	TestQueueIsEmpty();
 	TestQueueSize();
+	TestQueueAppend();
 	
 	return 0;
 }
@@ -204,13 +205,14 @@ static void TestQueueAppend()
 	queue_p_1 = GenerateQueueFrmArr(queue_p_1, arr_2, DATA_ARR_SIZE);
 	queue_p_2 = GenerateQueueFrmArr(queue_p_2, arr_2, DATA_ARR_SIZE);
 	
+	printf("append\t\t\t\tPASSED\n");
 	printf("Queue1: ");
 	PrintQueue(queue_p_1);
 	
 	printf("Queue2: ");
 	PrintQueue(queue_p_2);
 	
-	QueueAppend(queue_1, queue_2);
+	QueueAppend(queue_p_1, queue_p_2);
 	
 	printf("after appending:\n");
 	printf("Queue1: ");
@@ -219,8 +221,9 @@ static void TestQueueAppend()
 	printf("Queue2: ");
 	PrintQueue(queue_p_2);
 	
+	/* since queue_p_2 -> list_ty head and tail points at the dummy node
+	   we don't need to free it*/
 	QueueDestroy(queue_p_1);
-	QueueDestroy(queue_p_2);
 
 }
 
