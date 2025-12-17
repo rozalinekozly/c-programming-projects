@@ -110,4 +110,7 @@ size_t QueueSize(const queue_ty* queue_p)
 	return SListCount(queue_p->slist);
 }
 	
-
+void QueueAppend(queue_ty* queue_p1, queue_ty* queue_p2)
+{
+	SListAppend(queue_p1 -> slist, queue_p2 -> slist);
+}
