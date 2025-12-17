@@ -257,3 +257,13 @@ int SListForEach(slist_iter_ty from, slist_iter_ty to, action_func_ty action, vo
 
 	return action_result;
 }
+
+void* SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
+{
+	slist_iter_ty list1_tail = slist_p_1 -> tail;
+	slist_p_1 -> tail = slist_p_2 -> head;
+	SListRemove(list1_tail);
+	slist_p_1 -> tail = slist_p_2 -> tail;
+	slist_p_2 -> head = slist_p_2 -> tail;
+
+}
