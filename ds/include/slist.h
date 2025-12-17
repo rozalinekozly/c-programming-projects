@@ -26,7 +26,7 @@ slist_iter_ty SListBeginIter(slist_ty* slist_p);
 /******************************************************************************
 *   Undefined behavior if "iter" is SlistEnd
 ******************************************************************************/
-slist_iter_ty IterNext(slist_iter_ty iter);
+slist_iter_ty SListIterNext(slist_iter_ty iter);
 
 /******************************************************************************
 *	Returns: 1 if iter1 and iter2 are of the same node, 0 otherwise.   
@@ -34,17 +34,17 @@ slist_iter_ty IterNext(slist_iter_ty iter);
 *	 	"iter1"/"iter2" NULL
 *		"iter1"/"iter2" not in the same list
 ******************************************************************************/
-int IterIsEqual(slist_iter_ty iter1, slist_iter_ty iter2);
+int SListIterIsEqual(slist_iter_ty iter1, slist_iter_ty iter2);
 
 /****************************************************************************** 
 *   Undefined behavior if "iter" is SlistEnd
 ******************************************************************************/
-void* IterGetData(slist_iter_ty iter);
+void* SListIterGetData(slist_iter_ty iter);
 
 /****************************************************************************** 
 *   Undefined behavior if "iter" is SlistEnd
 ******************************************************************************/
-void IterSetData(slist_iter_ty iter, void* data);
+void SListIterSetData(slist_iter_ty iter, void* data);
 
 /****************************************************************************** 
 *   Returns NULL in case of failure

@@ -8,7 +8,7 @@ stage : peer-review
 ----------------------------------------------------------------------------*/
 #include <assert.h> 					/* assert() */
 #include <stdlib.h> 					/* malloc(), free() */
-#include "../include/slist.h"
+#include "slist.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -65,11 +65,11 @@ static void IterRemove(slist_iter_ty iter)
 static void SetNewTail(slist_iter_ty new_tail)
 {
 	assert(NULL == IterNext(new_tail));
-	((slist_ty*)IterGetData(new_tail))->tail = IterToNode(new_tail);
+	((slist_ty*)SListIterGetData(new_tail))->tail = IterToNode(new_tail);
 }
 /*------------------setters and getters from iterator--------------------------*/
 /* getters */
-void* IterGetData(slist_iter_ty iter)
+void* SListIterGetData(slist_iter_ty iter)
 {
 	return IterToNode(iter)->data;
 }
@@ -90,20 +90,20 @@ slist_iter_ty SListBeginIter(slist_ty* slist_p)
 
 /* setters */
 /* set data */
-void IterSetData(slist_iter_ty iter, void* data)
+void SListIterSetData(slist_iter_ty iter, void* data)
 {
 	IterToNode(iter)->data = data;
 }
 
 
 /*this function provides the user a way to make iter points at next node in list */
-slist_iter_ty IterNext(slist_iter_ty iter)
+slist_iter_ty SListIterNext(slist_iter_ty iter)
 {
 	return (slist_iter_ty)IterToNode(iter)->next;
 }
 
 /* comparing between two iterators */
-int IterIsEqual(slist_iter_ty iter1, slist_iter_ty iter2)
+int SListIterIsEqual(slist_iter_ty iter1, slist_iter_ty iter2)
 {
 	return (iter1 == iter2);
 }
@@ -125,8 +125,8 @@ slist_ty* SListCreate(void)
 	
 	if (NULL == dummy_p)
 	{
-	FREE(list_p);
-	return NULL;
+		FREE(list_p);
+		return NULL;
 	}
 
 	dummy_p->data = list_p;
@@ -147,7 +147,7 @@ size_t SListCount(const slist_ty* slist_p)
       while(list_itr != end)
       {
       	++count;
-      	list_itr = IterNext(list_itr);
+      	list_itr = SListIterNext(list_itr);
       }
       
       return count;
@@ -167,9 +167,9 @@ void SListDestroy(slist_ty* slist_p)
 	curr_iter = SListBeginIter(slist_p);
 	end_iter = SListEndIter(slist_p);
 
-	while (FALSE == IterIsEqual(curr_iter, end_iter))
+	while (FALSE == SListIterIsEqual(curr_iter, end_iter))
 	{
-		next_iter = IterNext(curr_iter);
+		next_iter = SListIterNext(curr_iter);
 		IterRemove(curr_iter);
 		curr_iter = next_iter;
 	}
@@ -182,10 +182,10 @@ slist_iter_ty SListRemove(slist_iter_ty iter)
 {
 	slist_iter_ty iter_next = NULL;
 	assert(FALSE == IsItTheTail(iter));
-	iter_next = IterNext(iter);
+	iter_next = SListIterNext(iter);
 
-	IterSetData(iter, IterGetData(iter_next));
-	IterSetNext(iter, IterNext(iter_next));
+	SListIterSetData(iter, SListIterGetData(iter_next));
+	IterSetNext(iter, SListIterNext(iter_next));
 
 	if (TRUE == IsItTheTail(iter_next))
 	{
@@ -213,17 +213,17 @@ void* new_data)
 		return SListEndIter(slist_p);
 	}
 
-	IterSetData(iter_next, IterGetData(where_iter));
-	IterSetNext(iter_next, IterNext(where_iter));
+	SListIterSetData(iter_next, SListIterGetData(where_iter));
+	IterSetNext(iter_next, SListIterNext(where_iter));
 
 	end = SListEndIter(slist_p);
 	
-	if (TRUE == IterIsEqual(where_iter, end))
+	if (TRUE == SListIterIsEqual(where_iter, end))
 	{
 		slist_p->tail = IterToNode(iter_next);
 	}
 
-	IterSetData(where_iter, new_data);
+	SListIterSetData(where_iter, new_data);
 	IterSetNext(where_iter, iter_next);
 
 	return where_iter;
@@ -234,10 +234,10 @@ slist_iter_ty SListFind(slist_iter_ty from, slist_iter_ty to, match_func_ty is_m
 {
 	assert(NULL != is_match);
 
-	while ((FALSE == IterIsEqual(from, to)) &&
-	(FALSE == is_match(IterGetData(from), param)))
+	while ((FALSE == SListIterIsEqual(from, to)) &&
+	(FALSE == is_match(SListIterGetData(from), param)))
 	{
-		from = IterNext(from);
+		from = SListIterNext(from);
 	}
 
 	return from;
@@ -249,10 +249,10 @@ int SListForEach(slist_iter_ty from, slist_iter_ty to, action_func_ty action, vo
 	
 	assert(NULL != action);
 
-	while ((FALSE == IterIsEqual(from, to)) && (TRUE == action_result))
+	while ((FALSE == SListIterIsEqual(from, to)) && (TRUE == action_result))
 	{
-		action_result = action(IterGetData(from), param);
-		from = IterNext(from);
+		action_result = action(SListIterGetData(from), param);
+		from = SListIterNext(from);
 	}
 
 	return action_result;
