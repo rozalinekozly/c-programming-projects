@@ -202,7 +202,7 @@ static void TestQueueAppend()
 	GenereateData(arr_1, DATA_ARR_SIZE);
 	GenereateData(arr_2, DATA_ARR_SIZE);
 	/* create queue from given array (filled with data, use Enqueue function */
-	queue_p_1 = GenerateQueueFrmArr(queue_p_1, arr_2, DATA_ARR_SIZE);
+	queue_p_1 = GenerateQueueFrmArr(queue_p_1, arr_1, DATA_ARR_SIZE);
 	queue_p_2 = GenerateQueueFrmArr(queue_p_2, arr_2, DATA_ARR_SIZE);
 	
 	printf("append\t\t\t\tPASSED\n");
