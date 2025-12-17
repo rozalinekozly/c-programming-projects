@@ -94,7 +94,7 @@ slist_iter_ty SListFind(slist_iter_ty from, slist_iter_ty to,
 *   Stops upon first fail and returns 1 on fail, 0 on succes 
 ******************************************************************************/
 int SListForEach( slist_iter_ty from, slist_iter_ty to, 
-				  action_func action,  void *param);
+				  action_func_ty action,  void *param);
 
 
 #endif /* __SLIST_H__ */
