@@ -26,6 +26,7 @@ static void TestQueueCreateDestroy();
 static void TestQueueEnqueueDequeuePeek();
 static void TestQueueIsEmpty();
 static void TestQueueSize();
+static void TestQueueAppend();
 /*-----------------aux functions for dealing with queues------------------------*/
 /* printing queue to the terminal */
 static void PrintQueue(queue_ty*); 
@@ -107,6 +108,7 @@ static void TestQueueCreateDestroy()
 
 static void TestQueueEnqueueDequeuePeek()
 {
+	/*check enqueue's return values*/
 	queue_ty* queue_p = QueueCreate();
 	int arr[DATA_ARR_SIZE] = {0};
 	size_t queue_size = DATA_ARR_SIZE;
@@ -155,6 +157,7 @@ static void TestQueueIsEmpty()
 		printf("FAILED at realising the queue is not empty\n");
 	}
 	printf("PASSED\n");
+	QueueDestroy(queue_p);
 }
 
 static void TestQueueSize()
@@ -183,10 +186,43 @@ static void TestQueueSize()
 		printf("FAILED at realising the queue size is %u\n",DATA_ARR_SIZE);
 	}
 	printf("PASSED\n");
+	QueueDestroy(queue_p);
 
 }
 
+static void TestQueueAppend()
+{
+	queue_ty* queue_p_1 = QueueCreate();
+	queue_ty* queue_p_2 = QueueCreate();
+	int arr_1[DATA_ARR_SIZE] = {0};
+	int arr_2[DATA_ARR_SIZE] = {0};
+	
+	/* generate random data (range 0 - MAX_VAL) */
+	GenereateData(arr_1, DATA_ARR_SIZE);
+	GenereateData(arr_2, DATA_ARR_SIZE);
+	/* create queue from given array (filled with data, use Enqueue function */
+	queue_p_1 = GenerateQueueFrmArr(queue_p_1, arr_2, DATA_ARR_SIZE);
+	queue_p_2 = GenerateQueueFrmArr(queue_p_2, arr_2, DATA_ARR_SIZE);
+	
+	printf("Queue1: ");
+	PrintQueue(queue_p_1);
+	
+	printf("Queue2: ");
+	PrintQueue(queue_p_2);
+	
+	QueueAppend(queue_1, queue_2);
+	
+	printf("after appending:\n");
+	printf("Queue1: ");
+	PrintQueue(queue_p_1);
+	
+	printf("Queue2: ");
+	PrintQueue(queue_p_2);
+	
+	QueueDestroy(queue_p_1);
+	QueueDestroy(queue_p_2);
 
+}
 
 
 
