@@ -65,7 +65,7 @@ static void IterRemove(slist_iter_ty iter)
 
 static void SetNewTail(slist_iter_ty new_tail)
 {
-	assert(NULL == IterNext(new_tail));
+	assert(NULL != SListIterNext(new_tail));
 	((slist_ty*)SListIterGetData(new_tail))->tail = IterToNode(new_tail);
 }
 void TurnToDummy(slist_iter_ty iter, slist_ty* slist)
