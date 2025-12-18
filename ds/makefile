@@ -1,120 +1,124 @@
-# ------------------------------ compiler ----------------------------------------
 CC = gcc
 
-# ------------------------------ directories -----------------------------------
-SRC_DIR = src
-INC_DIR = include
-TST_DIR = test
-
-# -------- placement to save bin (exe ?) and obj file -------------------------
-OBJ_DIR = obj
-BIN_DIR = bin
-
-# ------------------------------ files ----------------------------------------
-# -------- foo (makefile worksheet) -------------------------------------------
-SRC_FOO = $(SRC_DIR)/foo.c
-INC_FOO = $(INC_DIR)/foo.h
-TEST_FOO = $(TST_DIR)/main.c
-OBJ_FOO = $(OBJ_DIR)/foo.o
-
-# -------- bit array (bit array worksheet) ------------------------------------
-SRC_BIT_ARRAY = $(SRC_DIR)/bit_array.c
-INC_BIT_ARRAY = $(INC_DIR)/bit_array.h
-TEST_BIT_ARRAY = $(TST_DIR)/bit_array_test.c
-OBJ_BIT_ARRAY = $(OBJ_DIR)/bit_array.o
-
-# -------- stack (stack worksheet) --------------------------------------------
-SRC_STACK = $(SRC_DIR)/stack.c
-INC_STACK = $(INC_DIR)/stack.h
-TEST_STACK = $(TST_DIR)/stack_test.c
-OBJ_STACK = $(OBJ_DIR)/stack.o
-
-# -------- vector (dynamic vector worksheet) ----------------------------------
-SRC_VECTOR = $(SRC_DIR)/vector.c
-INC_VECTOR = $(INC_DIR)/vector.h
-TEST_VECTOR = $(TST_DIR)/vector_test.c
-OBJ_VECTOR = $(OBJ_DIR)/vector.o
-
-# -------- slist (singly linked list worksheet) -------------------------------
-SRC_SLIST = $(SRC_DIR)/slsit.c
-INC_SLIST = $(INC_DIR)/slist.h
-TEST_SLIST = $(TST_DIR)/slist_test.c
-OBJ_SLIST = $(OBJ_DIR)/slist.o
-
-# -------- slist_ex (slist exercise worksheet) --------------------------------
-SRC_SLIST_EX = $(SRC_DIR)/slsit_ex.c
-INC_SLIST_EX = $(INC_DIR)/slist_ex.h
-TEST_SLIST_EX = $(TST_DIR)/slist_ex_test.c
-OBJ_SLIST_EX = $(OBJ_DIR)/slist_ex.o
-
-# -------- queue (queue worksheet) --------------------------------------------
-SRC_QUEUE = $(SRC_DIR)/queue.c
-INC_QUEUE = $(INC_DIR)/queue.h
-TEST_QUEUE = $(TST_DIR)/queuetest.c
-OBJ_QUEUE = $(OBJ_DIR)/queue.o
-
-# -------- ------------ all sources --------------------------------------------
-SRC_ALL = $(SRC_FOO) $(SRC_STACK) $(SRC_BIT_ARRAY) \
-          $(SRC_VECTOR) $(SRC_SLIST) $(SRC_QUEUE) \
-          $(TEST_FOO)
-          
-# ------------------------------ objects ---------------------------------------
-OBJS_ALL = $(SRC_ALL:%.c=$(OBJ_DIR)/%.o)
-
-# ------------------------------ target ---------------------------------------
-TARGET = $(BIN_DIR)/prog
-
-# ------------------------------ flags ---------------------------------------
-CFLAGS_COMMON = -Wall -Wextra -pedantic-errors -I $(INC_DIR)
-
+# ---------------- flags ----------------
+CFLAGS_COMMON = -Wall -Wextra -pedantic-errors -I include
 CFLAGS_C89_DEBUG   = -ansi $(CFLAGS_COMMON) -g
 CFLAGS_C89_RELEASE = -ansi $(CFLAGS_COMMON) -DNDEBUG -O3
 
-CFLAGS_C99_DEBUG   = -std=c99 $(CFLAGS_COMMON) -g
-CFLAGS_C99_RELEASE = -std=c99 $(CFLAGS_COMMON) -DNDEBUG -O3
+LDFLAGS  = -lm
+VALGRIND = valgrind --leak-check=yes --track-origins=yes
 
-LDFLAGS = -lm
+# ---------------- top level ----------------
+all: debug release
 
-# ------------------------------ default ---------------------------------------
-all: c89-release
+debug:   stack-debug bit_array-debug slist-debug slist_ex-debug vector-debug queue-debug
+release: stack-release bit_array-release slist-release slist_ex-release vector-release queue-release
 
-# ------------------------------ build modes -----------------------------------
+# =========================================================
+# stack
+# =========================================================
+stack:
+	$(CC) $(CFLAGS) src/stack.c test/stack_test.c -o $(OUT) $(LDFLAGS)
 
-c89-debug:   CFLAGS = $(CFLAGS_C89_DEBUG)
-c89-debug:   $(TARGET)
+stack-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+stack-debug: OUT = stack_debug
+stack-debug: stack
 
-c89-release: CFLAGS = $(CFLAGS_C89_RELEASE)
-c89-release: $(TARGET)
+stack-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+stack-release: OUT = stack_release
+stack-release: stack
 
-c99-debug:   CFLAGS = $(CFLAGS_C99_DEBUG)
-c99-debug:   $(TARGET)
+stack-val: stack-debug
+	$(VALGRIND) ./stack_debug
 
-c99-release: CFLAGS = $(CFLAGS_C99_RELEASE)
-c99-release: $(TARGET)
+# =========================================================
+# bit array
+# =========================================================
+bit_array:
+	$(CC) $(CFLAGS) src/bit_array.c test/bit_array_test.c -o $(OUT) $(LDFLAGS)
 
-# ------------------------------ linking ---------------------------------------
+bit_array-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+bit_array-debug: OUT = bit_array_debug
+bit_array-debug: bit_array
 
-$(TARGET): $(OBJS_ALL) | $(BIN_DIR)
-	$(CC) $(OBJS_ALL) $(LDFLAGS) -o $@
+bit_array-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+bit_array-release: OUT = bit_array_release
+bit_array-release: bit_array
 
-# ------------------------------ compilation -----------------------------------
+bit_array-val: bit_array-debug
+	$(VALGRIND) ./bit_array_debug
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+# =========================================================
+# slist
+# =========================================================
+slist:
+	$(CC) $(CFLAGS) src/slist.c test/slist_test.c -o $(OUT) $(LDFLAGS)
 
-# -------- directories --------
+slist-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+slist-debug: OUT = slist_debug
+slist-debug: slist
 
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+slist-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+slist-release: OUT = slist_release
+slist-release: slist
 
-$(BIN_DIR):
-	mkdir -p $(BIN_DIR)
+slist-val: slist-debug
+	$(VALGRIND) ./slist_debug
 
-# -------- utilities --------
+# =========================================================
+# slist_ex
+# =========================================================
+slist_ex:
+	$(CC) $(CFLAGS) src/slist_ex.c test/slist_ex_test.c -o $(OUT) $(LDFLAGS)
 
+slist_ex-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+slist_ex-debug: OUT = slist_ex_debug
+slist_ex-debug: slist_ex
+
+slist_ex-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+slist_ex-release: OUT = slist_ex_release
+slist_ex-release: slist_ex
+
+slist_ex-val: slist_ex-debug
+	$(VALGRIND) ./slist_ex_debug
+
+# =========================================================
+# vector
+# =========================================================
+vector:
+	$(CC) $(CFLAGS) src/vector.c test/vector_test.c -o $(OUT) $(LDFLAGS)
+
+vector-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+vector-debug: OUT = vector_debug
+vector-debug: vector
+
+vector-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+vector-release: OUT = vector_release
+vector-release: vector
+
+vector-val: vector-debug
+	$(VALGRIND) ./vector_debug
+
+# =========================================================
+# queue (depends on slist)
+# =========================================================
+queue:
+	$(CC) $(CFLAGS) src/queue.c src/slist.c test/queue_test.c -o $(OUT) $(LDFLAGS)
+
+queue-debug: CFLAGS = $(CFLAGS_C89_DEBUG)
+queue-debug: OUT = queue_debug
+queue-debug: queue
+
+queue-release: CFLAGS = $(CFLAGS_C89_RELEASE)
+queue-release: OUT = queue_release
+queue-release: queue
+
+queue-val: queue-debug
+	$(VALGRIND) ./queue_debug
+
+# ---------------- utils ----------------
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -f *_debug *_release
 
-.PHONY: all clean c89-debug c89-release c99-debug c99-release
+.PHONY: all debug release clean
 
