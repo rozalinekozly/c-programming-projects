@@ -2,9 +2,9 @@
 submitter : Rozaline Kozly
 reviewer  : shir
 worksheet : 11 (ds - bit_array)
-version   : 1
-date      : 9 Dec 2025
-stage     : pre-review
+version   : 2
+date      : 10 Dec 2025
+stage     : pre-mimir
 ----------------------------------------------------------------------------*/
 #include <limits.h>			/* CHAR_BIT */
 #include <string.h>			/* strlen() */
@@ -55,7 +55,7 @@ bit_array_ty BitArraySetOn(bit_array_ty bit_array, unsigned int index)
 /*question 4*/
 bit_array_ty BitArraySetOff(bit_array_ty bit_array, unsigned int index)
 {
-       return bit_array &= SHIFT_LEFT(~(size_t)1, index);
+       return bit_array &= ~(SHIFT_LEFT((size_t)1, index));
 }
 
 /* quesition 5*/
@@ -186,7 +186,7 @@ char* BitArrayToString(bit_array_ty bit_array, char* dest)
 		bit_array = SHIFT_RIGHT(bit_array, 1);
 	}
 	*dest_itr = '\0';
-	 ReverseString(dest);
+	ReverseString(dest);
 
 	return dest;
 }
