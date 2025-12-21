@@ -2,251 +2,309 @@
 submitter : Rozaline Kozly
 reviewer  : steve
 worksheet : 12 (ds - stack)
-version   : 1
+version   : 3
 date      : 10 Dec 2025
-stage     : post-testing (intial-testing-peerReview-mimir)
+stage     : pre-mimir
 ----------------------------------------------------------------------------*/
-#include "../include/stack.h"
-#include <stdio.h>	/* printf() */
-#include <math.h>		/* pow()   */
-#include <stdlib.h>	/* rand() */
-#include  <limits.h>		/*INT_MAX*/
 
-#define SIZEOF_ARR(ARR)  		(sizeof(ARR)/sizeof(*ARR))
-#define ASCII_SIZE				256
+#include <stdio.h>          /* printf()     */
+#include <stdlib.h>         /* rand()       */
+#include <limits.h>         /* INT_MAX      */
+#include <math.h>           /* pow()        */
 
-static void Test();
+#include "stack.h"   /* header file (API) */
 
-static void TestInt(size_t capacity, size_t element_size, int* elements, size_t number_of_elements);
-static void TestFloat(size_t capacity, size_t element_size, float* elements, size_t number_of_elements);
-static void TestChar(size_t capacity, size_t element_size, char* elements, size_t number_of_elements);
+#define ASCII_SIZE   256
+#define CAPACITY     100
 
-static size_t test_number = 1;
+static void TestInt(size_t capacity, int* elements, size_t count);
+static void TestFloat(size_t capacity, float* elements, size_t count);
+static void TestChar(size_t capacity, char* elements, size_t count);
+
+static size_t test_num = 1;
 
 int main()
-{	
-	Test();
-	return 0;	
-}
-
-
-static void Test()
 {
-	size_t capacity = 100;
-	int elements_int[100] = {0};
-	float elements_float[100] = {0};
-	char elements_char[100] = {0};
-	size_t i = 0;
-	
-	
-	/* creating random values of each type */
-	for(i = 0 ; i < capacity ; i++)
-	{
-		elements_int[i] = pow(-1,i)*(rand()%INT_MAX );
-		elements_float[i] = pow(-1,i)*((float)(rand()% INT_MAX)/(rand() + 1));
-		elements_char[i] = (rand() % ASCII_SIZE);
-	
-	}
-	/* call test int */
-	TestInt(capacity, sizeof(int), elements_int, 100);
-	TestFloat(capacity, sizeof(float), elements_float, 100);
-      TestChar(capacity, sizeof(char), elements_char, 100);
-      
+    size_t capacity = CAPACITY;
+    size_t i = 0;
+
+    int   elements_int[CAPACITY];
+    float elements_float[CAPACITY];
+    char  elements_char[CAPACITY];
+
+    /* generating random values */
+    for (i = 0; i < capacity; i++)
+    {
+        elements_int[i]   = pow(-1, i) * (rand() % INT_MAX);
+        elements_float[i] = pow(-1, i) * ((float)(rand() % INT_MAX) / (rand() + 1));
+        elements_char[i]  = rand() % ASCII_SIZE;
+    }
+
+    TestInt(capacity, elements_int, capacity);
+    TestFloat(capacity, elements_float, capacity);
+    TestChar(capacity, elements_char, capacity);
+
+    return 0;
 }
 
+/**----------------------------- INT TEST -----------------------------**/
 
-static void TestInt(size_t capacity, size_t element_size, int* elements, size_t number_of_elements)
-{	
-	stack_ty* stack_p = StackCreate(capacity, element_size);	
-	size_t i = 0;
-	int val = 0;
+static void TestInt(size_t capacity, int *elements, size_t count)
+{
+    stack_ty* stack_p = NULL;
+    size_t i = 0;
+    size_t before = 0;
+    int val = 0;
 
-	printf("--------- TEST %lu ---------\n",test_number);
-	printf("create\t\t");
-	if(NULL == stack_p)
-	{
-		printf("failed at creating the stack with the following attributes:\n");
-		printf("capacity = %lu, element size = %lu\n", capacity, element_size);
-		return;
-	}
-	printf("PASSED\n");
-	printf("capacity\t");
-	if(capacity != StackCapacity(stack_p))
-	{
-		printf("failed: StackCreate function, in creating stack of %lu capacity\n", capacity);
-		printf("it created %lu capacity\n",StackCapacity(stack_p));
-		StackDestroy(stack_p);
-		return;
-	}
-	printf("PASSED\n");
-	
-		printf("push\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			StackPush(stack_p, &elements[i]);
-		}
-		if(StackSize(stack_p) != number_of_elements)
-		{
-			printf("size\t\t");
-			printf("failed\n");
-			return;
-		}
-		printf("PASSED\n");
-		printf("peek\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			val = *(int*)StackPeek(stack_p);
-			StackPop(stack_p);
-			if(val != elements[number_of_elements -1 - i])
-			{
-				printf("failed: it got %d, where it supposed to get %d\n", val, elements[number_of_elements -1 - i]);
-				return;
-			}
-		}
+    printf("\n--------- TEST %lu: INT ---------\n", test_num++);
 
-            printf("PASSED\n");
-            printf("pop\t\t");
-            printf("PASSED\n");
-            printf("size\t\t");
-            printf("PASSED\n");
-		StackDestroy(stack_p);
-		printf("destroy\t\t");
-            printf("PASSED\n");
-	
-	++test_number;
-   
+    stack_p = StackCreate(capacity, sizeof(int));
+    if (NULL == stack_p)
+    {
+        printf("create\t\tFAILED (NULL returned)\n");
+        return;
+    }
+    printf("create\t\tPASSED\n");
+
+    if (capacity != StackCapacity(stack_p))
+    {
+        printf("capacity\tFAILED\nexpected: %lu\nactual:   %lu\n",
+            capacity, StackCapacity(stack_p));
+        return;
+    }
+    printf("capacity\tPASSED\n");
+
+    if (0 != StackSize(stack_p))
+    {
+        printf("size\t\tFAILED\nexpected: 0\nactual:   %lu\n",
+            StackSize(stack_p));
+        return;
+    }
+    printf("size\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        StackPush(stack_p, &elements[i]);
+
+        if ((i + 1) != StackSize(stack_p))
+        {
+            printf("push\t\tFAILED at index %lu\nexpected size: %lu\nactual size: %lu\n",
+                i, (unsigned long)(i + 1), (unsigned long)StackSize(stack_p));
+            return;
+        }
+    }
+    printf("push\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        before = StackSize(stack_p);
+        val = *(int*)StackPeek(stack_p);
+
+        if (before != StackSize(stack_p))
+        {
+            printf("peek\t\tFAILED (size changed)\nbefore: %lu\nafter:%lu\n",
+                before, StackSize(stack_p));
+            return;
+        }
+
+        StackPop(stack_p);
+
+        if (elements[count - 1 - i] != val)
+        {
+            printf("pop-peek\tFAILED at index %lu\nexpected: %d\ngot:%d\n",
+                i, elements[count - 1 - i], val);
+            return;
+        }
+    }
+    printf("peek/pop\tPASSED\n");
+
+    if (0 != StackIsEmpty(stack_p))
+    {
+        /* StackIsEmpty returns 1 when empty, so failure means not empty */
+        if (1 != StackIsEmpty(stack_p))
+        {
+            printf("empty\t\tFAILED (stack not empty)\ncurrent size: %lu\n",
+                StackSize(stack_p));
+            return;
+        }
+    }
+    printf("empty\t\tPASSED\n");
+
+    StackDestroy(stack_p);
+    printf("destroy\t\tPASSED\n");
 }
 
-static void TestFloat(size_t capacity, size_t element_size, float* elements, size_t number_of_elements)
-{	
-	stack_ty* stack_p =  StackCreate(capacity, element_size);	
-	size_t i = 0;
-	float val = 0;
+/**----------------------------- FLOAT TEST -----------------------------**/
 
+static void TestFloat(size_t capacity, float *elements, size_t count)
+{
+    stack_ty* stack_p = NULL;
+    size_t i = 0;
+    size_t before = 0;
+    float val = 0;
 
-	
-	printf("--------- TEST %lu ---------\n",test_number);
-	++test_number;
-	printf("create\t\t");
-	if(NULL == stack_p)
-	{
-		printf("failed at creating the stack with the following attributes:\n");
-		printf("capacity = %lu, element size = %lu\n", capacity, element_size);
-		return;
-	
-	}
-	printf("PASSED\n");
-	printf("capacity\t");
-	if(capacity != StackCapacity(stack_p))
-	{
-		printf("failed: StackCreate function, in creating stack of %lu capacity\n", capacity);
-		printf("it created %lu capacity\n",StackCapacity(stack_p));
-		StackDestroy(stack_p);
-		return;
-	}
-	printf("PASSED\n");
-	
-		printf("push\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			StackPush(stack_p, &elements[i]);
-		}
-		if(StackSize(stack_p) != number_of_elements)
-		{
-			printf("size\t\t");
-			printf("failed\n");
-			return;
-		}
-		printf("PASSED\n");
-		printf("peek\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			val = *(float*)StackPeek(stack_p);
-			StackPop(stack_p);
-			if(val != elements[number_of_elements -1 - i])
-			{
-				printf("failed: it got %f, where it supposed to get %f\n", val, elements[number_of_elements -1 - i]);
-				return;
-			}
-		}
+    printf("\n--------- TEST %lu: FLOAT ---------\n", test_num++);
 
-            printf("PASSED\n");
-            printf("pop\t\t");
-            printf("PASSED\n");
-            printf("size\t\t");
-            printf("PASSED\n");
-		StackDestroy(stack_p);
-		printf("destroy\t\t");
-            printf("PASSED\n");
-	
+    stack_p = StackCreate(capacity, sizeof(float));
+    if (NULL == stack_p)
+    {
+        printf("create\t\tFAILED (NULL returned)\n");
+        return;
+    }
+    printf("create\t\tPASSED\n");
 
-    
+    if (capacity != StackCapacity(stack_p))
+    {
+        printf("capacity\tFAILED\nexpected: %lu\nactual:%lu\n",
+            capacity, StackCapacity(stack_p));
+        return;
+    }
+    printf("capacity\tPASSED\n");
 
+    if (0 != StackSize(stack_p))
+    {
+        printf("size\t\tFAILED\nexpected: 0\nactual:%lu\n",
+            StackSize(stack_p));
+        return;
+    }
+    printf("size\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        StackPush(stack_p, &elements[i]);
+
+        if ((i + 1) != StackSize(stack_p))
+        {
+            printf("push\t\tFAILED at index %lu\nexpected size: %lu\nactual size:%lu\n",
+                i, (unsigned long)(i + 1), (unsigned long)StackSize(stack_p));
+            return;
+        }
+    }
+    printf("push\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        before = StackSize(stack_p);
+        val = *(float*)StackPeek(stack_p);
+
+        if (before != StackSize(stack_p))
+        {
+            printf("peek\t\tFAILED (size changed)\nbefore: %lu\nafter:%lu\n",
+                before, StackSize(stack_p));
+            return;
+        }
+
+        StackPop(stack_p);
+
+        if (elements[count - 1 - i] != val)
+        {
+            printf("pop-peek\tFAILED at index %lu\nexpected: %f\ngot: %f\n",
+                i, elements[count - 1 - i], val);
+            return;
+        }
+    }
+    printf("peek/pop\tPASSED\n");
+
+    if (0 != StackIsEmpty(stack_p))
+    {
+        if (1 != StackIsEmpty(stack_p))
+        {
+            printf("empty\t\tFAILED (stack not empty)\ncurrent size: %lu\n",
+                StackSize(stack_p));
+            return;
+        }
+    }
+    printf("empty\t\tPASSED\n");
+
+    StackDestroy(stack_p);
+    printf("destroy\t\tPASSED\n");
 }
 
-static void TestChar(size_t capacity, size_t element_size, char* elements, size_t number_of_elements)
-{	
-	stack_ty* stack_p =  StackCreate(capacity, element_size);	
-	size_t i = 0;
-	char val = 0;
+/**----------------------------- CHAR TEST -----------------------------**/
 
+static void TestChar(size_t capacity, char *elements, size_t count)
+{
+    stack_ty *stack_p = NULL;
+    size_t i = 0;
+    size_t before = 0;
+    char val = 0;
 
-	
-	printf("--------- TEST %lu ---------\n",test_number);
-	printf("create\t\t");
-	if(NULL == stack_p)
-	{
-		printf("failed at creating the stack with the following attributes:\n");
-		printf("capacity = %lu, element size = %lu\n", capacity, element_size);
-		return;
-	
-	}
-	printf("PASSED\n");
-	printf("capacity\t");
-	if(capacity != StackCapacity(stack_p))
-	{
-		printf("failed: StackCreate function, in creating stack of %lu capacity\n", capacity);
-		printf("it created %lu capacity\n",StackCapacity(stack_p));
-		StackDestroy(stack_p);
-		return;
-	}
-	printf("PASSED\n");
-	
-		printf("push\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			StackPush(stack_p, &elements[i]);
-		}
-		if(StackSize(stack_p) != number_of_elements)
-		{
-			printf("size\t\t");
-			printf("failed\n");
-			return;
-		}
-		printf("PASSED\n");
-		printf("peek\t\t");
-		for(i = 0 ; i < number_of_elements ; i++)
-		{
-			val = *(char*)StackPeek(stack_p);
-			StackPop(stack_p);
-			if(val != elements[number_of_elements -1 - i])
-			{
-				printf("failed: it got %c, where it supposed to get %c\n", val, elements[number_of_elements -1 - i]);
-				return;
-			}
-		}
+    printf("\n--------- TEST %lu: CHAR ---------\n", test_num++);
 
-            printf("PASSED\n");
-            printf("pop\t\t");
-            printf("PASSED\n");
-            printf("size\t\t");
-            printf("PASSED\n");
-		StackDestroy(stack_p);
-		printf("destroy\t\t");
-            printf("PASSED\n");
-	
-	++test_number;
-    
+    stack_p = StackCreate(capacity, sizeof(char));
+    if (NULL == stack_p)
+    {
+        printf("create\t\tFAILED (NULL returned)\n");
+        return;
+    }
+    printf("create\t\tPASSED\n");
 
+    if (capacity != StackCapacity(stack_p))
+    {
+        printf("capacity\tFAILED\nexpected: %lu\nactual:%lu\n",
+            capacity, StackCapacity(stack_p));
+        return;
+    }
+    printf("capacity\tPASSED\n");
+
+    if (0 != StackSize(stack_p))
+    {
+        printf("size\t\tFAILED\nexpected: 0\nactual: %lu\n",
+            StackSize(stack_p));
+        return;
+    }
+    printf("size\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        StackPush(stack_p, &elements[i]);
+
+        if ((i + 1) != StackSize(stack_p))
+        {
+            printf("push\t\tFAILED at index %lu\nexpected size: %lu\nactual size:%lu\n",
+                i, (unsigned long)(i + 1), (unsigned long)StackSize(stack_p));
+            return;
+        }
+    }
+    printf("push\t\tPASSED\n");
+
+    for (i = 0 ; i < count ; i++)
+    {
+        before = StackSize(stack_p);
+        val = *(char*)StackPeek(stack_p);
+
+        if (before != StackSize(stack_p))
+        {
+            printf("peek\t\tFAILED (size changed)\nbefore: %lu\nafter:%lu\n",
+                before, StackSize(stack_p));
+            return;
+        }
+
+        StackPop(stack_p);
+
+        if (elements[count - 1 - i] != val)
+        {
+            printf("pop-peek\tFAILED at index %lu\nexpected: '%c' (ASCII %d)\ngot:'%c' (ASCII %d)\n",
+                i,
+                elements[count - 1 - i], elements[count - 1 - i],
+                val, val);
+            return;
+        }
+    }
+    printf("peek/pop\tPASSED\n");
+
+    if (0 != StackIsEmpty(stack_p))
+    {
+        if (1 != StackIsEmpty(stack_p))
+        {
+            printf("empty\t\tFAILED (stack not empty)\ncurrent size: %lu\n",
+                StackSize(stack_p));
+            return;
+        }
+    }
+    printf("empty\t\tPASSED\n");
+
+    StackDestroy(stack_p);
+    printf("destroy\t\tPASSED\n");
 }
 

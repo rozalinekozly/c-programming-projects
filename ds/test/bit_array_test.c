@@ -2,25 +2,28 @@
 submitter : Rozaline Kozly
 reviewer  : shir 
 worksheet : 11 (ds - bit_array)
-version   : 1
-date      : 9 Dec 2025
-stage     : pre-review
+version   : 2
+date      : 10 Dec 2025
+stage     : pre-mimir
 ----------------------------------------------------------------------------*/
 #include <stdio.h>		/* printf() */
-#include <string.h>   		/* memcmp() */
+#include <string.h>   		/* memcmp(), strcmp()*/
 #include <limits.h>		/* CHAR_BIT */
-#include <stdlib.h>		/* malloc() */
+#include <stdlib.h>		/* malloc(), free() */
 #include "../include/bit_array.h"
+
 
 #define BIT_ARR_SIZE		      	 (sizeof(bit_array_ty) * CHAR_BIT)
 #define SIZEOF_ARR(ARR)			       (sizeof(ARR)/sizeof(*ARR))
 /* macros for bit operations */
 #define SHIFT_RIGHT(x,y)            	 ((x) >> (y)) 	   /* shifts x y bits to the right */
 #define SHIFT_LEFT(x,y)             	 ((x) << (y)) 	   /* shifts x y bits to the left */
-
+/* masks*/
 #define LSB_MASK(x)                	 	 ((x) & 0x1)         /* keeps only LSB */
+/* helpful values */
 #define ALL_ON		          		 (0xFFFFFFFFFFFFFFFF) /*1(64 times)*/
-#define ALL_OFF					  (0x0)
+#define ALL_OFF					 (0x0)
+
 static void TestBitArraySetAll(void);
 static void TestBitArrayResetAll(void);
 static void TestBitArraySetOn(void);
@@ -34,7 +37,6 @@ static void TestBitArrayRotateLeft(void);
 static void TestBitArrayCountOn(void);
 static void TestBitArrayCountOff(void);
 static void TestBitArrayToString(void);
-
 
 
 int main()
@@ -124,7 +126,7 @@ void TestBitArraySetOff(void)
 {
     bit_array_ty tests[] =    {1, 2, 3, 5, 0};
     size_t bits_to_off[] =    {1, 0, 0, 0, 0};
-    bit_array_ty expected[] = {0, 2, 2, 4, 0};
+    bit_array_ty expected[] = {1, 2, 2, 4, 0};
     size_t i = 0;
     size_t tests_arr_size = SIZEOF_ARR(tests);
     size_t set_off_res = 0;
@@ -150,7 +152,7 @@ void TestBitArraySetBit(void)
     size_t i = 0;
     bit_array_ty tests_to_off[] = {1, 2, 3, 5, 0};
     size_t bits_to_off[] = {1, 0, 0, 0, 0};
-    bit_array_ty expected_off[] = {0, 2, 2, 4, 0};
+    bit_array_ty expected_off[] = {1, 2, 2, 4, 0};
     
     size_t tests_arr_size = SIZEOF_ARR(tests_to_on);
     size_t set_bit_res = 0;
@@ -328,6 +330,8 @@ void TestBitArrayToString(void)
          }
          printf("FAILED\n"); 
 	printf("string is :%s \n", dest);
+	free(dest);
+	dest = NULL;
 }
 
 

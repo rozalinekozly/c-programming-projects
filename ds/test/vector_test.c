@@ -4,7 +4,7 @@ reviewer  : steve
 worksheet : 13 (ds - vector)
 version   : 1
 date      : 10 Dec 2025
-stage     : peer-review
+stage     : mimir review
 ----------------------------------------------------------------------------*/
 #include <stdio.h>				/* printf() */
 #include "../include/vector.h" 
@@ -45,9 +45,10 @@ static void TestVectorCreateAndDestroy()
 		return;	
 	}
 	
-	if(10 != VectorCapacity(vec))
+	if(CAPACITY != VectorCapacity(vec))
 	{
 		printf("failed at creation in updating capacity\n");
+		return;
 	}
 	printf("PASSED\n");
 	printf("destroy\t\t");
@@ -154,6 +155,7 @@ static void TestVectorReserve()
 	size_t i = 0;
 	
 	printf("push-reserve\t");
+	
 	for(i = 0 ; i < 2*CAPACITY ; i++)
 	{
 	
@@ -163,6 +165,7 @@ static void TestVectorReserve()
 	
 	vec_capacity =  VectorCapacity(vec);
 	VectorDestroy(vec);
+	
 	if(vec_capacity != expected_capacity)
 	{
 		printf("failed at reserving \n");
@@ -180,6 +183,7 @@ static void TestVectorShrink()
 	size_t vec_capacity = 0;
 	size_t i = 0;
 	int val =  pow(-1,rand()%2)*(rand()%INT_MAX);
+	
 	for(i = 0 ; i < CAPACITY/2 ; i++)
 	{
 	     VectorPushBack(vec, &val);

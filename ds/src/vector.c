@@ -4,7 +4,7 @@ reviewer  : steve
 worksheet : 13 (ds - vector)
 version   : 1
 date      : 14 Dec 2025
-stage     : peer- review
+stage     : mimir review
 ----------------------------------------------------------------------------*/
 #include <assert.h>				/* assert()  */
 #include <string.h>				/* memcpy() */
@@ -58,7 +58,7 @@ void VectorDestroy(vector_ty* vec)
 	{
 		free(vec -> data);
 		vec -> data = NULL;
-		free(vec);
+		FREE(vec);
 	}
 }
 
@@ -91,6 +91,7 @@ int VectorPushBack(vector_ty* vec, void* data)
 void VectorPopBack(vector_ty* vec)
 {
 	assert(NULL != vec);
+	assert((vec -> size) > 0);
 	
 	--(vec -> size);
 }
@@ -126,17 +127,22 @@ int VectorShrinkToFit(vector_ty* vec)
 
 int VectorReserve(vector_ty* vec, size_t new_capacity)
 {
+	/* to hold the result of the realloc, in case of failure, return the 
+	    original vector without resizing 
+	    so we won't lose the original vector */
+	vector_ty* tmp = NULL; 
 	assert(NULL != vec);
-	
+	assert((vec -> size) <= new_capacity);
 	/*"new capcity represents number of new elements within the vector
          so in order to calculate the actual new capacity we multiply it's value
          with element_size of the vector this operation takes O(n)*/
-	vec -> data = (char*)realloc(vec -> data, (vec -> element_size) * new_capacity);
-	if (NULL == vec -> data)
+	tmp = (char*)realloc(vec -> data, (vec -> element_size) * new_capacity);
+	if (NULL == tmp)
 	{
+		FREE(tmp);
 		return FAILURE;
 	}
-		
+	vec -> data = tmp;	
 	vec -> capacity = new_capacity;
 	
 	return SUCCESS;
