@@ -71,7 +71,7 @@ static void GenereateData(int* arr, size_t arr_size)
     size_t i = 0;
      
     /* intialize data's array */
-    for(i = 0 ; i < arr_size ; ++i)
+    for (i = 0 ; i < arr_size ; ++i)
     {
     	arr[i] = pow(-1,i)*(rand()%MAX_VAL);
     
@@ -82,7 +82,7 @@ static queue_ty* GenerateQueueFrmArr(queue_ty* queue_p, int* arr, size_t arr_siz
 {
  	size_t i = 0;
  	 
-  	for(i = 0 ; i < arr_size ; ++i)
+  	for (i = 0 ; i < arr_size ; ++i)
   	{
 		QueueEnqueue(queue_p, &arr[i]);
   	}
@@ -124,7 +124,7 @@ static void TestQueueEnqueueDequeuePeek()
 	PrintQueue(queue_p);
 	printf("Dequeue (1 element at a time):\n");
 	
-	for(i = 0 ; i < queue_size ; i++)
+	for (i = 0 ; i < queue_size ; i++)
 	{
 		QueueDequeue(queue_p);
 		PrintQueue(queue_p);
@@ -141,7 +141,7 @@ static void TestQueueIsEmpty()
 	
 	printf("is empty\t\t\t");
 	
-	if(is_empty_res != expected_is_empty_res)
+	if (is_empty_res != expected_is_empty_res)
 	{
 		printf("FAILED at realising the queue is empty\n");
 	}
@@ -153,7 +153,7 @@ static void TestQueueIsEmpty()
 	expected_is_empty_res = 0;
 	is_empty_res = QueueIsEmpty(queue_p);
 	
-	if(is_empty_res != expected_is_empty_res)
+	if (is_empty_res != expected_is_empty_res)
 	{
 		printf("FAILED at realising the queue is not empty\n");
 	}
@@ -170,7 +170,7 @@ static void TestQueueSize()
 	
 	printf("size\t\t\t\t");
 	
-	if(expected_size_res != size_res)
+	if (expected_size_res != size_res)
 	{
 		printf("FAILED at realising the queue size is %lu\n",expected_size_res);
 	}
@@ -182,7 +182,7 @@ static void TestQueueSize()
 	expected_size_res = DATA_ARR_SIZE;
 	size_res = QueueSize(queue_p);
 	
-	if(expected_size_res != size_res)
+	if (expected_size_res != size_res)
 	{
 		printf("FAILED at realising the queue size is %u\n",DATA_ARR_SIZE);
 	}
