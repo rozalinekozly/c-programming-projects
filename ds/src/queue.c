@@ -15,6 +15,7 @@ stage : peer-review
 #define SUCCESS 0
 #define FAILED 1
 
+#define FREE(x) 				(free(x), x = NULL)
 /*------------------------------queue struct ---------------------------------*/
 struct queue
 {
@@ -41,21 +42,16 @@ queue_ty* QueueCreate(void)
 	return queue_p;
 }
 
-
-
 void QueueDestroy(queue_ty* queue_p)
 {
-	/* remove since free doesn't care if it is NULL */
-	/*if (NULL == queue_p)
+	if (NULL == queue_p)
 	{
 		return;
-	}*/
+	}
 
 	SListDestroy(queue_p->slist);
-	free(queue_p);
-	queue_p = NULL;
+	FREE(queue_p);
 }
-
 
 int QueueEnqueue(queue_ty* queue_p, void* data)
 {
@@ -70,7 +66,6 @@ int QueueEnqueue(queue_ty* queue_p, void* data)
 	return SListIterIsEqual(res, dummy) ? FAILED : SUCCESS;
 }
 
-
 void QueueDequeue(queue_ty* queue_p)
 {
 	slist_iter_ty begin = NULL;
@@ -82,8 +77,6 @@ void QueueDequeue(queue_ty* queue_p)
 	SListRemove(begin);
 }
 
-
-
 void* QueuePeek(const queue_ty* queue_p)
 {
 	assert(NULL != queue_p);
@@ -92,16 +85,12 @@ void* QueuePeek(const queue_ty* queue_p)
 	return SListIterGetData(SListBeginIter(queue_p->slist));
 }
 
-
-
 int QueueIsEmpty(const queue_ty* queue_p)
 {
 	assert(NULL != queue_p);
 
 	return SListIterIsEqual(SListBeginIter(queue_p->slist), SListEndIter(queue_p->slist));
 }
-
-
 
 size_t QueueSize(const queue_ty* queue_p)
 {
@@ -112,5 +101,7 @@ size_t QueueSize(const queue_ty* queue_p)
 	
 void QueueAppend(queue_ty* queue_p1, queue_ty* queue_p2)
 {
+	assert(queue_p1 != NULL);
+	assert(queue_p1 != NULL);
 	SListAppend(queue_p1 -> slist, queue_p2 -> slist);
 }

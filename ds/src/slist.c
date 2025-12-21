@@ -271,14 +271,17 @@ void SListAppend(slist_ty* slist_p_1, slist_ty* slist_p_2)
 	slist_iter_ty list2_head = SListBeginIter(slist_p_2);
 	slist_iter_ty list1_dummy = SListEndIter(slist_p_1);
 	
+	/* list 1 tail next points at the second element in list 2 */
 	IterSetNext(list1_dummy, SListIterNext(SListBeginIter(slist_p_2)));
+	/* copy contents of list 2 head into list 1 original tail */
 	SListIterSetData(list1_dummy, SListIterGetData(list2_head));
+	/* turn original list 2 head into a dummy */
 	TurnToDummy(list2_head, slist_p_2);
-	
+	/* update list 1 tail to point at list 2 tail (this is the concat list)*/
 	slist_p_1 -> tail = slist_p_2->tail;
-	slist_p_2 -> head = list2_head;
+	/* emptifying list 2 */
 	slist_p_2 -> tail = list2_head;
-	
+	/* define the data in the dummy to point at the managing list */
 	SListIterSetData(slist_p_1 -> tail, slist_p_1);
 
 }
