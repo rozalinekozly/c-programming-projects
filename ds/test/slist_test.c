@@ -86,13 +86,13 @@ static void TestInsertBefore(void)
 	iter = SlistInsertBefore(list, iter, &b);
 
 	iter = SListBeginIter(list);
-	if(20 != *(int*)IterGetData(iter))
+	if(20 != *(int*)SListIterGetData(iter))
 	{
 		printf("failed at get data1\n");
 	
 	}
-	iter = IterNext(iter);
-	if(10 != *(int*)IterGetData(iter))
+	iter = SListIterNext(iter);
+	if(10 != *(int*)SListIterGetData(iter))
 	{
 		printf("failed at get data2\n");
 	}
@@ -119,7 +119,7 @@ static void TestRemove(void)
 	{
 		printf("failed at remove-count\n");
 	}
-	if(2 != *(int*)IterGetData(iter))
+	if(2 != *(int*)SListIterGetData(iter))
 	{
 		printf("failed at remove2\n");
 	}
@@ -143,11 +143,11 @@ static void TestFind(void)
 
 	found = SListFind(SListBeginIter(list), SListEndIter(list), (match_func_ty )MatchInt, &key);
 
-	if(FALSE != IterIsEqual(found, SListEndIter(list)))
+	if(FALSE != SListIterIsEqual(found, SListEndIter(list)))
 	{
 		printf("failed at itr is equal1\n");
 	}
-	if(7 != *(int*)IterGetData(found))
+	if(7 != *(int*)SListIterGetData(found))
 	{
 		printf("failed at itr is equal2\n");
 	}
@@ -172,12 +172,12 @@ static void TestForEach(void)
 	&add);
 
 	iter = SListBeginIter(list);
-	if(12 != *(int*)IterGetData(iter))
+	if(12 != *(int*)SListIterGetData(iter))
 	{
 		printf("failed at for-each\n");
 	}
-	iter = IterNext(iter);
-	if(11 != *(int*)IterGetData(iter))
+	iter = SListIterNext(iter);
+	if(11 != *(int*)SListIterGetData(iter))
 	{
 		printf("failed at for-each\n");
 	}
