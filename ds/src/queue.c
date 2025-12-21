@@ -101,7 +101,7 @@ size_t QueueSize(const queue_ty* queue_p)
 	
 void QueueAppend(queue_ty* queue_p1, queue_ty* queue_p2)
 {
-	assert(queue_p1 != NULL);
-	assert(queue_p1 != NULL);
+	assert(NULL != queue_p1);
+	assert(NULL != queue_p2);
 	SListAppend(queue_p1 -> slist, queue_p2 -> slist);
 }
