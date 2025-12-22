@@ -8,6 +8,8 @@ stage : peer-review
 ----------------------------------------------------------------------------*/
 #include <stdlib.h>	 	 /* malloc(), free() */
 #include <string.h>		 /* memcpy() */
+#include <assert.h> 	 /* assert() */
+
 #include "buffer.h"		 /* API */
 
 #define TRUE 			1
@@ -69,6 +71,8 @@ size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 	size_t first_chunk = 0;
 	size_t second_chunk = 0;
 
+	assert(NULL != buf);
+	assert(NULL != src);
 	/*
 	 wrapping index (without % and without branching with ifs):
 	 scene 1: no wrapping, then first condition is false and = 0
@@ -103,6 +107,8 @@ size_t BufRead(buf_ty* buf, size_t n_bytes, void* dest)
 	size_t first_chunk = 0;
 	size_t second_chunk = 0;
 	
+	assert(NULL != buf);
+	assert(NULL != dest);
 	/* data till the end of the array's limit */
 	first_chunk = MIN(bytes_to_be_read, buf->capacity - buf->read);
 	/* remain data to read from the begining of the array */
@@ -127,16 +133,19 @@ size_t BufRead(buf_ty* buf, size_t n_bytes, void* dest)
 
 size_t BufFreeSpace(const buf_ty* buf)
 {
+	assert(NULL != buf);
 	return buf->capacity - buf->size;
 }
 
 size_t BufCap(const buf_ty* buf)
 {
+	assert(NULL != buf);
 	return buf->capacity;
 }
 
 int BufIsEmpty(const buf_ty* buf)
 {
+	assert(NULL != buf);
 	return (0 == buf->size) ? TRUE : FALSE;
 }
 	
