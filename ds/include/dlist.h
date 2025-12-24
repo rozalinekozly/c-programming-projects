@@ -79,9 +79,8 @@ int DListIsEmpty(const dlist_ty* dlist);
 * 		where is invalid
 *   O(1)
 ******************************************************************************/
-dlist_iter_ty DListInsertBefore(	dlist_ty* dlist, 
-									dlist_iter_ty where, 
-									void* new_data);
+dlist_iter_ty DListInsertBefore(dlist_ty* dlist, dlist_iter_ty where, 
+								void* new_data);
 
 /****************************************************************************** 
 * 	Description:
@@ -251,8 +250,8 @@ int DListIterIsEqual(const dlist_iter_ty iter1, const dlist_iter_ty iter2);
 *       "is_match" is NULL
 *   O(n)
 ******************************************************************************/
-dlist_iter_ty DListFind( const dlist_iter_ty from, const dlist_iter_ty to, 
-						 is_match_func_ty is_match, void* param	            );
+dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to, 
+						 is_match_func_ty is_match, void* param);
 							
 /****************************************************************************** 
 *  	Description:
@@ -270,9 +269,8 @@ dlist_iter_ty DListFind( const dlist_iter_ty from, const dlist_iter_ty to,
 *       "dest" is between "from" and "to"
 *   O(n)
 ******************************************************************************/
-int DListMultiFind(	const dlist_iter_ty from, const dlist_iter_ty to, 
-					dlist_ty* dest,
-					is_match_func_ty is_match, void* param              );
+int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
+                   dlist_ty* dest, is_match_func_ty is_match, void* param);
 
 /******************************************************************************
 * 	Description:
