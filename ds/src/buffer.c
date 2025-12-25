@@ -9,7 +9,7 @@ stage : mimir
 #include <stdlib.h>	 	 /* malloc(), free() */
 #include <string.h>		 /* memcpy() */
 #include <assert.h> 	 /* assert() */
-
+#include <stddef.h>		 /* offsetof */
 #include "buffer.h"		 /* API */
 
 #define TRUE 			1
