@@ -24,121 +24,112 @@ typedef int (*action_func_ty)(void* data, void* param);
 *	Function should return 0 on success and 1 on failure.
 ******************************************************************************/
 typedef int (*is_match_func_ty) (const void* data, void* param);
-
-/****************************************************************************** 
-* 	Description:
-* 		Creates an empty list,
-* 	Return value:	
-* 		On success, a pointer to the created list
-* 		On failure, NULL
-* 	O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListCreate(void)
+	purpose: 	    constructs a doubly-linked-list data structure instance.
+	return values:  an iterator to the constructed list, in case it succeed.
+					NULL if construction failed.
+	time complexity:O(1)
+ */
 dlist_ty* DListCreate(void);
-
-/****************************************************************************** 
-* 	Description:
-* 		Destroys the dlist
-* 		No operations performed if dlist is NULL
-* 	Return value:
-* 		None
-*   O(n)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListDestroy(ptr-to-list)
+	purpose: 	    destruct a doubly-linked-list instance.
+	return values:  void
+	time complexity:O(n)
+ */
 void DListDestroy(dlist_ty* dlist);
-
-/****************************************************************************** 
-* 	Description:
-* 		Counts the size of dlist	  
-* 	Return value: 
-* 		Count of nodes in dlist (Not including dummy)
-* 	Undefined behavior: 
-* 		dlist is NULL
-*   O(n)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListCount(iter-to-dlist)
+	arguments:      pointer to dlist instance.
+	purpose: 	    to count number of nodes in the dlist instance.
+	return values:  nodes in the instance.
+	UB:				dlist is NULL.
+	time complexity:O(n)
+ */
 size_t DListCount(const dlist_ty* dlist);
-
-/****************************************************************************** 
-* 	Description:
-* 		Checks if the list is empty
-* 	Return value: 
-* 		1 if empty
-* 		0 otherwise
-* 	Undefined behavior:
-* 		"dlist" is NULL
-* 	O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListIsEmpty(iter-to-dlist)
+	arguments:      pointer to dlist instance.
+	purpose: 	    to answer the question is dlist empty.
+	return values:  TRUE = 1 = it is empty
+					FALSE = 0 otherwise.
+	UB:				dlist is NULL.
+	time complexity:O(1)
+ */
 int DListIsEmpty(const dlist_ty* dlist);
-
-/****************************************************************************** 
-* 	Description:
-* 		Insert a new node with a passed data before "where"
-* 	Return value:	
-* 		On success, iterator to the newly allocated node,
-* 		On failure, "DListEnd"
-* 	Undefined behaviour:
-* 		dlist is NULL
-* 		where is invalid
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListInsertBefore(iter-to-dlist, where-iter, new-data)
+	arguments:      iter-to-dlist: pointer to dlist.
+					 where-iter: iter to the placement to insert before.
+					 new-data: data of the new node to insert.
+	purpose: 	    insert a new node with the passed data before where-iter.
+	return values:  if insertion succeed: an iterator to newly inserted node.
+					if failed, NULL.
+	UB:				dlist is NULL.
+					where-iter is NULL.
+	time complexity:O(1)
+ */
 dlist_iter_ty DListInsertBefore(dlist_ty* dlist, dlist_iter_ty where, 
 								void* new_data);
-
-/****************************************************************************** 
-* 	Description:
-* 		Insert a new node with a passed data to the front of the list
-* 	Return value:	
-* 		On success, iterator to the newly allocated node,
-* 		On failure, "DListEnd"
-* 	Undefined behaviour:
-* 		dlist is NULL
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListPushFront(iter-to-dlist, new-data)
+	arguments:      iter-to-dlist: pointer to dlist.
+					 new-data: data of the new node to insert.
+	purpose: 	    insert a new node with the passed data in front of the dlist.
+	return values:  if pushing succeed: an iterator to newly pushed node.
+					otherwise: NULL.
+	UB:				dlist is NULL.
+	time complexity:O(1)
+ */
 dlist_iter_ty DListPushFront(dlist_ty* dlist, void* new_data);
-
-/****************************************************************************** 
-*   Description:
-* 		Removes a node from the beginning of the list
-* 	Return value: 
-* 		None
-* 	Undefined behavior: 
-* 		dlist is NULL
-* 		dlist is empty
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListPopFront(iter-to-dlist)
+	arguments:      iter-to-dlist: pointer to dlist.
+	purpose: 	    removes front node in dlist.
+	return values:  void.
+	UB:				dlist is NULL or empty.
+	time complexity:O(1)
+ */
 void DListPopFront(dlist_ty* dlist);
-
-/****************************************************************************** 
-* 	Description:
-* 		Insert a new node with a passed data to the back of the list
-* 	Return value:	
-* 		On success, iterator to the newly allocated node,
-* 		On failure, "DListEnd"
-* 	Undefined behaviour:
-* 		dlist is NULL
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListPushBack(iter-to-dlist, new-data)
+	arguments:      iter-to-dlist: pointer to dlist.
+					 new-data: data of the new node to insert.
+	purpose: 	    insert a new node with the passed data in the end of the dlist.
+	return values:  if pushing succeed: an iterator to newly pushed node.
+					otherwise: NULL.
+	UB:				dlist is NULL.
+	time complexity:O(1)
+ */
 dlist_iter_ty DListPushBack(dlist_ty* dlist, void* new_data);
-
-/****************************************************************************** 
-*   Description:
-* 		Removes a node from the back of the list
-* 	Return value: 
-* 		None
-* 	Undefined behavior: 
-* 		dlist is NULL
-* 		dlist is empty
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListPopBack(iter-to-dlist)
+	arguments:      iter-to-dlist: pointer to dlist.
+	purpose: 	    removes last node in dlist.
+	return values:  void.
+	UB:				dlist is NULL or empty.
+	time complexity:O(1)
+ */
 void DListPopBack(dlist_ty* dlist);
-									
-/****************************************************************************** 
-*   Description:
-* 		Removes a node pointed by iter from the list
-* 	Return value: 
-* 		iter to next node
-* 	Undefined behavior: 
-* 		iter is "DListEnd"
-*   O(1)
-******************************************************************************/
+/*----------------------------------------------------------------------------*/
+/*
+	syntax: 	    DListPopBack(iter-to-dlist)
+	arguments:      iter-to-dlist: pointer to dlist.
+	purpose: 	    removes last node in dlist.
+	return values:  void.
+	UB:				dlist is NULL or empty.
+	time complexity:O(1)
+ */
 dlist_iter_ty DListRemove(dlist_iter_ty iter);
 
 /****************************************************************************** 
@@ -237,38 +228,48 @@ int DListForEach( dlist_iter_ty from, const dlist_iter_ty to,
 ******************************************************************************/
 int DListIterIsEqual(const dlist_iter_ty iter1, const dlist_iter_ty iter2);
 		  
-/****************************************************************************** 
-*  	Description:
-* 		Searches for a match in range ["from", "to")
-*   Return value:
-* 		On success, returns iter to the matching node 
-* 		On failure, returns "to"
-*   Undefinded behavior:
-*       "from" or "to" are invaild iters
-*       "from" and "to" don't belong to the same list
-*       "from" > "to" 
-*       "is_match" is NULL
-*   O(n)
-******************************************************************************/
+/*
+	syntax: 	    DListFind(start-range, end-range, matching-func, param)
+	arguments:      start-range: iterator to the start of searching range (included).
+					end-range: iterator to the end of the range (not included).
+					matching-func: function that takes an iterator and parameter
+					and decides if there is a match, in case there is it returns 
+					TRUE = 1, otherwise it returns FALSE = 0.
+					param: parameter can be passed to matching function.
+	purpose: 	    searches for a match in iter range [from, to), and returns an 
+	                iterator to first match within the range.
+	return values:  if there's a match, it returns an iter to the matching node
+					otherwise it returns the "to" iter.
+	UB:				"from" or "to" are invalid.
+					"from" and "to" do not belong to same list.
+					"from" > "to".
+					"is_match" function is NULL.
+	time complexity:O(n)
+ */
 dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to, 
 						 is_match_func_ty is_match, void* param);
-							
-/****************************************************************************** 
-*  	Description:
-* 		Searches for all matching to param nodes in range ["from", "to")
-* 		with is_match function and insets them to "dest" list, provided by user
-*   Return value:
-* 		On success, returns 0
-* 		On failure, returns 1
-*   Undefinded behavior:
-*       "from" or "to" are invaild iters
-*       "from" and "to" don't belong to the same list
-*       "from" > "to" 
-*       "is_match" is NULL
-* 		"dest" is NULL
-*       "dest" is between "from" and "to"
-*   O(n)
-******************************************************************************/
+/*
+	syntax: 	    DListMultiFind(start-range, end-range,dest-list,
+				    matching-func, param)
+	arguments:      start-range: iterator to the start of searching range (included).
+					end-range: iterator to the end of the range (not included).
+					dest-list: a doubly-linked-list provided by the user, to insert
+					matching nodes in it.
+					matching-func: function that takes an iterator and parameter
+					and decides if there is a match, in case there is it returns 
+					TRUE = 1, otherwise it returns FALSE = 0.
+					param: parameter can be passed to matching function.
+	purpose: 	    searches for a match in iter range [from, to), in case of match
+					it inserts these nodes in dest-list.
+	return values:  if a match has been found it returns SUCCESS = 0,
+					otherwise it returns FAIL = 1.
+	UB:				"from" or "to" are invalid.
+					"from" and "to" do not belong to same list.
+					"from" > "to".
+					"dest" is NULL.
+					"dest" is between "from" and "to.
+	time complexity:O(n)
+ */							
 int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
                    dlist_ty* dest, is_match_func_ty is_match, void* param);
 

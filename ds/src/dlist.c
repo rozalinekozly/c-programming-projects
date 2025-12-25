@@ -13,8 +13,8 @@ stage :  writing code
 #define TRUE 1
 #define FALSE 0
 
-#define UNUSED(x)			      ((void)x)
-#define FREE(x) 				(free(x), x = NULL)
+#define UNUSED(x)			        ((void)x)
+#define FREE(x) 					(free(x), x = NULL)
 
 /*----------------------------------------------------------------------------*/
 /* node strucutre */
@@ -34,12 +34,14 @@ struct dlist
 	dlist_node_ty head;
 	dlist_node_ty tail;
 };
+/*----------------------------aux functions ----------------------------------*/
 /*--------------------abstraction layer on iter ------------------------------*/
-dlist_node_ty* IterToNode(const dlist_iter_ty iter)
+/* add that this is a pointer to node not actual node! */
+static dlist_node_ty* IterToNode(const dlist_iter_ty iter)
 {
 	return ((dlist_node_ty*)iter);
 }
-dlist_iter_ty NodeToIter(const dlist_node_ty* node)
+static dlist_iter_ty NodeToIter(const dlist_node_ty* node)
 {
 	return ((dlist_iter_ty)node);
 }
@@ -47,15 +49,15 @@ dlist_iter_ty NodeToIter(const dlist_node_ty* node)
 /*
 	takes an iterator and sets it's next to be the second passed argument.
 */
-void IterSetNext(dlist_iter_ty iter, dlist_iter_ty new_next)
+static void IterSetNext(dlist_iter_ty iter, dlist_iter_ty new_next)
 {
 	IterToNode(iter)->next = IterToNode(new_next);
 }
-void IterSetPrev(dlist_iter_ty iter, dlist_iter_ty new_prev)
+static void IterSetPrev(dlist_iter_ty iter, dlist_iter_ty new_prev)
 {
 	IterToNode(iter)->prev = IterToNode(new_prev);
 }
-dlist_iter_ty GetHead(dlist_ty* list)
+static dlist_iter_ty GetHead(dlist_ty* list)
 {
 	return (NodeToIter(&list->head));
 }
@@ -81,6 +83,11 @@ dlist_ty* DListCreate()
 	return list;
 }
 /*----------------------------------------------------------------------------*/
+/*
+	using remove function may cause an overhead, since remove makes sure prev 
+	node points at the new node, wheras in destroy we just free first mode
+	and carry on.
+*/
 void DListDestroy(dlist_ty* list)
 {
 	dlist_node_ty* curr_node = NULL;
@@ -166,6 +173,7 @@ int DListIsEmpty(const dlist_ty* dlist)
 	return FALSE;
 }
 /*----------------------------------------------------------------------------*/
+/* implement is using foreach() */
 size_t DListCount(const dlist_ty* dlist)
 {
 	dlist_iter_ty list_iter = DListBeginIter(dlist);
@@ -243,15 +251,19 @@ int DListIterIsEqual(const dlist_iter_ty iter1, const dlist_iter_ty iter2)
 dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to, 
 						 is_match_func_ty is_match, void* param)
 {
+	const dlist_iter_ty range_iter = from; 
+	
 	assert(NULL != is_match);
 
-	while ((FALSE == SListIterIsEqual(from, to)) &&
-	(FALSE == is_match(SListIterGetData(from), param)))
+	/* while range_iter is still in the range, and haven't found a matching yet
+	   continue traversing on the list and make rang_iter to point on next node
+	   in the list */
+	while ((FALSE == SListIterIsEqual(range_iter, to)) && 
+	      (FALSE == is_match(SListIterGetData(range_iter), param)))
 	{
-		from = SListIterNext(from);
+		range_iter = SListIterNext(from);
 	}
-
-	return from;
+	return range_iter;
 }
 /*----------------------------------------------------------------------------*/
 int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
