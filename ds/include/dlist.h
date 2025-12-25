@@ -272,22 +272,22 @@ dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to,
  */							
 int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
                    dlist_ty* dest, is_match_func_ty is_match, void* param);
-
-/******************************************************************************
-* 	Description:
-* 		Copies nodes of the second list from "from" to "to" ("to" not
-*       included), to the first list before "where". Nodes remain in their
-*       original order.
-*   Return value:
-* 		None
-*   Undefinded behavior:
-* 		"from", "to" or "where" are invaild iters
-*  		"from" is DListEnd
-*       "from" > "to"
-*		"from" == "to"
-*       "where" is between "from" and "to"
-*   O(1)
-******************************************************************************/
+/*
+	syntax: 	    DListSplice(from, to ,where)
+	arguments:      from: iter on the element to start splicing from.
+					to: iter on the element to end range (not included).
+					where: iter to placement to insert the elements within range 
+					before.
+	purpose: 	    moves elements that exist within the range [from, to)
+					to before "where" iter.
+	return values:  void.
+	UB:				"from" or "to" or "where" are invalid.
+					"from" and "to" do not belong to same list.
+					"from" >= "to".
+					"from" is DListEnd.
+					"where" is between "from" and "to.
+	time complexity:O(1)
+ */
 void DListSplice(dlist_iter_ty from, dlist_iter_ty to, dlist_iter_ty where);
 
 
