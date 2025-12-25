@@ -61,10 +61,10 @@ void BufDestroy(buf_ty* buf)
 size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 {
 	/* index in buffer to write to, will be wrapped */
-	size_t write_idx = buf->read + buf->size;
+	size_t write_idx = 0;
 	/* bytes to be written (can't write more than empty space since
 	   there is no writing on data */
-	size_t bytes_to_be_written = MIN(n_bytes, BufFreeSpace(buf));
+	size_t bytes_to_be_written = 0;
 	/* dividing the data to be written into 2 chunks 
 		in best case (no wrapping) first chunk will be count
 		and second chunk is 0 */
@@ -73,6 +73,9 @@ size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 
 	assert(NULL != buf);
 	assert(NULL != src);
+	
+	write_idx = buf->read + buf->size;
+	bytes_to_be_written = MIN(n_bytes, BufFreeSpace(buf));
 	/*
 	 wrapping index (without % and without branching with ifs):
 	 scene 1: no wrapping, then first condition is false and = 0
@@ -81,7 +84,7 @@ size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 	 (by 1 it can't be more than that) and needed to be wrapped so 
 	 we should subtract buf->capacity from write_idx.
 	*/
-	write_idx -= (write_idx >= buf->capacity) * buf->capacity;
+	write_idx -= (write_idx == buf->capacity) * buf->capacity;
 	
 	/* bytes to copy till it reaches the end */
 	first_chunk = MIN(bytes_to_be_written, buf->capacity - write_idx);
@@ -102,13 +105,14 @@ size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 
 size_t BufRead(buf_ty* buf, size_t n_bytes, void* dest)
 {
-	size_t bytes_to_be_read = MIN(n_bytes, buf->size);
+	size_t bytes_to_be_read = 0;
 
 	size_t first_chunk = 0;
 	size_t second_chunk = 0;
 	
 	assert(NULL != buf);
 	assert(NULL != dest);
+	bytes_to_be_read = MIN(n_bytes, buf->size);
 	/* data till the end of the array's limit */
 	first_chunk = MIN(bytes_to_be_read, buf->capacity - buf->read);
 	/* remain data to read from the begining of the array */
@@ -124,7 +128,7 @@ size_t BufRead(buf_ty* buf, size_t n_bytes, void* dest)
 	/* update read index */
 	buf->read += bytes_to_be_read;
 	/* wrap read index */
-	buf->read -= (buf->read >= buf->capacity) * buf->capacity;
+	buf->read -= (buf->read == buf->capacity) * buf->capacity;
 	/* update size */
 	buf->size -= bytes_to_be_read;
 
