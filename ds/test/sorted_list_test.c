@@ -1,51 +1,77 @@
-/*--------------------------------------------------------------------------
-submitter : Rozaline Kozly
-reviewer : ?
-worksheet : 25 (ds - sorted list)
-version : 1
-date : 25 Dec 2025
-stage : writing-code
-----------------------------------------------------------------------------*/
-#include <stdio.h>				   		  /* printf(), NULL */
-#include <stdlib.h> 				      /* malloc(), free(), rand() */
-#include <assert.h>				          /* assert() */
-/* to randomify data */
-#include <math.h>					      /* pow()   */
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
-#include "sorted_list.h" 
+#include "sorted_list.h"
 
-#define TRUE   						      1
-#define FALSE  						      0
-/*magic numbers */
-/* data's array size */
-#define DATA_ARR_SIZE						10
-/* to make the values readable used for modulu */
-#define MAX_VAL							100
-/*--------------------testing functions----------------------------------------*/
+static int CmpInt(const void* data1, const void* data2, void* param);
+static int PrintInt(void* data, void* param);
+static int IsMatchInt(const void* data, void* param);
 
-
-
-/*-----------------aux functions for dealing with list------------------------*/
-/* printing list to the terminal */
-static void PrintList(const sorted_list_ty*);
-/*-------------------- implementations ----------------------------------------*/
-static void PrintList(const sorted_list_ty* list)
+int main(void)
 {
-	const sorted_list_iter list_iter = list;
-	const sorted_list_iter end_of_list = SortedListEndIter(list);
-	
-	printf("sorted-list:\n");
-	while(list_iter != end_of_list)
+	sorted_list_ty* list = NULL;
+	sorted_list_iter_ty iter;
+	int i = 0;
+	int values[] = {7, 3, 9, 1, 5, 8, 2, 6, 4};
+	int key = 5;
+
+	list = SortedListCreate(CmpInt, NULL);
+	assert(NULL != list);
+
+	for (i = 0; i < 9; ++i)
 	{
-		printf("%d<->");
-		list_iter = SortedListIterNext(list_iter);
+		SortedListInsert(list, &values[i]);
 	}
-	return;
+
+	printf("After insert:\n");
+	SortedListForEach(SortedListBeginIter(list),
+	SortedListEndIter(list),
+	PrintInt,
+	NULL);
+	printf("\n");
+
+	iter = SortedListFind(list, &key);
+	assert(!SortedListIterIsEqual(iter, SortedListEndIter(list)));
+	printf("Found %d\n", *(int*)SortedListIterGetData(iter));
+
+	SortedListRemove(iter);
+
+	printf("After remove 5:\n");
+	SortedListForEach(SortedListBeginIter(list),
+	SortedListEndIter(list),
+	PrintInt,
+	NULL);
+	printf("\n");
+
+	iter = SortedListFindIf(SortedListBeginIter(list),
+	SortedListEndIter(list),
+	IsMatchInt,
+	&key);
+	assert(SortedListIterIsEqual(iter, SortedListEndIter(list)));
+
+	SortedListDestroy(list);
+
+	printf("Test passed\n");
+	return 0;
 }
-/*----------------------------------------------------------------------------*/
 
+static int CmpInt(const void* data1, const void* data2, void* param)
+{
+	(void)param;
+	return *(int*)data1 - *(int*)data2;
+}
 
+static int PrintInt(void* data, void* param)
+{
+	(void)param;
+	printf("%d ", *(int*)data);
+	return 0;
+}
 
-
-
+static int IsMatchInt(const void* data, void* param)
+{
+	return (*(int*)data == *(int*)param);
+}
+	
 
