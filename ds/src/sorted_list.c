@@ -110,19 +110,19 @@ void SortedListIterSetData(sorted_list_ty* lst, sorted_list_iter_ty iter, void* 
 	SortedListRemove(iter);
 	SortedListInsert(lst, new_data);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListEndIter(const sorted_list_ty* lst)
 {
 	assert(NULL != lst);
 	return DIterToSIter(DListEndIter(lst->list), lst);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListBeginIter(const sorted_list_ty* lst)
 {
 	assert(NULL != lst);
 	return DIterToSIter(DListBeginIter(lst->list), lst);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListIterNext(sorted_list_iter_ty iter)
 {
 	dlist_iter_ty d_next;
@@ -135,7 +135,7 @@ sorted_list_iter_ty SortedListIterNext(sorted_list_iter_ty iter)
 
 	return DIterToSIter(d_next, lst);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListIterPrev(sorted_list_iter_ty iter)
 {
 	dlist_iter_ty d_prev;
@@ -148,7 +148,7 @@ sorted_list_iter_ty SortedListIterPrev(sorted_list_iter_ty iter)
 
 	return DIterToSIter(d_prev, lst);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 int SortedListIterIsEqual(sorted_list_iter_ty iter1, sorted_list_iter_ty iter2)
 {
 	assert(NULL != SIterToDIter(iter1));
@@ -168,7 +168,7 @@ sorted_list_action_func_ty action, void* param)
 
 	return DListForEach(SIterToDIter(from), SIterToDIter(to), action, param);
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListFind(sorted_list_ty* lst, void* data)
 {
 	sorted_list_iter_ty iter;
@@ -199,7 +199,7 @@ sorted_list_iter_ty SortedListFind(sorted_list_ty* lst, void* data)
 
 	return end;
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 sorted_list_iter_ty SortedListFindIf(sorted_list_iter_ty from, sorted_list_iter_ty to,
 sorted_list_is_match_func_ty is_match, void* param)
 {
@@ -220,7 +220,7 @@ sorted_list_is_match_func_ty is_match, void* param)
 
 	return to;
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 void SortedListMerge(sorted_list_ty* dest, sorted_list_ty* src)
 {
 	dlist_iter_ty dest_it;
@@ -272,25 +272,44 @@ void SortedListMerge(sorted_list_ty* dest, sorted_list_ty* src)
 		src_it = run_to;
 	}
 }
-----------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------*/
 #ifndef NDEBUG
+
 static dlist_iter_ty SIterToDIter(sorted_list_iter_ty s_iter)
 {
 	return s_iter.d_iter;
 }
 
-static sorted_list_iter_ty DIterToSIter(dlist_iter_ty iter,
-const sorted_list_ty* lst)
+static sorted_list_iter_ty DIterToSIter(dlist_iter_ty iter, const sorted_list_ty* lst)
 {
-sorted_list_iter_ty s_iter;
-s_iter->d_iter = iter;
-s_iter->sorted_lst = lst;
-return s_iter;
+	sorted_list_iter_ty s_iter;
+	s_iter.d_iter = iter;
+	s_iter.sorted_lst = lst;
+	return s_iter;
 }
 
 static const sorted_list_ty* SIterToSList(sorted_list_iter_ty s_iter)
 {
-return s_iter->sorted_lst;
+	return s_iter.sorted_lst;
 }
-	
+
+#else
+
+static dlist_iter_ty SIterToDIter(sorted_list_iter_ty s_iter)
+{
+	return s_iter;
+}
+
+static sorted_list_iter_ty DIterToSIter(dlist_iter_ty iter, const sorted_list_ty* lst)
+{
+	(void)lst;
+	return iter;
+}
+
+static const sorted_list_ty* SIterToSList(sorted_list_iter_ty s_iter)
+{
+	(void)s_iter;
+	return NULL;
+}
+
 #endif
