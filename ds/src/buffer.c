@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer : steve :)
-worksheet : 17 (ds - circular buffer)
+reviewer : steve 
+worksheet : circular buffer
 version : 2
 date : 21 Dec 2025
 stage : mimir
@@ -10,26 +10,23 @@ stage : mimir
 #include <string.h>		 /* memcpy() */
 #include <assert.h> 	 /* assert() */
 #include <stddef.h>		 /* offsetof */
+
 #include "buffer.h"		 /* API */
 
 #define TRUE 			1
 #define FALSE 			0
 
-/*free-ing and prevanting a dangling pointer*/
-#define FREE(x) 		(free(x), (x) = NULL)
 /*finds minimum in a given numbers*/
 #define MIN(a,b)	    ((a)>(b) ? (b) : (a))
 
 /*--------------------------- cbuffer struct ---------------------------------*/
 struct buf
 {
-	/* total number of elements an instance can hold */
 	size_t capacity; 
 	/* front index */
 	size_t read;
 	/* number of bytes currently stored in an instance*/
 	size_t size; 
-	/* flexible array that holds the data */
 	char data[1]; 
 };
 /*------------------------------implementations -------------------------------*/
@@ -54,7 +51,8 @@ void BufDestroy(buf_ty* buf)
 {
 	if (NULL != buf)
 	{
-		FREE(buf);
+		free(buf);
+		buf = NULL;
 	}
 }
 
@@ -84,7 +82,7 @@ size_t BufWrite(buf_ty* buf, size_t n_bytes, const void* src)
 	 (by 1 it can't be more than that) and needed to be wrapped so 
 	 we should subtract buf->capacity from write_idx.
 	*/
-	write_idx -= (write_idx == buf->capacity) * buf->capacity;
+	write_idx -= (write_idx >= buf->capacity) * buf->capacity;
 	
 	/* bytes to copy till it reaches the end */
 	first_chunk = MIN(bytes_to_be_written, buf->capacity - write_idx);
@@ -128,7 +126,7 @@ size_t BufRead(buf_ty* buf, size_t n_bytes, void* dest)
 	/* update read index */
 	buf->read += bytes_to_be_read;
 	/* wrap read index */
-	buf->read -= (buf->read == buf->capacity) * buf->capacity;
+	buf->read -= (buf->read >= buf->capacity) * buf->capacity;
 	/* update size */
 	buf->size -= bytes_to_be_read;
 
