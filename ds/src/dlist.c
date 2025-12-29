@@ -13,6 +13,8 @@ stage :  writing code
 #define TRUE 1
 #define FALSE 0
 
+#define SUCCESS  0
+#define FAIL 1
 #define UNUSED(x)			        ((void)x)
 #define FREE(x) 					(free(x), x = NULL)
 
@@ -137,6 +139,7 @@ void* DListIterGetData(const dlist_iter_ty iter)
 	return(IterToNode(iter)->data);
 }
 /*----------------------------------------------------------------------------*/
+/* change implementation using insert function*/
 dlist_iter_ty DListPushFront(dlist_ty* dlist, void* new_data)
 {
 	dlist_iter_ty new_node = NodeToIter((dlist_node_ty*)malloc(sizeof(dlist_node_ty)));
@@ -152,6 +155,7 @@ dlist_iter_ty DListPushFront(dlist_ty* dlist, void* new_data)
 	return new_node;
 }
 /*----------------------------------------------------------------------------*/
+/* change implementation using remove function*/
 void DListPopFront(dlist_ty* dlist)
 {
 	dlist_iter_ty head = GetHead(dlist);
@@ -188,12 +192,18 @@ size_t DListCount(const dlist_ty* dlist)
 	return counter;
 }
 /*----------------------------------------------------------------------------*/
+/* change implementation using insert function did not pass tests something wrong! */
 dlist_iter_ty DListPushBack(dlist_ty* dlist, void* new_data)
 {
+	/* add assert! */
 	dlist_iter_ty new_node = NodeToIter((dlist_node_ty*)malloc(sizeof(dlist_node_ty)));
-	/*check failed mallocing and return end iter */
 	dlist_iter_ty old_end = DListEndIter(dlist)->prev;
 	dlist_iter_ty tail = DListEndIter(dlist);
+	if(NULL == new_node)
+	{
+		return DListEndIter(dlist);
+	}
+
 	
 	DListIterSetData(new_node, new_data);
 	IterSetPrev(tail, new_node);
@@ -204,6 +214,7 @@ dlist_iter_ty DListPushBack(dlist_ty* dlist, void* new_data)
 	return new_node;	
 }
 /*----------------------------------------------------------------------------*/
+/* change implementation using remove function*/
 void DListPopBack(dlist_ty* dlist)
 {
 	dlist_iter_ty tail = DListEndIter(dlist);
@@ -251,17 +262,17 @@ int DListIterIsEqual(const dlist_iter_ty iter1, const dlist_iter_ty iter2)
 dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to, 
 						 is_match_func_ty is_match, void* param)
 {
-	const dlist_iter_ty range_iter = from; 
+	dlist_iter_ty range_iter = (dlist_iter_ty)from; 
 	
 	assert(NULL != is_match);
 
 	/* while range_iter is still in the range, and haven't found a matching yet
 	   continue traversing on the list and make rang_iter to point on next node
 	   in the list */
-	while ((FALSE == SListIterIsEqual(range_iter, to)) && 
-	      (FALSE == is_match(SListIterGetData(range_iter), param)))
+	while ((FALSE == DListIterIsEqual(range_iter, to)) && 
+	      (FALSE == is_match(DListIterGetData(range_iter), param)))
 	{
-		range_iter = SListIterNext(from);
+		range_iter = DListIterNext(from);
 	}
 	return range_iter;
 }
@@ -269,7 +280,47 @@ dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to,
 int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
                    dlist_ty* dest, is_match_func_ty is_match, void* param)
 {
+	dlist_iter_ty range_iter = (dlist_iter_ty)from; 
+	dlist_iter_ty push_back_ret_val = NULL;
 	
+	assert(NULL != is_match);
 
+	while ((FALSE == DListIterIsEqual(range_iter, to)))
+	{
+		if(TRUE == is_match(DListIterGetData(range_iter), param))
+		{
+			push_back_ret_val = DListPushBack(dest, DListIterGetData(range_iter));
+			if(NULL == push_back_ret_val)
+			{
+				return FAIL;
+			}
+		}
+		range_iter = DListIterNext(range_iter);
+	
+	}
+	return SUCCESS;
 }
+/*----------------------------------------------------------------------------*/
+void DListSplice(dlist_iter_ty from, dlist_iter_ty to, dlist_iter_ty where)
+{
+	dlist_iter_ty from_prev = NULL;
+	dlist_iter_ty where_prev = NULL;
+	dlist_iter_ty to_prev = NULL;
+	
+	assert(NULL != from && NULL != to && NULL != where);
+	
+	from_prev = DListIterPrev(from);
+	where_prev = DListIterPrev(where);
+	to_prev = DListIterPrev(to);
+	
+	IterSetNext(from_prev, to);
+	IterSetPrev(to, from_prev);
+	IterSetNext(where_prev, from);
+	IterSetPrev(from, where_prev);
+	IterSetNext(to_prev, where);
+	IterSetPrev(where, to_prev);
+}
+
+
+
 
