@@ -1,67 +1,122 @@
+/*--------------------------------------------------------------------------
+submitter : Rozaline Kozly
+reviewer : steve
+version : 1
+date : 6 Jan 2026
+----------------------------------------------------------------------------*/
+#include <stdlib.h> /* malloc, free */
+#include <assert.h> /* assert */
+
 #include "sorted_list.h"
-#include "priority_queue.h"
+#include "pqueue.h"
 
-
-typedef struct priority_queue
+struct pq
 {
-	sorted_list_ty* lst;
-	
-} priority_queue_ty;
+    sorted_list_ty* lst;
+};
 
-static int IsMatchTaskId(void* task_data, void* uid_param);
-
-
-priority_queue_ty* PriorityQueueCreate(priority_queue_cmp_func_ty cmp, void* param)
+pq_ty* PQCreate(pq_cmp_ty cmp, void* param)
 {
-	/* 1: create queue and validate null */
-	/* 2: create sorted list with cmp func and param */
-	/* 3: return q */
+    pq_ty* q = (pq_ty*)malloc(sizeof(pq_ty));
+    if (NULL == q)
+    {
+        return NULL;
+    }
+
+    /* We use the Sorted List to handle the heavy lifting of ordering */
+    q->lst = SortedListCreate(cmp, param);
+    if (NULL == q->lst)
+    {
+        free(q);
+        return NULL;
+    }
+
+    return q;
 }
 
-void PriorityQueueDestroy(priority_queue_ty* q)
+void PQDestroy(pq_ty* q)
 {
-	/* 1: if queue is null return */
-	/* 2: destroy sorted list */
-	/* 3: free queue */
+    if (NULL == q)
+    {
+        return;
+    }
+
+    SortedListDestroy(q->lst);
+    free(q);
+    q = NULL;
 }
 
-size_t PriorityQueueCount(const priority_queue_ty* q)
+size_t PQCount(const pq_ty* q)
 {
-	/* 1: return sorted list count */
+    assert(NULL != q);
+    return SortedListCount(q->lst);
 }
 
-int PriorityQueueIsEmpty(const priority_queue_ty* q)
+bool_ty PQIsEmpty(const pq_ty* q)
 {
-	/* 1: return sorted list is empty */
+    assert(NULL != q);
+    return (bool_ty)SortedListIsEmpty(q->lst);
 }
 
-int PriorityQueueEnqueue(priority_queue_ty* q, task_ty* tsk)
+status_ty PQEnqueue(pq_ty* q, void* data)
 {
-	/* 1: call to sorted list insert on (q->lst, tsk) */
-	/* 2: return !! on returned value*/
+    sorted_list_iter_ty iter;
+    assert(NULL != q);
+
+    iter = SortedListInsert(q->lst, data);
+
+    /* If SortedListInsert returns EndIter, it means allocation failed */
+    if (SortedListIterIsEqual(iter, SortedListEndIter(q->lst)))
+    {
+        return FAIL;
+    }
+
+    return SUCCESS;
 }
 
-task_ty* PriorityQueueDequeue(priority_queue_ty* q)
+void* PQDequeue(pq_ty* q)
 {
-	/* 1: call to sorted list remove on sorted list head */
+    void* data = NULL;
+    assert(NULL != q);
+    assert(!PQIsEmpty(q));
+
+    /* Data is at the beginning because the list is sorted */
+    data = SortedListIterGetData(SortedListBeginIter(q->lst));
+    SortedListRemove(SortedListBeginIter(q->lst));
+
+    return data;
 }
 
-task_ty* PriorityQueueRemove(priority_queue_ty* q, uid_ty id)
+void* PQPeek(const pq_ty* q)
 {
-	/* 1: call to sorted list findif on id and is match */
-	/* 2: call to sorted list remove on returned value */
+    assert(NULL != q);
+    assert(!PQIsEmpty(q));
+
+    return SortedListIterGetData(SortedListBeginIter(q->lst));
 }
 
-task_ty* PriorityQueuePeek(const priority_queue_ty* q)
+void* PQRemove(pq_ty* q, pq_is_match_ty is_match, void* param)
 {
-	/* 1: return sorted list head */
-}
+    sorted_list_iter_ty found_iter;
+    void* data = NULL;
 
-static int IsMatchTaskId(void* task_data, void* uid_param)
-{
-	task_ty* tsk = (task_ty*)task_data;
-	uid_ty* id = (uid_ty*)uid_param;
-	
-	return TaskGetUid(tsk) == *id;
-}
+    assert(NULL != q);
+    assert(NULL != is_match);
 
+    /* Search the sorted list for the specific element */
+    found_iter = SortedListFindIf(SortedListBeginIter(q->lst), 
+                                  SortedListEndIter(q->lst), 
+                                  is_match, 
+                                  param);
+
+    /* If we didn't find it, return NULL */
+    if (SortedListIterIsEqual(found_iter, SortedListEndIter(q->lst)))
+    {
+        return NULL;
+    }
+
+    data = SortedListIterGetData(found_iter);
+    SortedListRemove(found_iter);
+
+    return data;
+}
