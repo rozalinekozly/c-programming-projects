@@ -1,245 +1,184 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
 reviewer : oshrat
-worksheet : (ds - dlist)
 version : 1
 date : 23 Dec 2025
-stage :  writing code
 ----------------------------------------------------------------------------*/
-#include <stdio.h>				         /* printf(), NULL */
-#include <stdlib.h> 				     /* malloc(), free(), rand() */
-#include <assert.h>				         /* assert() */
-/* to randomify data */
-#include <math.h>					     /* pow()   */
+#include <stdio.h>      /* printf(), NULL */
+#include <stdlib.h>     /* malloc(), free(), rand() */
+#include <assert.h>     /* assert() */
+#include <math.h>       /* pow() */
 
 #include "dlist.h" 
 
-#define TRUE   						      1
-#define FALSE  						      0
-/*magic numbers */
-/* data's array size */
-#define DATA_ARR_SIZE					  10
-/* to make the values readable used for modulu */
-#define MAX_VAL							100
+#define TRUE 1
+#define FALSE 0
+#define MAX_VAL 100
+
 /*------------------- macros for printing test results -----------------------*/
-#define TEST(msg) printf("[TEST] %s\n", msg)
-#define PASS(msg) printf("[PASS] %s\n", msg)
-#define FAIL(msg) printf("[FAIL] %s\n", msg)
+#define TEST(msg) printf("\n[TEST] %s\n", msg)
+#define PASS(msg) printf("  [PASS] %s\n", msg)
+#define FAIL(msg) printf("  [FAIL] %s\n", msg)
+
 /*--------------------testing functions----------------------------------------*/
 static void TestCreateDestroy();
-static void TestPushPopFront();
-static void TestPushPopBack();
-static void TestInsertBeforeRemove();
-/*static void TestFind();*/
+static void TestPushPop();
+static void TestInsertRemove();
+static void TestFind();
 static void TestSplice();
 
 /*-----------------aux functions for dealing with list------------------------*/
-static void PushArrFront(int* arr, size_t arr_size, dlist_ty* list);
-static void PrintDlist(dlist_ty* list);
-static void GenereateData(int* arr, size_t arr_size);
+static int MatchInt(const void *data, void *param);
+/*static void PrintDlist(dlist_ty* list);*/
+
 /*-------------------- implementations ----------------------------------------*/
 int main() 
 {
-	TestCreateDestroy();
-	TestPushPopFront();
-	TestPushPopBack();
-	TestInsertBeforeRemove();
-	/*TestFind();*/
-	TestSplice();
+    TestCreateDestroy();
+    TestPushPop();
+    TestInsertRemove();
+    TestFind();
+    TestSplice();
+    
+    printf("\n--- All tests finished ---\n");
     return 0;
 }
+
 /*----------------------------------tests------------------------------------*/
+
 static void TestCreateDestroy()
 {
-	dlist_ty* list = DListCreate();
-	
-	TEST("create & destroy");
-	if(NULL == list)
-	{
-		FAIL("create failed and created a NULL");
-		return;
-	}
-	PASS("create successed in creating a dlist");
-	DListDestroy(list);
-	PASS("destroy successed in destroying a dlist");
+    dlist_ty* list = DListCreate();
+    TEST("DListCreate & DListDestroy");
+    
+    if(NULL != list && DListIsEmpty(list))
+    {
+        PASS("List created and is empty");
+    }
+    else
+    {
+        FAIL("Create failed or list not empty");
+    }
+    DListDestroy(list);
 }
 
-static void TestPushPopFront()
+static void TestPushPop()
 {
-		dlist_ty* list = DListCreate();
-		int a = 1;
-		int b = 2;
-		int c = 3;
-		
-		TEST("push & pop front");
-		printf("expected 3-2-1\n");	
-		DListPushFront(list, &a);
-		DListPushFront(list, &b);
-		DListPushFront(list, &c);
-		PrintDlist(list);
-		
-		printf("popping front\n");	
-		DListPopFront(list);
-		PrintDlist(list);
-		DListPopFront(list);
-		PrintDlist(list);
-		DListPopFront(list);
-		PrintDlist(list);
+    dlist_ty* list = DListCreate();
+    int a = 10, b = 20, c = 30;
+    
+    TEST("Push/Pop Front & Back");
+    
+    DListPushFront(list, &a); /* [10] */
+    DListPushBack(list, &b);  /* [10, 20] */
+    DListPushFront(list, &c); /* [30, 10, 20] */
+    
+    if(DListCount(list) == 3) PASS("Count is 3 after pushes");
+    else FAIL("Count is incorrect after pushes");
 
-		DListDestroy(list);
+    if(*(int*)DListIterGetData(DListBeginIter(list)) == 30) PASS("Front is 30");
+    
+    DListPopFront(list); /* [10, 20] */
+    DListPopBack(list);  /* [10] */
+    
+    if(DListCount(list) == 1 && *(int*)DListIterGetData(DListBeginIter(list)) == 10)
+    {
+        PASS("Pop successful, remaining element is 10");
+    }
+    
+    DListDestroy(list);
 }
-static void TestPushPopBack()
-{
-		dlist_ty* list = DListCreate();
-		int a = 1;
-		int b = 2;
-		int c = 3;
-		
-		TEST("push & pop back");
-		printf("expected 1-2-3\n");	
-		DListPushBack(list, &a);
-		DListPushBack(list, &b);
-		DListPushBack(list, &c);
-		PrintDlist(list);
-		
-		printf("popping back\n");	
-		DListPopBack(list);
-		PrintDlist(list);
-		DListPopBack(list);
-		PrintDlist(list);
-		DListPopBack(list);
-		PrintDlist(list);
 
-		DListDestroy(list);
+static void TestInsertRemove()
+{
+    dlist_ty* list = DListCreate();
+    int data[] = {1, 2, 3};
+    dlist_iter_ty iter;
+    
+    TEST("InsertBefore & Remove");
+    
+    iter = DListBeginIter(list);
+    iter = DListInsertBefore(list, iter, &data[0]); /* [1] */
+    iter = DListInsertBefore(list, iter, &data[1]); /* [2, 1] */
+    
+    if(*(int*)DListIterGetData(DListBeginIter(list)) == 2) PASS("InsertBefore worked");
+
+    DListRemove(DListBeginIter(list)); /* Removes 2, leaves [1] */
+    
+    if(DListCount(list) == 1) PASS("Remove worked");
+
+    DListDestroy(list);    
 }
-static void TestInsertBeforeRemove()
-{
-/* make it better! */
-	dlist_ty* list = DListCreate();
-	dlist_iter_ty rmv;
-	int a = 1;
-	int b = 2;
-	int c = 3;
-	int d = 4;
-	
-	
-	DListPushBack(list, &a);
-	DListPushBack(list, &b);
-	DListPushBack(list, &c);
-	DListPushBack(list, &d);
-	
-	PrintDlist(list);
-	rmv = DListIterNext(DListIterNext(DListBeginIter(list)));
-	DListRemove(rmv);
-	PrintDlist(list);
 
-	DListDestroy(list);	
+static void TestFind()
+{
+    dlist_ty* list = DListCreate();
+    int a = 1, b = 2, c = 3;
+    dlist_iter_ty found;
+    
+    TEST("DListFind");
+    DListPushBack(list, &a);
+    DListPushBack(list, &b);
+    DListPushBack(list, &c);
+    
+    found = DListFind(DListBeginIter(list), DListEndIter(list), MatchInt, &b);
+    
+    if(!DListIterIsEqual(found, DListEndIter(list)) && *(int*)DListIterGetData(found) == 2)
+    {
+        PASS("Found element 2");
+    }
+    else
+    {
+        FAIL("Could not find element 2");
+    }
+    
+    DListDestroy(list);
 }
 
 static void TestSplice()
 {
-	dlist_ty* list1 = DListCreate();
-	dlist_ty* list2 = DListCreate();
-	dlist_iter_ty from = NULL;
-	dlist_iter_ty to = NULL;
-	dlist_iter_ty where = NULL;
-	int a = 1;
-	int b = 2;
-	int c = 3;
-	int d = 4;
-	
-	int e = 10;
-	int f = 20;
-	int g = 30;
-	int h = 40;
-	
-	TEST("splice");
-	/* create a multi push function aux that it takes an array and pushes all it's elements */
-	DListPushFront(list1, &a);
-	DListPushFront(list1, &b);
-	DListPushFront(list1, &c);
-	DListPushFront(list1, &d);
-	
-	DListPushFront(list2, &e);
-	DListPushFront(list2, &f);
-	DListPushFront(list2, &g);
-	DListPushFront(list2, &h);
-	
-	printf("list1:");
-	PrintDlist(list1);
-	
-	printf("list2:");
-	PrintDlist(list2);
-	
-	from = DListBeginIter(list1);
-	to = DListIterNext(DListIterNext(from));
-	
-	where = DListIterNext(DListIterNext(DListBeginIter(list2)));
-
-    DListSplice(from, to, where);
+    dlist_ty* l1 = DListCreate();
+    dlist_ty* l2 = DListCreate();
+    int a=1, b=2, c=3, d=4;
     
-    printf("list1:");
-	PrintDlist(list1);
-	
-	printf("list2:");
-	PrintDlist(list2);
-	
-	DListDestroy(list1);
-	DListDestroy(list2);		   
+    TEST("DListSplice");
+    DListPushBack(l1, &a);
+    DListPushBack(l1, &b); /* l1: [1, 2] */
+    DListPushBack(l2, &c);
+    DListPushBack(l2, &d); /* l2: [3, 4] */
+    
+    /* Move [1, 2] from l1 to the middle of l2 */
+    DListSplice(DListBeginIter(l1), DListEndIter(l1), DListIterNext(DListBeginIter(l2)));
+    
+    /* Expected: l1 empty, l2 [3, 1, 2, 4] */
+    if(DListIsEmpty(l1) && DListCount(l2) == 4)
+    {
+        PASS("Splice successful: Nodes moved from l1 to l2");
+    }
+    else
+    {
+        FAIL("Splice failed: Counts are incorrect");
+    }
+    
+    DListDestroy(l1);
+    DListDestroy(l2);           
+}
+
+/*----------------- Helpers ------------------------*/
+
+static int MatchInt(const void *data, void *param)
+{
+    return (*(int*)data == *(int*)param);
 }
 /*
-static void TestFind()
-{
-	int arr[DATA_ARR_SIZE] = {0};
-	dlist_ty* list = DListCreate();
-	
-	GenereateData(arr, DATA_ARR_SIZE);
-	PushArrFront(arr, DATA_ARR_SIZE, list);
-	
-	
-
-
-}
-
-*/
-static void PushArrFront(int* arr, size_t arr_size, dlist_ty* list)
-{
-	size_t i = 0;
-	
-	for(i = 0 ; i < arr_size ; i++)
-	{
-		DListPushFront(list1, &arr[i]);
-	}
-}
-
 static void PrintDlist(dlist_ty* list)
 {
-	/* this function assumes the type is int of the data */
-	/* later change it to struct of person or smth */
-	dlist_iter_ty list_iter = DListBeginIter(list);
-	dlist_iter_ty list_tail = DListEndIter(list);
-	
-	printf("\tDlist: ");
-	while(list_iter != list_tail)
-	{
-		printf(" %d <->", *(int*)DListIterGetData(list_iter));
-		list_iter = DListIterNext(list_iter);
-	}
-	printf("\n");
-}
-
-/* function to generate random data */
-static void GenereateData(int* arr, size_t arr_size)
-{
-	 size_t i = 0;
-     
-    /* intialize data's array */
-    for(i = 0 ; i < arr_size ; ++i)
+    dlist_iter_ty iter = DListBeginIter(list);
+    printf("\tList: ");
+    while(!DListIterIsEqual(iter, DListEndIter(list)))
     {
-    	arr[i] = pow(-1,i)*(rand()%MAX_VAL);
-    
+        printf("%d <-> ", *(int*)DListIterGetData(iter));
+        iter = DListIterNext(iter);
     }
-
-
-
-}
+    printf("NULL\n");
+}*/

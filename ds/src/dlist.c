@@ -1,10 +1,8 @@
 /*--------------------------------------------------------------------------
 submitter : Rozaline Kozly
 reviewer : oshrat
-worksheet : (ds - dlist)
 version : 1
 date : 23 Dec 2025
-stage :  writing code
 ----------------------------------------------------------------------------*/
 #include <assert.h> 		/* assert() */
 #include <stdlib.h> 		/* malloc(), free() */
@@ -16,8 +14,6 @@ stage :  writing code
 #define SUCCESS  0
 #define FAIL 1
 #define UNUSED(x)			        ((void)x)
-#define FREE(x) 					(free(x), x = NULL)
-
 /*----------------------------------------------------------------------------*/
 /* node strucutre */
 struct dlist_node
@@ -36,21 +32,18 @@ struct dlist
 	dlist_node_ty head;
 	dlist_node_ty tail;
 };
-/*----------------------------aux functions ----------------------------------*/
-/*--------------------abstraction layer on iter ------------------------------*/
-/* add that this is a pointer to node not actual node! */
+/*---------------abstraction layer on iter (conversion)------------------------*/
+/* Converts an iterator (public) to a node pointer (private) */
 static dlist_node_ty* IterToNode(const dlist_iter_ty iter)
 {
 	return ((dlist_node_ty*)iter);
 }
+/* Converts a node pointer (private) to an iterator (public) */
 static dlist_iter_ty NodeToIter(const dlist_node_ty* node)
 {
 	return ((dlist_iter_ty)node);
 }
 /*----------------------------aux functions ----------------------------------*/
-/*
-	takes an iterator and sets it's next to be the second passed argument.
-*/
 static void IterSetNext(dlist_iter_ty iter, dlist_iter_ty new_next)
 {
 	IterToNode(iter)->next = IterToNode(new_next);
@@ -59,11 +52,11 @@ static void IterSetPrev(dlist_iter_ty iter, dlist_iter_ty new_prev)
 {
 	IterToNode(iter)->prev = IterToNode(new_prev);
 }
-static dlist_iter_ty GetHead(dlist_ty* list)
+/*static dlist_iter_ty GetHead(dlist_ty* list)
 {
 	return (NodeToIter(&list->head));
-}
-/*----------------------------------------------------------------------------*/
+}*/
+/*-----------------------------implementation---------------------------------*/
 dlist_ty* DListCreate()
 {
 	dlist_ty* list = (dlist_ty*)malloc(sizeof(dlist_ty));
@@ -80,16 +73,11 @@ dlist_ty* DListCreate()
 	list->head.prev = NULL;
 	
 	list->tail.next = NULL;
-	list->head.prev = NULL;
+	list->tail.prev = &(list->head);
 	
 	return list;
 }
 /*----------------------------------------------------------------------------*/
-/*
-	using remove function may cause an overhead, since remove makes sure prev 
-	node points at the new node, wheras in destroy we just free first mode
-	and carry on.
-*/
 void DListDestroy(dlist_ty* list)
 {
 	dlist_node_ty* curr_node = NULL;
@@ -107,6 +95,7 @@ void DListDestroy(dlist_ty* list)
 		curr_node = next_node;
 	}
 	free(list);
+	list = NULL;
 }
 /*----------------------------------------------------------------------------*/
 dlist_iter_ty DListEndIter(const dlist_ty* dlist)
@@ -139,98 +128,16 @@ void* DListIterGetData(const dlist_iter_ty iter)
 	return(IterToNode(iter)->data);
 }
 /*----------------------------------------------------------------------------*/
-/* change implementation using insert function*/
-dlist_iter_ty DListPushFront(dlist_ty* dlist, void* new_data)
-{
-	dlist_iter_ty new_node = NodeToIter((dlist_node_ty*)malloc(sizeof(dlist_node_ty)));
-	dlist_iter_ty old_start = DListBeginIter(dlist);
-	dlist_iter_ty head = GetHead(dlist);
-	
-	DListIterSetData(new_node, new_data);
-	IterSetNext(head, new_node);
-	IterSetPrev(new_node, head);
-	IterSetNext(new_node, old_start);
-	IterSetPrev(old_start, new_node);
-	
-	return new_node;
-}
-/*----------------------------------------------------------------------------*/
-/* change implementation using remove function*/
-void DListPopFront(dlist_ty* dlist)
-{
-	dlist_iter_ty head = GetHead(dlist);
-	dlist_iter_ty node_to_rmv = DListBeginIter(dlist);
-	dlist_iter_ty new_start = DListIterNext(node_to_rmv);
-	
-	IterSetNext(head, new_start);
-	IterSetPrev(new_start, head);
-	
-	free(node_to_rmv);
-}
-/*----------------------------------------------------------------------------*/
-int DListIsEmpty(const dlist_ty* dlist)
-{
-	if(DListBeginIter(dlist) == DListEndIter(dlist))
-	{
-		return TRUE;
-	}
-	return FALSE;
-}
-/*----------------------------------------------------------------------------*/
-/* implement is using foreach() */
-size_t DListCount(const dlist_ty* dlist)
-{
-	dlist_iter_ty list_iter = DListBeginIter(dlist);
-	dlist_iter_ty list_tail = DListEndIter(dlist);
-	size_t counter = 0;
-	
-	while(list_iter != list_tail)
-	{
-		++counter;
-		list_iter = DListIterNext(list_iter);
-	}
-	return counter;
-}
-/*----------------------------------------------------------------------------*/
-/* change implementation using insert function did not pass tests something wrong! */
-dlist_iter_ty DListPushBack(dlist_ty* dlist, void* new_data)
-{
-	/* add assert! */
-	dlist_iter_ty new_node = NodeToIter((dlist_node_ty*)malloc(sizeof(dlist_node_ty)));
-	dlist_iter_ty old_end = DListEndIter(dlist)->prev;
-	dlist_iter_ty tail = DListEndIter(dlist);
-	if(NULL == new_node)
-	{
-		return DListEndIter(dlist);
-	}
-
-	
-	DListIterSetData(new_node, new_data);
-	IterSetPrev(tail, new_node);
-	IterSetNext(new_node, tail);
-	IterSetNext(old_end, new_node);
-	IterSetPrev(new_node, old_end);
-	
-	return new_node;	
-}
-/*----------------------------------------------------------------------------*/
-/* change implementation using remove function*/
-void DListPopBack(dlist_ty* dlist)
-{
-	dlist_iter_ty tail = DListEndIter(dlist);
-	dlist_iter_ty node_to_rmv = DListIterPrev(DListEndIter(dlist));
-	dlist_iter_ty new_end = DListIterPrev(node_to_rmv);
-	
-	IterSetNext(new_end, tail);
-	IterSetPrev(tail, new_end);
-	
-	free(node_to_rmv);
-}
-/*----------------------------------------------------------------------------*/
 dlist_iter_ty DListInsertBefore(dlist_ty* dlist, dlist_iter_ty where, void* new_data)
 {
 	dlist_iter_ty where_old_prev = DListIterPrev(where);
+	
 	dlist_iter_ty new_node = NodeToIter((dlist_node_ty*)malloc(sizeof(dlist_node_ty)));
+	if(NULL == new_data)
+	{
+		return DListEndIter(dlist);
+	}
+	
 	UNUSED(dlist);
 	DListIterSetData(new_node, new_data);
 	IterSetNext(new_node, where);
@@ -254,27 +161,78 @@ dlist_iter_ty DListRemove(dlist_iter_ty iter)
 	return iter_next;
 }
 /*----------------------------------------------------------------------------*/
+dlist_iter_ty DListPushFront(dlist_ty* dlist, void* new_data)
+{
+    /* DListInsertBefore handles the malloc, the linking, AND the NULL check */
+    return DListInsertBefore(dlist, DListBeginIter(dlist), new_data);
+}
+/*----------------------------------------------------------------------------*/
+void DListPopFront(dlist_ty* dlist)
+{
+    /* DListRemove handles the neighbor re-linking and the free() */
+    DListRemove(DListBeginIter(dlist));
+}
+/*----------------------------------------------------------------------------*/
+dlist_iter_ty DListPushBack(dlist_ty* dlist, void* new_data)
+{
+    /* Insert right before the Tail dummy */
+    return DListInsertBefore(dlist, DListEndIter(dlist), new_data);
+}
+/*----------------------------------------------------------------------------*/
+void DListPopBack(dlist_ty* dlist)
+{
+    /* Remove the node immediately preceding the tail */
+    DListRemove(DListIterPrev(DListEndIter(dlist)));
+}
+/*----------------------------------------------------------------------------*/
+int DListIsEmpty(const dlist_ty* dlist)
+{
+	if(DListBeginIter(dlist) == DListEndIter(dlist))
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+/*----------------------------------------------------------------------------*/
 int DListIterIsEqual(const dlist_iter_ty iter1, const dlist_iter_ty iter2)
 {
 	return(IterToNode(iter1) == IterToNode(iter2));
 }
 /*----------------------------------------------------------------------------*/
 dlist_iter_ty DListFind(const dlist_iter_ty from, const dlist_iter_ty to, 
-						 is_match_func_ty is_match, void* param)
+                        is_match_func_ty is_match, void* param)
 {
-	dlist_iter_ty range_iter = (dlist_iter_ty)from; 
-	
-	assert(NULL != is_match);
+    dlist_iter_ty range_iter = from; 
+    assert(NULL != is_match);
 
-	/* while range_iter is still in the range, and haven't found a matching yet
-	   continue traversing on the list and make rang_iter to point on next node
-	   in the list */
-	while ((FALSE == DListIterIsEqual(range_iter, to)) && 
-	      (FALSE == is_match(DListIterGetData(range_iter), param)))
-	{
-		range_iter = DListIterNext(from);
-	}
-	return range_iter;
+    while ((FALSE == DListIterIsEqual(range_iter, to)) && 
+           (FALSE == is_match(DListIterGetData(range_iter), param)))
+    {
+        range_iter = DListIterNext(range_iter); 
+    }
+    return range_iter;
+}
+/*----------------------------------------------------------------------------*/
+int DListForEach(dlist_iter_ty from, const dlist_iter_ty to,action_func_ty action,
+ 				 void* param)
+{
+    int status = 0;
+    dlist_iter_ty range_iter = from;
+
+    /* Per description: undefined behavior if action is NULL */
+    assert(NULL != action);
+
+    /* Iterate from 'from' up to, but not including, 'to' */
+    while (!DListIterIsEqual(range_iter, to) && (0 == status))
+    {
+        /* Perform action and update status */
+        status = action(DListIterGetData(range_iter), param);
+        
+        /* Move to the next node */
+        range_iter = DListIterNext(range_iter);
+    }
+
+    return status;
 }
 /*----------------------------------------------------------------------------*/
 int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to, 
@@ -299,6 +257,29 @@ int DListMultiFind(const dlist_iter_ty from, const dlist_iter_ty to,
 	
 	}
 	return SUCCESS;
+}
+/*----------------------------------------------------------------------------*/
+static int CountHelper(void* data, void* param)
+{
+    /* We don't need the data, just the counter */
+    UNUSED(data); 
+    
+    /* Cast the void* back to a size_t pointer and increment what it points to */
+    *(size_t*)param += 1;
+    
+    return 0; /* Always return 0 so ForEach continues to the next node */
+}
+/*----------------------------------------------------------------------------*/
+size_t DListCount(const dlist_ty* dlist)
+{
+    size_t count = 0;
+    dlist_iter_ty from = DListBeginIter(dlist);
+    dlist_iter_ty to = DListEndIter(dlist);
+
+    /* ForEach will call CountHelper for every node in the range */
+    DListForEach(from, to, CountHelper, &count);
+
+    return count;
 }
 /*----------------------------------------------------------------------------*/
 void DListSplice(dlist_iter_ty from, dlist_iter_ty to, dlist_iter_ty where)
