@@ -98,24 +98,24 @@ void* PQPeek(const pq_ty* q)
 /*----------------------------------------------------------------------------*/
 void* PQRemove(pq_ty* q, pq_is_match_ty is_match, void* param)
 {
-    sorted_list_iter_ty found_iter = {0};
+    sorted_list_iter_ty iter_to_rmv = {0};
     void* data = NULL;
 
     assert(NULL != q);
     assert(NULL != is_match);
 
     /* Search the sorted list for the specific element */
-    found_iter = SortedListFindIf(SortedListBeginIter(q->lst), 
+    iter_to_rmv = SortedListFindIf(SortedListBeginIter(q->lst), 
                                   SortedListEndIter(q->lst), is_match, param);
 
     /* If we didn't find it, return NULL */
-    if (SortedListIterIsEqual(found_iter, SortedListEndIter(q->lst)))
+    if (SortedListIterIsEqual(iter_to_rmv, SortedListEndIter(q->lst)))
     {
         return NULL;
     }
 
-    data = SortedListIterGetData(found_iter);
-    SortedListRemove(found_iter);
+    data = SortedListIterGetData(iter_to_rmv);
+    SortedListRemove(iter_to_rmv);
 
     return data;
 }
