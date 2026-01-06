@@ -49,17 +49,35 @@ void TestPQBasic(void)
     PQEnqueue(pq, &t2);
     PQEnqueue(pq, &t3);
 
-    if (PQCount(pq) == 3) printf("  [PASS] Count is 3\n");
+    if (PQCount(pq) == 3) 
+    {
+    	printf("  [PASS] Count is 3\n");
+    }
     
     /* Peek should show the highest priority (t2) */
-    if (((task_ty*)PQPeek(pq))->id == 102) printf("  [PASS] Peeked highest priority task (102)\n");
+    if (((task_ty*)PQPeek(pq))->id == 102)
+    {
+    	printf("  [PASS] Peeked highest priority task (102)\n");
+    } 
 
     /* Dequeue should return them in order: 102, 103, 101 */
-    if (((task_ty*)PQDequeue(pq))->id == 102) printf("  [PASS] Dequeued 102\n");
-    if (((task_ty*)PQDequeue(pq))->id == 103) printf("  [PASS] Dequeued 103\n");
-    if (((task_ty*)PQDequeue(pq))->id == 101) printf("  [PASS] Dequeued 101\n");
+    if (((task_ty*)PQDequeue(pq))->id == 102) 
+    {
+    	printf("  [PASS] Dequeued 102\n");
+    }
+    if (((task_ty*)PQDequeue(pq))->id == 103)
+    {
+    	printf("  [PASS] Dequeued 103\n");
+    } 
+    if (((task_ty*)PQDequeue(pq))->id == 101)
+    {
+    	printf("  [PASS] Dequeued 101\n");
+    }
 
-    if (PQIsEmpty(pq)) printf("  [PASS] Queue is now empty\n");
+    if (PQIsEmpty(pq))
+    {
+    	printf("  [PASS] Queue is now empty\n");
+    } 
 
     PQDestroy(pq);
 }
@@ -86,11 +104,20 @@ void TestPQRemove(void)
         printf("  [PASS] Successfully removed task 20 from the middle\n");
     }
     
-    if (PQCount(pq) == 2) printf("  [PASS] Count is now 2\n");
+    if (PQCount(pq) == 2) 
+    {
+    	printf("  [PASS] Count is now 2\n");
+    }
 
     /* Verify order is still preserved for remaining */
-    if (((task_ty*)PQDequeue(pq))->id == 10) printf("  [PASS] Next out is 10\n");
-    if (((task_ty*)PQDequeue(pq))->id == 30) printf("  [PASS] Last out is 30\n");
+    if (((task_ty*)PQDequeue(pq))->id == 10) 
+    {
+    	printf("  [PASS] Next out is 10\n");
+    }
+    if (((task_ty*)PQDequeue(pq))->id == 30) 
+    {
+    	printf("  [PASS] Last out is 30\n");
+    }
 
     PQDestroy(pq);
 }
