@@ -16,11 +16,7 @@ BIN_DIR = bin
 VLG = valgrind --leak-check=yes --track-origins=yes
 
 # Modules list
-<<<<<<< HEAD
-MODULES = bit_array buffer slist slist_ex dlist stack uid vector queue sorted_list pqueue
-=======
 MODULES = bit_array buffer slist slist_ex dlist stack uid vector queue sorted_list pqueue task
->>>>>>> TASK
 
 # Targets
 .PHONY: all debug release clean test_all
@@ -57,13 +53,10 @@ $(BIN_DIR)/sorted_list_release: $(OBJ_DIR)/dlist.o
 $(BIN_DIR)/pqueue_debug: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
 $(BIN_DIR)/pqueue_release: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
 
-<<<<<<< HEAD
-=======
 # task depends on uid
 $(BIN_DIR)/task_debug: $(OBJ_DIR)/uid.o
 $(BIN_DIR)/task_release: $(OBJ_DIR)/uid.o
 
->>>>>>> TASK
 # --- Linker Rules ---
 
 # Generic rule to build a debug executable
@@ -95,7 +88,5 @@ rel_%: $(BIN_DIR)/%_release
 vlg_%: $(BIN_DIR)/%_debug
 	$(VLG) ./$<
 
-	
 clean:
 	rm -rf bin
-	
