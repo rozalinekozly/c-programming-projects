@@ -39,7 +39,7 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_
 	assert(NULL != cl);
 	
 	curr_time = time(NULL);
-	if(-1 == curr_time)
+	if((time_t)-1 == curr_time)
 	{
 		return NULL;
 	}
