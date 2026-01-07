@@ -10,7 +10,7 @@ date : 6 Jan 2026
 
 #include "uid.h"
 #include "task.h"
-
+/*-----------------------------------------------------------------------------*/
 struct task
 {
     /*unique identifier*/
@@ -29,8 +29,9 @@ struct task
     time_t time_to_run;
 };
 
-
-task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_param, unsigned int interval)
+/*-----------------------------------------------------------------------------*/
+task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void*
+		    cl_param, unsigned int interval)
 {
 	task_ty* new_tsk = {0};
 	time_t curr_time = 0;
@@ -64,22 +65,22 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_
 	new_tsk->interval = interval;
 	new_tsk->time_to_run = curr_time + (time_t)interval;
 	
-	return new_tsk;
+	return (new_tsk);
 }
-
+/*-----------------------------------------------------------------------------*/
 op_status_ty TaskExecute(task_ty* tsk)
 {
 	assert(NULL != tsk);
 	
 	return(tsk->op(tsk->op_param));
 }
-
+/*-----------------------------------------------------------------------------*/
 void TaskUpdateTimeToRun(task_ty* tsk)
 {
     assert(NULL != tsk);
     tsk->time_to_run += (time_t)tsk->interval;
 }
-
+/*-----------------------------------------------------------------------------*/
 void TaskDestroy(task_ty* tsk)
 {
 	if(NULL == tsk)
@@ -90,7 +91,7 @@ void TaskDestroy(task_ty* tsk)
 	free(tsk);
 	tsk = NULL;
 }
-
+/*-----------------------------------------------------------------------------*/
 uid_ty TaskGetUID(const task_ty* tsk)
 {
 	assert(NULL != tsk);
