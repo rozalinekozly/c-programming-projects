@@ -74,13 +74,6 @@ op_status_ty TaskExecute(task_ty* tsk)
 	return(tsk->op(tsk->op_param));
 }
 
-void TaskClean(task_ty* tsk)
-{
-	assert(NULL != tsk);
-	
-	tsk->cl(tsk->cl_param);
-}
-
 void TaskUpdateTimeToRun(task_ty* tsk)
 {
     assert(NULL != tsk);
@@ -93,7 +86,7 @@ void TaskDestroy(task_ty* tsk)
 	{
 		return;
 	}
-	TaskClean(tsk);
+	tsk->cl(tsk->cl_param);
 	free(tsk);
 	tsk = NULL;
 }
