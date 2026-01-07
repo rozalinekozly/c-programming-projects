@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer : ??
+reviewer : Itay
 version : 1
 date : 6 Jan 2026
 ------------------------------------------------------------------------------*/
@@ -13,19 +13,12 @@ date : 6 Jan 2026
 /*-----------------------------------------------------------------------------*/
 struct task
 {
-    /*unique identifier*/
     uid_ty uid;
-    /*function to execute*/
     task_op_ty op;
-    /*passed parameters to function*/
     void* op_param;
-    /*cleanup function in case the perameters were dynamically malloced*/
     task_cleanup_ty cl;
-    /*parameters for cleanup function*/
     void* cl_param;
-    /*repeate function each interval time starting from now*/
     unsigned int interval;
-    /*key to decide priority */
     time_t time_to_run;
 };
 
