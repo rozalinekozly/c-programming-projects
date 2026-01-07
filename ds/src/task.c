@@ -36,7 +36,7 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_
 	assert(NULL != op);
 	assert(NULL != cl);
 	
-	new_tsk = (task_ty*)malloc(sizeof(task_ty));
+	new_tsk = (task_ty*)malloc(sizeof(task_ty)*sizeof(char));
 	if(NULL == new_tsk)
 	{
 		return NULL;
