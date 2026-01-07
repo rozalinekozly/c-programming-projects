@@ -33,8 +33,16 @@ struct task
 task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_param, unsigned int interval)
 {
 	task_ty* new_tsk = {0};
+	time_t curr_time = 0;
+	
 	assert(NULL != op);
 	assert(NULL != cl);
+	
+	curr_time = time(NULL);
+	if(-1 == curr_time)
+	{
+		return NULL;
+	}
 	
 	new_tsk = (task_ty*)malloc(sizeof(task_ty)*sizeof(char));
 	if(NULL == new_tsk)
@@ -54,7 +62,7 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void* cl_
 	new_tsk->cl = cl;
 	new_tsk->cl_param = cl_param;
 	new_tsk->interval = interval;
-	new_tsk->time_to_run = time(NULL) + (time_t)interval;
+	new_tsk->time_to_run = curr_time + (time_t)interval;
 	
 	return new_tsk;
 }
