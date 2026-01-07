@@ -7,19 +7,13 @@ stage : writing code
 ----------------------------------------------------------------------------*/
 #include <time.h>       /* time, difftime */
 #include <unistd.h>     /* getpid         */
-#include <sys/types.h>  /* size_t, pid_t  */
-#include <sys/socket.h> /* Required for networking types */
 #include <netinet/in.h> /* sockaddr_in    */
 #include <arpa/inet.h>  /* inet_ntoa      */
 #include <ifaddrs.h>    /* getifaddrs     */
 #include <string.h>     /* strcpy, strcmp */
-#include <net/if.h>     /* IFF_LOOPBACK   */
+#include <linux/if.h>     /* IFF_LOOPBACK   */
 
 #include "uid.h"        /* API            */
-
-#ifndef IFF_LOOPBACK
-#define IFF_LOOPBACK 0x8
-#endif
 /*---------------------------------------------------------------------------*/
 const uid_ty invalid_uid_g = {0};
 static size_t uid_counter = 0;
@@ -65,6 +59,7 @@ uid_ty UidCreate(void)
     uid_ty new_uid = {0};
 
     new_uid.counter = ++uid_counter;
+    /*check if failed */
     new_uid.time = time(NULL);
     
     if (new_uid.time == (time_t)-1)
