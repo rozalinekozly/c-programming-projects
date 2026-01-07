@@ -16,7 +16,7 @@ BIN_DIR = bin
 VLG = valgrind --leak-check=yes --track-origins=yes
 
 # Modules list
-MODULES = bit_array buffer slist slist_ex dlist stack uid vector queue sorted_list
+MODULES = bit_array buffer slist slist_ex dlist stack uid vector queue sorted_list pqueue task
 
 # Targets
 .PHONY: all debug release clean test_all
@@ -48,6 +48,14 @@ $(BIN_DIR)/queue_release: $(OBJ_DIR)/slist.o
 # sorted_list depends on dlist
 $(BIN_DIR)/sorted_list_debug: $(OBJ_DIR)/dlist.o
 $(BIN_DIR)/sorted_list_release: $(OBJ_DIR)/dlist.o
+
+# pqueue depends on sorted_list AND dlist
+$(BIN_DIR)/pqueue_debug: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
+$(BIN_DIR)/pqueue_release: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
+
+# task depends on uid
+$(BIN_DIR)/task_debug: $(OBJ_DIR)/uid.o
+$(BIN_DIR)/task_release: $(OBJ_DIR)/uid.o
 
 # --- Linker Rules ---
 
@@ -83,3 +91,4 @@ vlg_%: $(BIN_DIR)/%_debug
 	
 clean:
 	rm -rf bin
+	
