@@ -74,7 +74,7 @@ size_t PQCount(const pq_ty* q);
 * 		"q" is NULL
 * 	O(1)
 ******************************************************************************/
-bool_ty PQIsEmpty(const pq_ty* q);
+pq_bool_ty PQIsEmpty(const pq_ty* q);
 
 /****************************************************************************** 
 * 	Description:
@@ -85,7 +85,7 @@ bool_ty PQIsEmpty(const pq_ty* q);
 * 		"q" is NULL
 *   O(n)
 ******************************************************************************/
-status_ty PQEnqueue(pq_ty* q, void* data);
+pq_status_ty PQEnqueue(pq_ty* q, void* data);
 
 /****************************************************************************** 
 *   Description:
