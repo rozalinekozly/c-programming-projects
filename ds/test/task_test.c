@@ -13,7 +13,7 @@ date : 6 Jan 2026
 
 /* --- Helper Functions --- */
 
-op_status_ty ToggleTask(void *param)
+task_op_status_ty ToggleTask(void *param)
 {
     int *counter = (int *)param;
     printf("  [Execute] Task counter: %d\n", *counter);
@@ -21,9 +21,9 @@ op_status_ty ToggleTask(void *param)
     if (*counter > 0)
     {
         --(*counter);
-        return REPEAT;
+        return TSK_REPEAT;
     }
-    return NOT_REPEAT;
+    return TSK_NOT_REPEAT;
 }
 
 void MyCleanup(void *param)
@@ -42,7 +42,7 @@ void TestTaskTimingAndMatch(void);
 
 int main(void)
 {
-    printf("--- Starting Task Unit Tests (C89) ---\n");
+    printf("--- Starting Task Unit Tests ---\n");
 
     TestTaskLifeCycle();
     TestTaskTimingAndMatch();
@@ -59,7 +59,7 @@ void TestTaskLifeCycle(void)
     int cleanup_data = 0;
     unsigned int interval = 2;
     task_ty *task = NULL;
-    op_status_ty status;
+    task_op_status_ty status;
     
     printf("\nTesting Life Cycle (Create, Execute, Destroy):\n");
 
@@ -69,7 +69,7 @@ void TestTaskLifeCycle(void)
     printf("  TaskCreate: SUCCESS\n");
 
     status = TaskExecute(task);
-    if (REPEAT == status)
+    if (TSK_REPEAT == status)
     {
         printf("  TaskExecute (1st run): SUCCESS (Returned REPEAT)\n");
     }
@@ -114,7 +114,7 @@ void TestTaskTimingAndMatch(void)
     }
 
     /* 3. Match Check */
-    if (TRUE == TaskIsMatch(tsk1, tsk1) && FALSE == TaskIsMatch(tsk1, tsk2))
+    if (TSK_TRUE == TaskIsMatch(tsk1, tsk1) && TSK_FALSE == TaskIsMatch(tsk1, tsk2))
     {
         printf("  TaskIsMatch: SUCCESS\n");
     }

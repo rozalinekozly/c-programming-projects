@@ -18,7 +18,7 @@ typedef enum task_bool
 } task_bool_ty;
 
 typedef struct task task_ty;
-typedef op_status_ty (*task_op_ty) (void* param);
+typedef task_op_status_ty (*task_op_ty) (void* param);
 typedef void (*task_cleanup_ty) (void* param);
 
 /******************************************************************************
@@ -63,7 +63,7 @@ uid_ty TaskGetUID(const task_ty *tsk);
 * 		tsk is NULL
 *   O(1)
 ******************************************************************************/
-op_status_ty TaskExecute(task_ty* tsk);
+task_op_status_ty TaskExecute(task_ty* tsk);
 
 /******************************************************************************
 *	Description:
@@ -92,6 +92,6 @@ void TaskUpdateTimeToRun(task_ty* tsk);
 *   Undefined behavior:
 *       tsk1 or tsk2 are NULL 
 ******************************************************************************/
-bool_ty TaskIsMatch(const task_ty* tsk1, const task_ty* tsk2);
+task_bool_ty TaskIsMatch(const task_ty* tsk1, const task_ty* tsk2);
 
 #endif /* __ILRD_TASK_H_ */
