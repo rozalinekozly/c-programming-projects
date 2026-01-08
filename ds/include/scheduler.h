@@ -9,29 +9,29 @@ typedef struct scheduler scheduler_ty;
 
 typedef enum sch_run_status
 {
-    SUCCESS = 0;
-    FAIL = 1;
-    STOP = 2;
+    SCH_SUCCESS = 0,
+    SCH_FAIL = 1,
+    SCH_STOP = 2
 } sch_run_status_ty;
 
 typedef enum sch_op_status
 {
-    REPEAT = 0,
-    NOT_REPEAT = 1
+    SCH_REPEAT = 0,
+	SCH_NOT_REPEAT = 1
 } sch_op_status_ty;
 
 /******************************************************************************
 *	Description :
 *		Performs task operation
 *	Return Value:
-* 		REPEAT = 0 (task will repeat in the next interval)
-*       NOT_REPEAT = 1 (task will be removed and cleaned)
+* 		SCH_REPEAT = 0 (task will repeat in the next interval)
+*       SCH_NOT_REPEAT = 1 (task will be removed and cleaned)
 ******************************************************************************/
 typedef sch_op_status_ty (*scheduler_op_ty)(void* param);
 
 /******************************************************************************
 *	Description:
-*		Performs task cleanup if operation return value is NOT_REPEAT
+*		Performs task cleanup if operation return value is SCH_NOT_REPEAT
 ******************************************************************************/
 typedef void (*scheduler_cleanup_ty)(void* param);
 
@@ -67,7 +67,7 @@ void SchedulerDestroy(scheduler_ty* sch);
 * 		clean_func is NULL
 *   O(1)
 ******************************************************************************/
-uid_ty SchedulerAddTask( scheduler_ty* sch, unsigned int interval
+uid_ty SchedulerAddTask( scheduler_ty* sch, unsigned int interval,
                          scheduler_op_ty op_func, void* op_param,
                          scheduler_cleanup_ty clean_func, void* clean_param );
 
@@ -92,15 +92,15 @@ int SchedulerRemoveTask(scheduler_ty* sch, uid_ty task_id);
 * 		sch is NULL
 *   O(n)
 ******************************************************************************/
-size_t SchedulerSize(const const scheduler_ty* sch);
+size_t SchedulerSize(const scheduler_ty* sch);
 
 /****************************************************************************** 
 * 	Description:
 * 		Run sch tasks
 * 	Return value: 
-* 		SUCCESS = 0 (scheduler finished running successfully)
-*       FAIL = 1 (one or more tasks failed)
-*       STOP = 2 (sch was stopped, sch may still contain unperformed tasks)
+* 		SCH_SUCCESS = 0 (scheduler finished running successfully)
+*       SCH_FAIL = 1 (one or more tasks failed)
+*       SCH_STOP = 2 (sch was stopped, sch may still contain unperformed tasks)
 * 	Undefined behavior:
 * 		sch is NULL
 *   O(n)
@@ -109,7 +109,7 @@ sch_run_status_ty SchedulerRun(scheduler_ty* sch);
 
 /****************************************************************************** 
 * 	Description:
-* 		Change the state of the scheduler to STOP
+* 		Change the state of the scheduler to SCH_STOP
 * 	Return value: 
 * 		None
 * 	Undefined behavior:
