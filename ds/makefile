@@ -40,6 +40,9 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(INC) -c $< -o $@
 
 # --- Dependencies Handling ---
+# -> if you want to add a make file, use same you must add all 
+# the dependencies (this is not effective must be corrected! and 
+# doesn't make the actual job of "make"
 
 # queue depends on slist
 $(BIN_DIR)/queue_debug: $(OBJ_DIR)/slist.o
@@ -57,9 +60,10 @@ $(BIN_DIR)/pqueue_release: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
 $(BIN_DIR)/task_debug: $(OBJ_DIR)/uid.o
 $(BIN_DIR)/task_release: $(OBJ_DIR)/uid.o
 
-# scheduler depends on uid, task, pqueue
-$(BIN_DIR)/scheduler_debug: $(OBJ_DIR)/uid.o $(OBJ_DIR)/task.o $(OBJ_DIR)/pqueue.o
-$(BIN_DIR)/scheduler_release: $(OBJ_DIR)/uid.o $(OBJ_DIR)/task.o $(OBJ_DIR)/pqueue.o
+# scheduler depends on EVERYTHING below it
+# Added: sorted_list.o and dlist.o
+$(BIN_DIR)/scheduler_debug: $(OBJ_DIR)/uid.o $(OBJ_DIR)/task.o $(OBJ_DIR)/pqueue.o $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
+$(BIN_DIR)/scheduler_release: $(OBJ_DIR)/uid.o $(OBJ_DIR)/task.o $(OBJ_DIR)/pqueue.o $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
 # --- Linker Rules ---
 
 # Generic rule to build a debug executable
