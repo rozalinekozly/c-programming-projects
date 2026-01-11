@@ -39,8 +39,6 @@ void BubbleSort(int* arr, size_t arr_size)
 	size_t curr_iter = 0;
 	size_t nxt_iter = 0;
 	
-	FillArrayWithRandomIntegers(arr, arr_size, MAX_INT);
-	
 	for(curr_iter = 0 ; curr_iter < arr_size ; ++curr_iter)
 	{
 
@@ -99,7 +97,6 @@ void TestBubbleSort()
 {
 	int bubble_sort_arr[ARR_SIZE] = {0};
 	int qsort_arr[ARR_SIZE] = {0};
-	
 	size_t arr_size = ARR_SIZE;
 	
 	clock_t bubble_sort_start = 0;
@@ -109,6 +106,9 @@ void TestBubbleSort()
 	clock_t qsort_start = 0;
 	clock_t qsort_stop = 0;
 	double qsort_elapsed = 0;
+	
+	FillArrayWithRandomIntegers(bubble_sort_arr, arr_size, MAX_INT);
+	FillArrayWithRandomIntegers(qsort_arr, arr_size, MAX_INT);
 	
 	bubble_sort_start = clock();
 	BubbleSort(bubble_sort_arr, arr_size);
@@ -136,6 +136,7 @@ void TestSelectionSort()
 	clock_t selection_sort_stop = 0;
 	double selection_sort_elapsed = 0;
 	
+	FillArrayWithRandomIntegers(selection_sort_arr, arr_size, MAX_INT);
 	selection_sort_start = clock();
 	SelectionSort(selection_sort_arr, arr_size);
 	selection_sort_stop = clock();
@@ -154,6 +155,7 @@ void TestInserionTest()
 	clock_t insertion_sort_stop = 0;
 	double insertion_sort_elapsed = 0;
 	
+	FillArrayWithRandomIntegers(insertion_sort_arr, arr_size, MAX_INT);
 	insertion_sort_start = clock();
 	InsertionSort(insertion_sort_arr, arr_size);
 	insertion_sort_stop = clock();
