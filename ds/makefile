@@ -57,6 +57,21 @@ $(BIN_DIR)/pqueue_release: $(OBJ_DIR)/sorted_list.o $(OBJ_DIR)/dlist.o
 $(BIN_DIR)/task_debug: $(OBJ_DIR)/uid.o
 $(BIN_DIR)/task_release: $(OBJ_DIR)/uid.o
 
+# scheduler depends on task, pqueue, sorted_list, dlist, uid
+$(BIN_DIR)/scheduler_debug: \
+    $(OBJ_DIR)/task.o \
+    $(OBJ_DIR)/pqueue.o \
+    $(OBJ_DIR)/sorted_list.o \
+    $(OBJ_DIR)/dlist.o \
+    $(OBJ_DIR)/uid.o
+
+$(BIN_DIR)/scheduler_release: \
+    $(OBJ_DIR)/task.o \
+    $(OBJ_DIR)/pqueue.o \
+    $(OBJ_DIR)/sorted_list.o \
+    $(OBJ_DIR)/dlist.o \
+    $(OBJ_DIR)/uid.o
+
 # --- Linker Rules ---
 
 # Generic rule to build a debug executable
