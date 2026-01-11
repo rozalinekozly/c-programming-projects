@@ -7,16 +7,16 @@
 
 typedef struct scheduler scheduler_ty;
 
-typedef enum sch_run_status
+typedef enum 
 {
-    SCH_SUCCESS = 0,
-    SCH_FAIL = 1,
-    SCH_STOP = 2
+	SCH_SUCCESS = 0,
+	SCH_FAIL = 1,
+	SCH_STOP = 2
 } sch_run_status_ty;
 
-typedef enum sch_op_status
+typedef enum 
 {
-    SCH_REPEAT = 0,
+	SCH_REPEAT = 0,
 	SCH_NOT_REPEAT = 1
 } sch_op_status_ty;
 
