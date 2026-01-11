@@ -61,7 +61,7 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void*
 	return (new_tsk);
 }
 /*-----------------------------------------------------------------------------*/
-op_status_ty TaskExecute(task_ty* tsk)
+task_op_status_ty TaskExecute(task_ty* tsk)
 {
 	assert(NULL != tsk);
 	
@@ -99,7 +99,7 @@ time_t TaskGetTimeToRun(const task_ty* tsk)
 	return(tsk->time_to_run);
 }
 
-bool_ty TaskIsMatch(const task_ty* tsk1, const task_ty* tsk2)
+task_bool_ty TaskIsMatch(const task_ty* tsk1, const task_ty* tsk2)
 {
     assert(NULL != tsk1);
     assert(NULL != tsk2);
