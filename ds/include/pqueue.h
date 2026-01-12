@@ -3,17 +3,17 @@
 
 typedef struct pq pq_ty;
 
-typedef enum status
+typedef enum pq_status
 {
-    SUCCESS = 0,
-    FAIL = 1
-} status_ty;
+    PQ_SUCCESS = 0,
+    PQ_FAIL = 1
+} pq_status_ty;
 
 typedef enum bool
 {
-    FALSE = 0,
-    TRUE = 1
-} bool_ty;
+    PQ_FALSE = 0,
+    PQ_TRUE = 1
+} pq_bool_ty;
 
 /****************************************************************************** 
 *   Function compares "data1" and "data2", any other parameter may be
@@ -74,7 +74,7 @@ size_t PQCount(const pq_ty* q);
 * 		"q" is NULL
 * 	O(1)
 ******************************************************************************/
-bool_ty PQIsEmpty(const pq_ty* q);
+pq_bool_ty PQIsEmpty(const pq_ty* q);
 
 /****************************************************************************** 
 * 	Description:
@@ -85,7 +85,7 @@ bool_ty PQIsEmpty(const pq_ty* q);
 * 		"q" is NULL
 *   O(n)
 ******************************************************************************/
-status_ty PQEnqueue(pq_ty* q, void* data);
+pq_status_ty PQEnqueue(pq_ty* q, void* data);
 
 /****************************************************************************** 
 *   Description:
