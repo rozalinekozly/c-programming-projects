@@ -1,6 +1,6 @@
 /******************************************************************************
-* Scheduler implementation
-* C89 compliant
+rozaline kozly
+itay
 ******************************************************************************/
 
 #include <stdlib.h>     /* malloc, free */
@@ -13,7 +13,6 @@
 #include "task.h"
 #include "uid.h"
 
-/* deferred operations flags */
 typedef enum op_flag
 {
     OP_NONE = 0,
