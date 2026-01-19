@@ -1,35 +1,96 @@
 /*-----------------------------------------------------------------------------
 submitter : Rozaline Kozly
-reviewer : ?
-date :18 Jan 2026
+reviewer : Steve
+date :19 Jan 2026
 ------------------------------------------------------------------------------*/
 #include <stddef.h>     /* size_t */
 #include <assert.h>     /* assert */
 #include <stdlib.h>     /* labs(abs for long)*/
-#include <stdio.h> /*printf remove later !*/
-#include "vsa.h"    /* API*/
+#include <stdio.h>      /*printf remove later !*/
+#include "vsa.h"        /* API*/
 /*-----------------------------------------------------------------------------*/
-#define WORD_SIZE (sizeof(size_t))
-#define ALIGN_UP(x) ((x + WORD_SIZE - 1) & ~(WORD_SIZE - 1))
+#define WORD_SIZE           (sizeof(size_t))
+#define ALIGN_DOWN(x)       ((x) & ~(WORD_SIZE - 1))
+
+#define FIRST_BLOCK_IN_POOL(vsa)    ((block_header_ty*)((char*)(vsa) + sizeof(vsa_ty)))
+#define IS_ILLEGAL_BLOCK(block)   ((block) == ILLEGAL_BLOCK)
+
+#define ILLEGAL_BLOCK   ((block_header_ty*) NULL)
+#define IS_USED_BLOCK(block)                 ((block)->block_size > 0)
+#define IS_FREE_BLOCK(block)                 ((block)->block_size < 0)
+#define IT_REACHED_THE_END(vsa, block)   ((char*)(block) < (char*)(vsa) + (vsa)->pool_size)
+
+
+#define NEXT_BLOCK(block)   ((block_header_ty*)((char*)(block) + labs((block)->block_size)))
+#define BLOCK_HEADER_SIZE   (sizeof(block_header_ty))
 /*-----------------------------------------------------------------------------*/
 struct vsa
 {
-    size_t occupied_offset;
+    size_t pool_size;
 };
-
+/*-----------------------------------------------------------------------------*/
+/*  
+    utiliesed in declareing a block
+    it's placed as a header of the block and contains
+    a number block_size it's abs is the size of the block (till next header object
+    or end of the pool), it's sign represents either it's free (+) or used (-)
+*/
 typedef struct 
 {
     long block_size;
 } block_header_ty;
 /*-------------------------- aux function -------------------------------------*/
 /*
+    NextBlock(curr_block)
     arguments: a pointer to block header
-    return value: next block (it may exceed the pool limits,
-                  check it's return value)
+    return value: next block (it may exceed the pool limits, check it's 
+    return value)
 */
 static block_header_ty* NextBlock(block_header_ty* block)
 {
     return (block_header_ty*)((char*)block + labs(block->block_size));
+}
+/*-----------------------------------------------------------------------------*/
+/*
+    purpose: giving a starting block, it finds the closest free block, including 
+    the start block.
+    return vlaues: it returns the closest free block in case of success, otherwise it 
+    returns illegal_block means did not found a free block.
+*/
+static block_header_ty* FindFreeBlock(vsa_ty* vsa, block_header_ty* start_block)
+{
+    block_header_ty* runner = start_block;
+    
+    while(!IT_REACHED_THE_END(vsa, runner))
+    {
+        if(IS_FREE_BLOCK(runner))
+        {
+            return runner;
+        }
+        runner = NEXT_BLOCK(runner);
+    }
+    return ILLEGAL_BLOCK;
+}
+/*-----------------------------------------------------------------------------*/
+/*
+    purpose: unify all upcoming sequenced free blocks into one block unify_to
+    return values: returns closest used block, or illegal block in case 
+    it reached the end.
+*/
+static block_header_ty* UnifyFreeBlocks(vsa_ty* vsa, block_header_ty* unify_to)
+{
+    block_header_ty* runner = NextBlock(unify_to);
+    
+    while(!IT_REACHED_THE_END(vsa, runner))
+    {
+        if(IS_USED_BLOCK(runner))
+        {
+            return runner;
+        }
+        unify_to->block_size += runner->block_size;
+        runner = NEXT_BLOCK(runner);
+    }
+    return ILLEGAL_BLOCK;
 }
 /*-------------------------implementation--------------------------------------*/
 vsa_ty* VsaInit(void* pool, size_t pool_size)
@@ -38,7 +99,7 @@ vsa_ty* VsaInit(void* pool, size_t pool_size)
 
     assert(pool);
 
-    pool_size = ALIGN_UP(pool_size);
+    pool_size = ALIGN_DOWN(pool_size);
 
     first = (block_header_ty*)pool;
     first->block_size = (long)(pool_size - sizeof(block_header_ty));
@@ -48,39 +109,52 @@ vsa_ty* VsaInit(void* pool, size_t pool_size)
 /*-----------------------------------------------------------------------------*/
 void* VsaAlloc(vsa_ty* vsa, size_t n_bytes)
 {
-    /*blocks iterator*/
+    /* blocks iterator */
     block_header_ty* runner = NULL;
-    /*to mark end of an allocated block, and new block (if there's enough space)*/
+    block_header_ty* unify_to = NULL;
     block_header_ty* next = NULL;
-    /*stores aligned n_bytes so the CPU can can access it efficiently*/
     size_t needed = 0;
 
     assert(vsa);
 
-    needed = ALIGN_UP(n_bytes);
-    
-    /*start running from the first block */
-    runner = (block_header_ty*)vsa;
-    
-    /*while we have not passed the pool limit*/
-    while ((char*)runner < (char*)vsa + labs(runner->block_size))
+    /* start iterating from the begining of the pool (where first block exists) */
+    runner = FIRST_BLOCK_IN_POOL(vsa);
+
+    while (!IT_REACHED_THE_END(vsa, runner))
     {
-        /*found a block that can fit needed ??*/
-        if (runner->block_size > 0 && (size_t)runner->block_size >= needed)
+        unify_to = FindFreeBlock(vsa,runner);
+        if(IS_ILLEGAL_BLOCK(unify_to))
         {
-            if ((size_t)runner->block_size >= needed
-                + sizeof(block_header_ty) + WORD_SIZE)
+            break;
+        }
+        runner = UnifyFreeBlocks(vsa, unify_to);
+    }
+    
+    runner = FIRST_BLOCK_IN_POOL(vsa);
+    needed = ALIGN_DOWN(n_bytes);
+        /* -------- TRY TO ALLOCATE -------- */
+    while (!IT_REACHED_THE_END(vsa, runner))
+    {
+        if (runner->block_size > 0 && (size_t)runner->block_size >= needed)
+         {
+            if ((size_t)runner->block_size >=
+                needed + sizeof(block_header_ty) + WORD_SIZE)
             {
-                next = (block_header_ty*)((char*)runner + sizeof(block_header_ty) + needed);
-                next->block_size = runner->block_size - needed - sizeof(block_header_ty);
+                next = (block_header_ty*)
+                    ((char*)runner + sizeof(block_header_ty) + needed);
+
+                next->block_size =
+                    runner->block_size - needed - sizeof(block_header_ty);
+
                 runner->block_size = -(long)needed;
             }
             else
             {
+
                 runner->block_size = -runner->block_size;
             }
-   
-            return (char*)runner + sizeof(block_header_ty);
+
+            return (char*)runner + BLOCK_HEADER_SIZE;
         }
 
         runner = NextBlock(runner);
@@ -89,43 +163,23 @@ void* VsaAlloc(vsa_ty* vsa, size_t n_bytes)
     return NULL;
 }
 /*-----------------------------------------------------------------------------*/
-/* preventing internal fragmentation! */
-/* remove assert if null it must do nothing just add a  case if null then 
-    return so u won't dereference it if u dont derefernce then u dont need that !'*/
+/* responsibilities: if ptr is not null then change it's block size field into positive, same amount
+    so use labs */
 void VsaFree(void* ptr)
 {
-    block_header_ty* curr = NULL;
-    block_header_ty* next = NULL;
-    size_t curr_size = 0;
+    block_header_ty* header = NULL;
 
-
-    /* get current block header */
-    curr = (block_header_ty*)((char*)ptr - sizeof(block_header_ty));
-
-    /* mark current block as free */
-    curr->block_size = labs(curr->block_size); /* from negative to positive */
-    /* here we free the current passed block */
-    curr_size = curr->block_size; /* used to go to next block in order to check it */
-
-    ptr = NULL;
-    /* calculate next block header *//* use function NextBlock to go for it */
-    next = (block_header_ty*)((char*)curr + sizeof(block_header_ty) + curr_size);
-    if(NULL == next)
+    if (NULL == ptr)
     {
-        printf("next is NULL!\n");
+        return;
     }
-    printf("here\n");
-    
 
-    /* unify with next block if it is free */
-    if (next->block_size > 0)
-    {
-    printf("here2");
-        curr->block_size += sizeof(block_header_ty) + next->block_size;
-    }
+    header = (block_header_ty*)((char*)ptr - sizeof(block_header_ty));
+    header->block_size = labs(header->block_size);
 }
 /*-----------------------------------------------------------------------------*/
-
+/* responsibilities: 
+*/
 size_t VsaLargestChunk(vsa_ty* vsa)
 {
     block_header_ty* runner = NULL;
@@ -143,7 +197,7 @@ size_t VsaLargestChunk(vsa_ty* vsa)
             max = (size_t)runner->block_size;
         }
 
-        runner = NextBlock(runner);
+        runner = NEXT_BLOCK(runner);
     }
 
     return max;
