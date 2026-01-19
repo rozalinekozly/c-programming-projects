@@ -5,6 +5,8 @@ itay
 
 #include <stdlib.h>     /* malloc, free */
 #include <assert.h>     /* assert */
+/*remove time.h since it's not direct usage and listed in uid header (not sure) 
+ add difftime function*/
 #include <time.h>       /* time */
 #include <unistd.h>     /* sleep */
 
@@ -105,6 +107,7 @@ uid_ty SchedulerAddTask(scheduler_ty *sch,
     if (PQ_FAIL == PQEnqueue(sch->pq, task))
     {
         TaskDestroy(task);
+        /* task = NULL*/
         return invalid_uid_g;
     }
 
@@ -118,8 +121,11 @@ int SchedulerRemoveTask(scheduler_ty *sch, uid_ty task_id)
     task_ty *task = NULL;
 
     assert(NULL != sch);
+    /* suggestion define it infornt of a use case, there is no reason not to define it
+        add if its invalid and then do nothing */
     assert(!IsMatchId(invalid_uid_g, task_id));
 
+    /* change this and deal with each state with 1 if*/
     if (IsMatchId(task_id, sch->cur_task) && OP_CLEAR != sch->op_flag)
     {
         sch->op_flag = OP_REMOVE;
@@ -186,6 +192,8 @@ sch_run_status_ty SchedulerRun(scheduler_ty *sch)
 
         task_status = TaskExecute(task);
 
+    /* remove the op clear flag and deal with it */
+    /* execute then check if to do enqueue or destroy must make it more elegant*/
         if (SCH_FALSE == sch->is_running && OP_CLEAR != sch->op_flag)
         {
             TaskDestroy(task);
@@ -244,7 +252,8 @@ void SchedulerStop(scheduler_ty *sch)
 void SchedulerClear(scheduler_ty *sch)
 {
     assert(NULL != sch);
-
+/* in if add set true to remove myself and don't change is_running state to SCH_FALSE if it is empty
+    it stopps by itself */
     if (SCH_TRUE == sch->is_running)
     {
         sch->is_running = SCH_FALSE;
@@ -266,6 +275,7 @@ static int TaskCmpTime(const void *data1, const void *data2, void *param)
     task_ty *t2 = (task_ty *)data2;
     (void)param;
 
+    /* add assers here on the arguments, so the fault be catched in higher level */
     return (int)difftime(TaskGetTimeToRun(t1), TaskGetTimeToRun(t2));
 }
 
