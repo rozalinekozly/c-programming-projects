@@ -56,6 +56,7 @@ task_ty* TaskCreate(task_op_ty op, void* op_param, task_cleanup_ty cl, void*
 	new_tsk->cl = cl;
 	new_tsk->cl_param = cl_param;
 	new_tsk->interval = interval;
+	/* check if there is a add function in time header, so it be defined units */
 	new_tsk->time_to_run = curr_time + (time_t)interval;
 	
 	return (new_tsk);
@@ -85,13 +86,15 @@ void TaskDestroy(task_ty* tsk)
 	tsk = NULL;
 }
 /*-----------------------------------------------------------------------------*/
+/* turn this into inline function */
+
 uid_ty TaskGetUID(const task_ty* tsk)
 {
 	assert(NULL != tsk);
 	
 	return(tsk->uid);
 }
-
+/* turn this into inline function */
 time_t TaskGetTimeToRun(const task_ty* tsk)
 {
 	assert(NULL != tsk);
