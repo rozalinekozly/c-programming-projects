@@ -65,7 +65,7 @@ pq_status_ty PQEnqueue(pq_ty* q, void* data)
     
     assert(NULL != q);
     
-    /* iter points to the newely inserted node (if success) or EndIter (if failed) */
+    /* iter points to the newely inserted node (if PQ_SUCCESS) or EndIter (if PQ_PQ_FAILd) */
     iter = SortedListInsert(q->lst, data);
     if (SortedListIterIsEqual(iter, SortedListEndIter(q->lst)))
     {
