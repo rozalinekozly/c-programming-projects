@@ -2,6 +2,19 @@
 submitter: rozaline kozly
 reviewer: Tomer
 ------------------------------------------------------------------------------*/
+#ifndef RECURSION_H
+#define RECURSION_H
+
+#include <stddef.h>
+#include "stack.h"
+
+typedef struct node node_ty;
+
+struct node
+{
+    void* data;
+    node_ty* next;
+};
 /*
 	purpose: calculates Fibonacci element placed at index X
 */
@@ -42,3 +55,5 @@ char* Strcat(char* cat_to, const char* cat_frm);
 	in search_Str
 */
 char* Strstr(char* search_str, const char* sub_str);
+/*-----------------------------------------------------------------------------*/
+#endif
