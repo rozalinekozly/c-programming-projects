@@ -13,6 +13,11 @@ submitter: rozaline
 static int BinarySearchRecursiveWrapped(int arr[], int left, int right , int key);
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right);
 static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right);
+static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
+                              int (*compar)(const void*, const void*));
+static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
+                        int (*compar)(const void*, const void*));
+static void Swap(void* a, void* b, size_t size);
 /*----------------------------------------------------------------------------*/
 int BinarySearchIterative(int arr[], size_t arr_size, int key)
 {
@@ -156,4 +161,72 @@ static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right)
         arr[i] = temp[i];
     }
 }
+void QuickSort(void* base, size_t num_elements, size_t element_size,
+               int (*compar)(const void*, const void*))
+{
+    assert(base != NULL);
+    assert(compar != NULL);
+    
+    if (num_elements <= 1)
+    {
+        return;
+    }
+    
+    QuickSortWrapper(base, 0, num_elements - 1, element_size, compar);
+}
 
+static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
+                              int (*compar)(const void*, const void*))
+{
+    size_t pivot_index = 0;
+    
+    if (left >= right)
+    {
+        return;
+    }
+    
+    pivot_index = Partition(base, left, right, element_size, compar);
+    
+    if (pivot_index > 0)
+    {
+        QuickSortWrapper(base, left, pivot_index - 1, element_size, compar);
+    }
+    QuickSortWrapper(base, pivot_index + 1, right, element_size, compar);
+}
+
+static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
+                        int (*compar)(const void*, const void*))
+{
+    char* arr = (char*)base;
+    void* pivot = arr + right * element_size;
+    size_t i = left;
+    size_t j = left;
+    
+    for (j = left; j < right; j++)
+    {
+        if (compar(arr + j * element_size, pivot) < 0)
+        {
+            Swap(arr + i * element_size, arr + j * element_size, element_size);
+            i++;
+        }
+    }
+    
+    Swap(arr + i * element_size, arr + right * element_size, element_size);
+    
+    return i;
+}
+
+static void Swap(void* a, void* b, size_t size)
+{
+    char temp;
+    char* p1 = (char*)a;
+    char* p2 = (char*)b;
+    size_t i = 0;
+    
+    for (i = 0; i < size; i++)
+    {
+        temp = p1[i];
+        p1[i] = p2[i];
+        p2[i] = temp;
+    }
+}
