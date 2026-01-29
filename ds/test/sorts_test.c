@@ -1,26 +1,29 @@
 /*
 submitter: rozaline 
+reviewer: shalev
 ------------------------------------------------------------------------------*/
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>		/*printf()*/
 
-#include "sorts.h"
+#include "sorts.h"		/*API*/
 /*----------------------------------------------------------------------------*/
-#define ARR_SIZE 					10
+#define ARR_SIZE 				10
 #define SIZEOF_ARR(arr)			(sizeof(arr) / sizeof(arr[0]))
 /*----------------------------------------------------------------------------*/
 static void TestBinarySearchIterative(void);
 static void TestBinarySearchRecursive(void);
 static void TestMergeSort(void);
+void TestQuickSort(void);
 /*----------------------------------------------------------------------------*/
 static void PrintArray(int* arr, size_t size);
 static int IsSorted(int* arr, size_t size);
+static int CompareInts(const void* a, const void* b);
 /*----------------------------------------------------------------------------*/
 int main(void)
 {
     TestBinarySearchIterative();
     TestBinarySearchRecursive();
     TestMergeSort();
+    TestQuickSort();
     return(0);
 }
 /*----------------------------------------------------------------------------*/
@@ -86,10 +89,6 @@ static void TestMergeSort(void)
     
     int* arrays[5];
     size_t sizes[5];
-    /* if u had time add this to each test and print it (to ecentuate dealing with edge 
-    case and no need to print actual values)*/
-   /* const char* descriptions[] = {"random", "small array", "single element", 
-                                  "all equal", "reverse sorted"};*/
     size_t num_tests = 5;
     size_t i = 0;
     
@@ -109,7 +108,7 @@ static void TestMergeSort(void)
     
     for (i = 0; i < num_tests; i++)
     {
-        printf("Test %lu: ", (unsigned long)(i + 1);
+        printf("Test %lu: ", (unsigned long)(i + 1));
         PrintArray(arrays[i], sizes[i]);
         MergeSort(arrays[i], sizes[i]);
         printf("Result: ");
@@ -125,6 +124,54 @@ static void TestMergeSort(void)
         }
     }
 }
+/*----------------------------------------------------------------------------*/
+void TestQuickSort(void)
+{
+    int arr1[] = {64, 34, 25, 12, 22, 11, 90};
+    int arr2[] = {5, 2, 8, 1, 9};
+    int arr3[] = {1};
+    int arr4[] = {3, 3, 3, 3};
+    int arr5[] = {9, 8, 7, 6, 5, 4, 3, 2, 1};
+    
+    int* arrays[5];
+    size_t sizes[5];
+
+    size_t num_tests = 5;
+    size_t i = 0;
+    
+    arrays[0] = arr1;
+    arrays[1] = arr2;
+    arrays[2] = arr3;
+    arrays[3] = arr4;
+    arrays[4] = arr5;
+    
+    sizes[0] = SIZEOF_ARR(arr1);
+    sizes[1] = SIZEOF_ARR(arr2);
+    sizes[2] = SIZEOF_ARR(arr3);
+    sizes[3] = SIZEOF_ARR(arr4);
+    sizes[4] = SIZEOF_ARR(arr5);
+    
+    printf("------------ Testing Quick Sort ------------\n");
+    
+    for (i = 0; i < num_tests; i++)
+    {
+        printf("Test %lu: ", (unsigned long)(i + 1));
+        PrintArray(arrays[i], sizes[i]);
+        QuickSort(arrays[i], sizes[i], sizeof(int), CompareInts);
+        printf("Result: ");
+        PrintArray(arrays[i], sizes[i]);
+        
+        if (IsSorted(arrays[i], sizes[i]))
+        {
+            printf("[PASS]\n");
+        }
+        else
+        {
+            printf("[FAIL]\n");
+        }
+    }
+}
+
 /*----------------------------------------------------------------------------*/
 static void PrintArray(int* arr, size_t size)
 {
@@ -157,3 +204,7 @@ static int IsSorted(int* arr, size_t size)
     return 1;
 }
 /*----------------------------------------------------------------------------*/
+static int CompareInts(const void* a, const void* b)
+{
+    return (*(int*)a - *(int*)b);
+}

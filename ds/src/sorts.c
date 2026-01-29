@@ -1,18 +1,19 @@
 /*
 submitter: rozaline 
+reviewer: shalev
 ------------------------------------------------------------------------------*/
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
+#include <assert.h>		/*assert()*/
+#include <stdlib.h>		/*malloc(), free()*/
 /*----------------------------------------------------------------------------*/
 #include "sorts.h"		/*API*/
 /*----------------------------------------------------------------------------*/
 #define NOT_FOUND		-1
 /*----------------------------------------------------------------------------*/
 static int BinarySearchRecursiveWrapped(int arr[], int left, int right , int key);
+
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right);
 static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right);
+
 static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
                               int (*compar)(const void*, const void*));
 static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
@@ -161,6 +162,7 @@ static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right)
         arr[i] = temp[i];
     }
 }
+/*----------------------------------------------------------------------------*/
 void QuickSort(void* base, size_t num_elements, size_t element_size,
                int (*compar)(const void*, const void*))
 {
@@ -174,7 +176,8 @@ void QuickSort(void* base, size_t num_elements, size_t element_size,
     
     QuickSortWrapper(base, 0, num_elements - 1, element_size, compar);
 }
-
+/*----------------------------------------------------------------------------*/
+/*define the function ptr later*/
 static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
                               int (*compar)(const void*, const void*))
 {
@@ -193,7 +196,7 @@ static void QuickSortWrapper(void* base, size_t left, size_t right, size_t eleme
     }
     QuickSortWrapper(base, pivot_index + 1, right, element_size, compar);
 }
-
+/*----------------------------------------------------------------------------*/
 static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
                         int (*compar)(const void*, const void*))
 {
@@ -215,7 +218,7 @@ static size_t Partition(void* base, size_t left, size_t right, size_t element_si
     
     return i;
 }
-
+/*----------------------------------------------------------------------------*/
 static void Swap(void* a, void* b, size_t size)
 {
     char temp;
