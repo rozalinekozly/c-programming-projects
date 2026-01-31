@@ -175,7 +175,6 @@ void QuickSort(void* base, size_t num_elements, size_t element_size,
     QuickSortWrapper(base, 0, (ssize_t)(num_elements - 1), element_size, compar);
 }
 /*----------------------------------------------------------------------------*/
-/*define the function ptr later*/
 static void QuickSortWrapper(void* base, ssize_t left, ssize_t right, size_t element_size,
                               int (*compar)(const void*, const void*))
 {
