@@ -32,9 +32,28 @@ void TestCreateDestroy()
     printf("PASS: AvlDestroy(NULL) succeeded\n");
 }
 
+void TestIsEmpty()
+{
+    avl_ty* avl = NULL;
+    
+    printf("Testing AvlIsEmpty...\n");
+    
+    /* Test 1: Empty tree */
+    avl = AvlCreate(IntCmp, NULL);
+    if (1 != AvlIsEmpty(avl))
+    {
+        printf("FAIL: Empty tree should return 1\n");
+        AvlDestroy(avl);
+        return;
+    }
+    printf("PASS: Empty tree returns 1\n");
+    
+    AvlDestroy(avl);
+}
 int main()
 {
     TestCreateDestroy();
+    TestIsEmpty();
     printf("\nAll tests passed!\n");
     return 0;
 }
