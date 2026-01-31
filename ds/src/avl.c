@@ -37,6 +37,9 @@ static avl_node_ty* RemoveRec(avl_node_ty* node, void* data,
                                avl_cmp_ty cmp_func, void* param, int* status);
 static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
                       avl_action_func_ty action, void* param);
+static avl_node_ty* FindMin(avl_node_ty* node);
+static int GetHeight(avl_node_ty* node);
+static void UpdateHeight(avl_node_ty* node);
 /*----------------------------------------------------------------------------*/
 avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
 {
@@ -84,102 +87,179 @@ static void DestroyRec(avl_node_ty* node)
     free(node);
 }
 
-int AvlInsert(avl_ty* avl, void* data)
-{
-    /* Algorithm:
-     * 1. Assert avl and data are not NULL
-     * 2. Call InsertRec starting from root.children[LEFT]
-     * 3. Update root.children[LEFT] with returned node
-     * 4. Return status (0 success, 1 failure)
-     */
-}
-
-/*aux function : InsertRec
-  actual function (recursive) that performs the insertion, update heights
-  and returns a pointer to the root of the subtree after insertion(phase1) and
-  balancing
-  (phase 2).*/
 static avl_node_ty* InsertRec(avl_node_ty* node, void* data, 
                                avl_cmp_ty cmp_func, void* param, int* status)
 {
-    /* Algorithm:
-     * Base case - empty spot found:
-     *   - malloc new node
-     *   - if malloc fails -> *status = FAILURE, return NULL
-     *   - set data, height = 0, children = NULL
-     *   - *status = SUCCESS
-     *   - return new node
-     * 
-     * Recursive case:
-     *   - compare data with node->data
-     *   - if equal -> duplicate, *status = FAILURE, return node
-     *   - if less -> go left: node->children[LEFT] = InsertRec(left, ...)
-     *   - if greater -> go right: node->children[RIGHT] = InsertRec(right, ...)
-     *   - update my height
-     *   - balance me
-     *   - return me (or new root after balance)
-     */
+    int cmp_result = 0;
+    
+    /* Base case - found empty spot */
+    if (NULL == node)
+    {
+        node = (avl_node_ty*)malloc(sizeof(avl_node_ty));
+        if (NULL == node)
+        {
+            *status = FAILURE;
+            return NULL;
+        }
+        
+        node->data = data;
+        node->height = 0;
+        node->children[LEFT] = NULL;
+        node->children[RIGHT] = NULL;
+        
+        *status = SUCCESS;
+        return node;
+    }
+    
+    /* Compare and recurse */
+    cmp_result = cmp_func(data, node->data, param);
+    
+    if (0 == cmp_result)
+    {
+        /* Duplicate */
+        *status = FAILURE;
+        return node;
+    }
+    else if (0 > cmp_result)
+    {
+        /* Go left */
+        node->children[LEFT] = InsertRec(node->children[LEFT], data, cmp_func, param, status);
+    }
+    else
+    {
+        /* Go right */
+        node->children[RIGHT] = InsertRec(node->children[RIGHT], data, cmp_func, param, status);
+    }
+    
+    /* Update height (for when we add balancing later) */
+    UpdateHeight(node);
+    
+    return node;
 }
-/*aux function RemoveRec */
+
+int AvlInsert(avl_ty* avl, void* data)
+{
+    int status = SUCCESS;
+    
+    assert(NULL != avl);
+    assert(NULL != data);
+    
+    avl->root.children[LEFT] = InsertRec(avl->root.children[LEFT], data, 
+                                          avl->cmp_func, avl->param, &status);
+    
+    return status;
+}
+
+static avl_node_ty* FindMin(avl_node_ty* node)
+{
+    while (NULL != node->children[LEFT])
+    {
+        node = node->children[LEFT];
+    }
+    
+    return node;
+}
+
 static avl_node_ty* RemoveRec(avl_node_ty* node, void* data, 
                                avl_cmp_ty cmp_func, void* param, int* status)
 {
-    /* Algorithm:
-     * Base case - not found:
-     *   - if node is NULL -> *status = FAILURE (not found), return NULL
-     * 
-     * Recursive case - search for node:
-     *   - compare data with node->data
-     *   - if less -> go left: node->children[LEFT] = RemoveRec(left, ...)
-     *   - if greater -> go right: node->children[RIGHT] = RemoveRec(right, ...)
-     *   - if equal -> found it! now remove:
-     * 
-     * Found node to remove (3 cases):
-     *   Case 1: No children (leaf)
-     *     - free node
-     *     - *status = SUCCESS
-     *     - return NULL
-     * 
-     *   Case 2: One child
-     *     - save the non-NULL child
-     *     - free node
-     *     - *status = SUCCESS
-     *     - return the saved child
-     * 
-     *   Case 3: Two children
-     *     - find minimum in right subtree
-     *     - copy min's data to current node
-     *     - remove min from right subtree: node->children[RIGHT] = RemoveRec(right, min_data, ...)
-     *     - *status = SUCCESS
-     * 
-     * After recursive removal:
-     *   - update my height
-     *   - balance me
-     *   - return me (or new root after balance)
-     */
+    int cmp_result = 0;
+    avl_node_ty* temp = NULL;
+    
+    /* Base case - not found */
+    if (NULL == node)
+    {
+        *status = FAILURE;
+        return NULL;
+    }
+    
+    /* Compare and search */
+    cmp_result = cmp_func(data, node->data, param);
+    
+    if (0 > cmp_result)
+    {
+        /* Go left */
+        node->children[LEFT] = RemoveRec(node->children[LEFT], data, cmp_func, param, status);
+    }
+    else if (0 < cmp_result)
+    {
+        /* Go right */
+        node->children[RIGHT] = RemoveRec(node->children[RIGHT], data, cmp_func, param, status);
+    }
+    else
+    {
+        /* Found it! Now remove */
+        *status = SUCCESS;
+        
+        /* Case 1: No left child */
+        if (NULL == node->children[LEFT])
+        {
+            temp = node->children[RIGHT];
+            free(node);
+            return temp;
+        }
+        /* Case 2: No right child */
+        else if (NULL == node->children[RIGHT])
+        {
+            temp = node->children[LEFT];
+            free(node);
+            return temp;
+        }
+        
+        /* Case 3: Two children */
+        temp = FindMin(node->children[RIGHT]);
+        node->data = temp->data;
+        node->children[RIGHT] = RemoveRec(node->children[RIGHT], temp->data, cmp_func, param, status);
+    }
+    
+    /* Update height */
+    UpdateHeight(node);
+    
+    return node;
 }
+
 int AvlRemove(avl_ty* avl, void* data)
 {
-    /* Algorithm:
-     * 1. Assert avl and data are not NULL
-     * 2. Call RemoveRec starting from root.children[LEFT]
-     * 3. Update root.children[LEFT] with returned node
-     * 4. Return status (0 found and removed, 1 not found)
-     */
+    int status = FAILURE;
+    
+    assert(NULL != avl);
+    assert(NULL != data);
+    
+    avl->root.children[LEFT] = RemoveRec(avl->root.children[LEFT], data, 
+                                          avl->cmp_func, avl->param, &status);
+    
+    return status;
 }
 
 void* AvlFind(avl_ty* avl, void* elem_to_find)
 {
-    /* Algorithm:
-     * 1. Assert avl and elem_to_find are not NULL
-     * 2. Start from root.children[LEFT] (actual root)
-     * 3. While current node is not NULL:
-     *    a. Compare elem_to_find with current data
-     *    b. If equal, return current data
-     *    c. If less, go left
-     *    d. If greater, go right
-     * 4. Return NULL if not found
-     */
+    avl_node_ty* current = NULL;
+    int cmp_result = 0;
+    
+    assert(NULL != avl);
+    assert(NULL != elem_to_find);
+    
+    current = avl->root.children[LEFT];
+    
+    while (NULL != current)
+    {
+        cmp_result = avl->cmp_func(elem_to_find, current->data, avl->param);
+        
+        if (0 == cmp_result)
+        {
+            return current->data;  /* Found it! */
+        }
+        else if (0 > cmp_result)
+        {
+            current = current->children[LEFT];  /* Go left */
+        }
+        else
+        {
+            current = current->children[RIGHT];  /* Go right */
+        }
+    }
+    
+    return NULL;  /* Not found */
 }
 
 static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
@@ -293,9 +373,26 @@ size_t AvlHeight(avl_ty* avl)
     
     if (NULL == avl->root.children[LEFT])
     {
-        return -1;  /* might change check with group later */
+        return 0;  /* might change check with group later */
     }
     
     return avl->root.children[LEFT]->height;
 }
 
+static int GetHeight(avl_node_ty* node)
+{
+    if (NULL == node)
+    {
+        return -1;
+    }
+    
+    return node->height;
+}
+
+static void UpdateHeight(avl_node_ty* node)
+{
+    int left_height = GetHeight(node->children[LEFT]);
+    int right_height = GetHeight(node->children[RIGHT]);
+    
+    node->height = 1 + (left_height > right_height ? left_height : right_height);
+}
