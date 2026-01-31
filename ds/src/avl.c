@@ -190,13 +190,22 @@ int AvlForEach(avl_ty* avl, traverse_ty traverse, avl_action_func_ty action, voi
      */
 }
 
+static int CountNodes(void* data, void* param)
+{
+    (void)data;
+    (*(size_t*)param)++;
+    return SUCCESS;
+}
+
 size_t AvlSize(avl_ty* avl)
 {
-    /* Algorithm:
-     * 1. Assert avl is not NULL
-     * 2. Call SizeRec starting from root.children[LEFT]
-     * 3. Return count
-     */
+    size_t count = 0;
+    
+    assert(NULL != avl);
+    
+    AvlForEach(avl, IN_ORDER, CountNodes, &count);
+    
+    return count;
 }
 
 int AvlIsEmpty(const avl_ty* avl)
