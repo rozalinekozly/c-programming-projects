@@ -1,397 +1,380 @@
-/*-----------------------------------------------------------------------------
-submitted by: rozaline kozly
-reviewer:
-note: change the implementation no need to support successor and predecessor 
-(this makes it so complicated)
-------------------------------------------------------------------------------*/
-#include <stdlib.h>     /* malloc(), free() */
-#include <assert.h>     /* assert() */ /*add size_t as well*/
+/*
+submitter: rozaline kozly
+reviewer: oshrat
+-------------------------------------------------------------------------------*/
+#include <stdlib.h>		/* malloc(), free() */
+#include <assert.h>		/* assert() */
 
-#include "bst.h"        /*API */
+#include "bst.h"		/* API */
 
-/*--------------------objects (managing structs)------------------------------*/
+/*-----------------------enums-------------------------------------------------*/
+enum children { LEFT = 0, PARENT = 1, RIGHT = 2 };
+
+/*-----------------------structs-----------------------------------------------*/
 struct bst_node
 {
-    void* data;
-    struct bst_node* child[3];   /* LEFT = 0, PARENT = 1, RIGHT = 2 */
-    struct bst_node* iter[2];    /* PREV = 0, NEXT = 1 */
+	void* data;
+	struct bst_node* child[3];	/* LEFT = 0, PARENT = 1, RIGHT = 2 */
 };
 
 struct bst
 {
-    /* maybe later change the name to start */
-    bst_node_ty* dummy;
-    bst_cmp_ty cmp;
-    /*change the name to cmp_func_param*/
-    void* param;
+	bst_node_ty root;
+	bst_cmp_ty cmp;
+	void* cmp_func_param;
 };
 
-/*------------------------aux functions---------------------------------------*/
-/*
-Algorithm:
-Traverse the tree from root using cmp until reaching a NULL child.
-Set dir to LEFT or RIGHT according to comparison.
-Return parent node.
-*/
-static bst_node_ty* FindInsertParent(const bst_ty* bst, void* data, int* dir)
-{
-    bst_node_ty* curr = bst->dummy->child[0];
-    bst_node_ty* parent = bst->dummy;
-    int cmp_res = 0;
+/*-----------------------aux functions-----------------------------------------*/
+static bst_node_ty* CreateNode(void* data);
+static bst_node_ty* GetRoot(const bst_ty* bst);
+static bst_node_ty* TraverseDirection(bst_node_ty* node, int dir);
+static void ReplaceChild(bst_node_ty* parent, bst_node_ty* old_child, bst_node_ty* new_child);
+static int IsLeaf(bst_node_ty* node);
+static int IsSingleChild(bst_node_ty* node);
+static int CountNodesAction(void* data, void* param);
 
-    while (NULL != curr)
-    {
-        parent = curr;
-        cmp_res = bst->cmp(data, curr->data, bst->param);
-        assert(cmp_res != 0);
-        *dir = (cmp_res < 0) ? 0 : 2;
-        curr = curr->child[*dir];
-    }
-
-    return parent;
-}
-/*----------------------------------------------------------------------------*/
-/*
-Algorithm:
-Connect new node between prev and next in in-order traversal.
-*/
-static void LinkPredSucc(bst_node_ty* new_node,
-                         bst_node_ty* prev,
-                         bst_node_ty* next)
-{
-    new_node->iter[0] = prev;
-    new_node->iter[1] = next;
-    prev->iter[1] = new_node;
-    next->iter[0] = new_node;
-}
-/*----------------------------------------------------------------------------*/
-/*
-Algorithm:
-Replace subtree rooted at old_node with new_node.
-Fix parent and child links.
-*/
-static void Transplant(bst_ty* bst,
-                       bst_node_ty* old_node,
-                       bst_node_ty* new_node)
-{
-    bst_node_ty* parent = old_node->child[1];
-
-    if (parent->child[0] == old_node)
-    {
-        parent->child[0] = new_node;
-    }
-    else
-    {
-        parent->child[2] = new_node;
-    }
-
-    if (NULL != new_node)
-    {
-        new_node->child[1] = parent;
-    }
-}
-/*----------------------------------------------------------------------------*/
-/*
-Algorithm:
-Return the leftmost node in the given subtree.
-*/
-static bst_node_ty* MinSubtree(bst_node_ty* node)
-{
-    while (NULL != node->child[0])
-    {
-        node = node->child[0];
-    }
-    return node;
-}
-/*---------------API implementations---------------------------------------*/
+/*-----------------------------------------------------------------------------*/
 bst_ty* BstCreate(bst_cmp_ty cmp_func, void* param)
 {
-    bst_ty* bst = NULL;
-    bst_node_ty* dummy = NULL;
+	bst_ty* bst = NULL;
+	bst_node_ty root = {0};
 
-    assert(NULL != cmp_func);
+	assert(NULL != cmp_func);
 
-    bst = (bst_ty*)malloc(sizeof(bst_ty));
-    if (NULL == bst)
-    {
-        return NULL;
-    }
+	bst = (bst_ty*)malloc(sizeof(*bst)*sizeof(char));
+	if (NULL == bst)
+	{
+		return (NULL);
+	}
 
-    dummy = (bst_node_ty*)malloc(sizeof(bst_node_ty));
-    if (NULL == dummy)
-    {
-        free(bst);
-        return NULL;
-    }
+	bst->root = root;
+	bst->cmp = cmp_func;
+	bst->cmp_func_param = param;
 
-    dummy->data = NULL;
-
-    dummy->child[0] = NULL;
-    dummy->child[1] = dummy;
-    dummy->child[2] = NULL;
-
-    dummy->iter[0] = dummy;
-    dummy->iter[1] = dummy;
-
-    bst->dummy = dummy;
-    bst->cmp = cmp_func;
-    bst->param = param;
-
-    return bst;
+	return (bst);
 }
-
+/*-----------------------------------------------------------------------------*/
 void BstDestroy(bst_ty* bst)
 {
-    /*
-    Algorithm:
-    Post-order traverse the tree starting from root.
-    Free all nodes.
-    Free dummy and bst.
-    */
-    bst_iter_ty it = NULL;
-    bst_iter_ty next = NULL;
+	bst_node_ty* parent = NULL;
+	bst_node_ty* curr = NULL;
 
-    if (NULL == bst)
-    {
-        return;
-    }
+	if (NULL == bst)
+	{
+		return;
+	}
 
-    it = BstItBegin(bst);
-    while (!BstItEqual(it, BstItEnd(bst)))
-    {
-        next = BstItNext(it);
-        free(it);
-        it = next;
-    }
+	curr = GetRoot(bst);
 
-    free(bst->dummy);
-    free(bst);
+	while (!BstIsEmpty(bst))
+	{
+		curr = TraverseDirection(curr, LEFT);
+
+		if (NULL != curr->child[RIGHT])
+		{
+			curr = curr->child[RIGHT];
+		}
+
+		if (IsLeaf(curr))
+		{
+			parent = curr->child[PARENT];
+			ReplaceChild(parent, curr, NULL);
+
+			free(curr);
+			curr = parent;
+		}
+	}
+
+	free(bst);
 }
-
+/*-----------------------------------------------------------------------------*/
 bst_iter_ty BstInsert(bst_ty* bst, void* data)
 {
-    /*
-    Algorithm:
-    Find insertion parent and direction.
-    Allocate new node.
-    Attach node to tree.
-    Update predecessor and successor.
-    Return iterator to new node.
-    */
-    bst_node_ty* new_node = NULL;
-    bst_node_ty* parent = NULL;
-    int dir = 0;
+	bst_node_ty* new_node = NULL;
+	bst_node_ty* parent = NULL;
+	bst_node_ty** curr = NULL;
+	int cmp_result = 0;
+	int dir = LEFT;
 
-    assert(NULL != bst);
+	assert(NULL != bst);
 
-    new_node = (bst_node_ty*)malloc(sizeof(bst_node_ty));
-    if (NULL == new_node)
-    {
-        return BstItEnd(bst);
-    }
+	new_node = CreateNode(data);
+	if (NULL == new_node)
+	{
+		return (BstItEnd(bst));
+	}
 
-    new_node->data = data;
-    new_node->child[0] = NULL;
-    new_node->child[2] = NULL;
+	curr = &bst->root.child[LEFT];
+	parent = &bst->root;
 
-    parent = FindInsertParent(bst, data, &dir);
-    new_node->child[1] = parent;
-    parent->child[dir] = new_node;
+	while (NULL != *curr)
+	{
+		cmp_result = bst->cmp((*curr)->data, data, bst->cmp_func_param);
 
-    if (parent == bst->dummy)
-    {
-        LinkPredSucc(new_node, bst->dummy, bst->dummy);
-    }
-    else if (dir == 0)
-    {
-        LinkPredSucc(new_node, parent->iter[0], parent);
-    }
-    else
-    {
-        LinkPredSucc(new_node, parent, parent->iter[1]);
-    }
+		parent = *curr;
+		dir = (0 > cmp_result) ? RIGHT : LEFT;
+		curr = &(*curr)->child[dir];
+	}
 
-    return new_node;
+	new_node->child[PARENT] = parent;
+	*curr = new_node;
+
+	return (new_node);
 }
-
+/*-----------------------------------------------------------------------------*/
 bst_iter_ty BstFind(const bst_ty* bst, void* data)
 {
-    /*
-    Algorithm:
-    Traverse tree using cmp until match or NULL.
-    */
-    
-    bst_node_ty* curr = NULL;
-    int cmp_res = 0;
+	bst_node_ty* curr = NULL;
+	int cmp_result = 0;
+	int dir = LEFT;
 
-    assert(NULL != bst);
+	assert(NULL != bst);
 
-    curr = bst->dummy->child[0];
-    while (NULL != curr)
-    {
-        cmp_res = bst->cmp(data, curr->data, bst->param);
-        if (0 == cmp_res)
-        {
-            return curr;
-        }
-        curr = curr->child[(cmp_res < 0) ? 0 : 2];
-    }
+	curr = GetRoot(bst);
 
-    return BstItEnd(bst);
+	while (NULL != curr)
+	{
+		cmp_result = bst->cmp(curr->data, data, bst->cmp_func_param);
+
+		if (0 == cmp_result)
+		{
+			return (curr);
+		}
+
+		dir = (0 < cmp_result) ? LEFT : RIGHT;
+		curr = curr->child[dir];
+	}
+
+	return (BstItEnd(bst));
 }
-
+/*-----------------------------------------------------------------------------*/
 bst_iter_ty BstRemove(bst_iter_ty iter)
 {
-    /*
-    Algorithm:
-    Save successor.
-    If node has two children, swap with successor.
-    Remove node with at most one child.
-    Fix predecessor and successor links.
-    Free node.
-    Return saved successor.
-    */
-    bst_node_ty* node = iter;
-    bst_node_ty* succ = node->iter[1];
-    bst_node_ty* child = NULL;
+	bst_node_ty* parent = NULL;
+	bst_node_ty* new_child = NULL;
+	bst_iter_ty next = NULL;
 
-    assert(node != NULL);
+	assert(NULL != iter);
 
-    if (NULL != node->child[0] && NULL != node->child[2])
-    {
-        bst_node_ty* min = MinSubtree(node->child[2]);
-        node->data = min->data;
-        node = min;
-    }
+	next = BstItNext(iter);
+	parent = iter->child[PARENT];
 
-    child = (NULL != node->child[0]) ? node->child[0] : node->child[2];
-    Transplant(NULL, node, child);
+	/* Case 1: leaf */
+	if (IsLeaf(iter))
+	{
+		ReplaceChild(parent, iter, NULL);
+		free(iter);
+		return (next);
+	}
 
-    node->iter[0]->iter[1] = node->iter[1];
-    node->iter[1]->iter[0] = node->iter[0];
+	/* Case 2: one child */
+	if (IsSingleChild(iter))
+	{
+		new_child = (NULL != iter->child[LEFT]) ? iter->child[LEFT] : iter->child[RIGHT];
+		ReplaceChild(parent, iter, new_child);
+		free(iter);
+		return (next);
+	}
 
-    free(node);
-    return succ;
+	/* Case 3: two children - swap data with successor and remove successor */
+	{
+		iter->data = next->data;
+		BstRemove(next);
+		return (iter);
+	}
 }
+/*-----------------------------------------------------------------------------*/
+size_t BstSize(const bst_ty* bst)
+{
+	size_t size = 0;
 
+	assert(NULL != bst);
 
+	BstForEach(BstItBegin(bst), BstItEnd(bst), CountNodesAction, &size);
 
+	return (size);
+}
+/*-----------------------------------------------------------------------------*/
+int BstIsEmpty(const bst_ty* bst)
+{
+	assert(NULL != bst);
+
+	return (NULL == bst->root.child[LEFT]);
+}
+/*-----------------------------------------------------------------------------*/
 int BstForEach(bst_iter_ty from,
                bst_iter_ty to,
                bst_action_func_ty action,
                void* param)
 {
-    /*
-    Algorithm:
-    Iterate from 'from' to 'to'.
-    Apply action.
-    Stop on first failure.
-    */
-    int res = 0;
+	bst_iter_ty iter = NULL;
+	int result = 0;
 
-    assert(NULL != action);
+	assert(NULL != action);
 
-    while (!BstItEqual(from, to))
-    {
-        res = action(BstGetData(from), param);
-        if (0 != res)
-        {
-            return res;
-        }
-        from = BstItNext(from);
-    }
+	iter = from;
 
-    return 0;
+	while (!BstItEqual(iter, to))
+	{
+		result = action(iter->data, param);
+		if (0 != result)
+		{
+			return (result);
+		}
+		iter = BstItNext(iter);
+	}
+
+	return (0);
 }
-
-
-
-
-
-size_t BstSize(const bst_ty* bst)
-{
-    /*
-    Algorithm:
-    Iterate from begin to end counting nodes.
-    */
-    size_t count = 0;
-    bst_iter_ty it = NULL;
-
-    assert(NULL != bst);
-
-    it = BstItBegin(bst);
-    while (!BstItEqual(it, BstItEnd(bst)))
-    {
-        ++count;
-        it = BstItNext(it);
-    }
-
-    return count;
-}
-
+/*-----------------------------------------------------------------------------*/
 bst_iter_ty BstItBegin(const bst_ty* bst)
 {
-    /*
-    Algorithm:
-    If empty return End.
-    Otherwise return leftmost node.
-    */
-    bst_node_ty* curr = NULL;
+	bst_node_ty* curr = NULL;
 
-    assert(NULL != bst);
-    
-    /*curr is tree's root '*/
-    curr = bst->dummy->child[0];
-    if (NULL == curr)
-    {
-        return bst->dummy;
-    }
+	assert(NULL != bst);
 
-    return MinSubtree(curr);
+	curr = GetRoot(bst);
+
+	if (NULL == curr)
+	{
+		return (BstItEnd(bst));
+	}
+
+	return (TraverseDirection(curr, LEFT));
 }
-
-bst_iter_ty BstItNext(const bst_iter_ty iter)
+/*-----------------------------------------------------------------------------*/
+bst_iter_ty BstItNext(bst_iter_ty iter)
 {
-    /*
-    Algorithm:
-    Return successor directly.
-    */
-    return iter->iter[1];
-}
+	bst_node_ty* curr = NULL;
+	bst_node_ty* parent = NULL;
 
-bst_iter_ty BstItPrev(const bst_iter_ty iter)
+	assert(NULL != iter);
+
+	curr = iter;
+
+	/* If right child exists, next is min of right subtree */
+	if (NULL != curr->child[RIGHT])
+	{
+		return (TraverseDirection(curr->child[RIGHT], LEFT));
+	}
+
+	/* Go up until we come from a left child */
+	parent = curr->child[PARENT];
+	while (parent->child[RIGHT] == curr)
+	{
+		curr = parent;
+		parent = curr->child[PARENT];
+	}
+
+	return (parent);
+}
+/*-----------------------------------------------------------------------------*/
+bst_iter_ty BstItPrev(bst_iter_ty iter)
 {
-    /*
-    Algorithm:
-    Return predecessor directly.
-    */
-    return iter->iter[0];
-}
+	bst_node_ty* curr = NULL;
+	bst_node_ty* parent = NULL;
 
-int BstItEqual(const bst_iter_ty iter1, const bst_iter_ty iter2)
-{
-    /*
-    Algorithm:
-    Compare iterators directly.
-    */
-    return iter1 == iter2;
-}
+	assert(NULL != iter);
 
+	curr = iter;
+
+	/* If left child exists, prev is max of left subtree */
+	if (NULL != curr->child[LEFT])
+	{
+		return (TraverseDirection(curr->child[LEFT], RIGHT));
+	}
+
+	/* Go up until we come from a right child */
+	parent = curr->child[PARENT];
+	while (parent->child[LEFT] == curr)
+	{
+		curr = parent;
+		parent = curr->child[PARENT];
+	}
+
+	return (parent);
+}
+/*-----------------------------------------------------------------------------*/
 bst_iter_ty BstItEnd(const bst_ty* bst)
 {
-    /*
-    Algorithm:
-    Return dummy iterator.
-    */
-    assert(NULL != bst);
-    return bst->dummy;
-}
-void* BstGetData(const bst_iter_ty iter)
-{
-    /*
-    Algorithm:
-    Return data stored in iterator.
-    */
-    return iter->data;
-}
+	assert(NULL != bst);
 
+	return ((bst_iter_ty)&bst->root);
+}
+/*-----------------------------------------------------------------------------*/
+int BstItEqual(bst_iter_ty iter1, bst_iter_ty iter2)
+{
+	return (iter1 == iter2);
+}
+/*-----------------------------------------------------------------------------*/
+void* BstGetData(bst_iter_ty iter)
+{
+	assert(NULL != iter);
+
+	return (iter->data);
+}
+/*-----------------------aux functions implementation--------------------------*/
+static bst_node_ty* CreateNode(void* data)
+{
+	bst_node_ty* node = NULL;
+
+	node = (bst_node_ty*)malloc(sizeof(*node));
+	if (NULL == node)
+	{
+		return (NULL);
+	}
+
+	node->data = data;
+	node->child[LEFT] = NULL;
+	node->child[PARENT] = NULL;
+	node->child[RIGHT] = NULL;
+
+	return (node);
+}
+/*-----------------------------------------------------------------------------*/
+static bst_node_ty* GetRoot(const bst_ty* bst)
+{
+	return (bst->root.child[LEFT]);
+}
+/*-----------------------------------------------------------------------------*/
+static bst_node_ty* TraverseDirection(bst_node_ty* node, int dir)
+{
+	while (NULL != node->child[dir])
+	{
+		node = node->child[dir];
+	}
+
+	return (node);
+}
+/*-----------------------------------------------------------------------------*/
+static void ReplaceChild(bst_node_ty* parent, bst_node_ty* old_child, bst_node_ty* new_child)
+{
+	int dir = (parent->child[LEFT] == old_child) ? LEFT : RIGHT;
+
+	parent->child[dir] = new_child;
+
+	if (NULL != new_child)
+	{
+		new_child->child[PARENT] = parent;
+	}
+}
+/*-----------------------------------------------------------------------------*/
+static int IsLeaf(bst_node_ty* node)
+{
+	return (NULL == node->child[LEFT] && NULL == node->child[RIGHT]);
+}
+/*-----------------------------------------------------------------------------*/
+static int IsSingleChild(bst_node_ty* node)
+{
+	return (!node->child[LEFT] != !node->child[RIGHT]);
+}
+/*-----------------------------------------------------------------------------*/
+static int CountNodesAction(void* data, void* param)
+{
+	size_t* counter = (size_t*)param;
+	(void)data;
+
+	*counter += 1;
+
+	return (0);
+}
