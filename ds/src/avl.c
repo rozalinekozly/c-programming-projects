@@ -30,24 +30,56 @@ struct avl
     void* param;
 };
 /*----------------------------------------------------------------------------*/
+static void DestroyRec(avl_node_ty* node);
+static avl_node_ty* InsertRec(avl_node_ty* node, void* data, 
+                               avl_cmp_ty cmp_func, void* param, int* status);
+static avl_node_ty* RemoveRec(avl_node_ty* node, void* data, 
+                               avl_cmp_ty cmp_func, void* param, int* status);
+/*----------------------------------------------------------------------------*/
 avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
 {
-    /* Algorithm:
-     * 1. Allocate memory for avl structure
-     * 2. Initialize dummy root node (both children NULL, height -1) (height here
-       does not matter and has no meaning)
-     * 3. Store comparison function and param
-     * 4. Return pointer to avl
-     */
+    avl_ty* avl = NULL;
+    
+    assert(NULL != cmp_func);
+    
+    avl = (avl_ty*)malloc(sizeof(avl_ty));
+    if (NULL == avl)
+    {
+        return NULL;
+    }
+    
+    avl->root.children[LEFT] = NULL;
+    avl->root.children[RIGHT] = NULL;
+    avl->root.height = -1;  /* doesn't matter for dummy */
+    avl->root.data = NULL;
+    
+    avl->cmp_func = cmp_func;
+    avl->param = param;
+    
+    return avl;
 }
 
 void AvlDestroy(avl_ty* avl)
 {
-    /* Algorithm:
-     * 1. If avl is NULL, return
-     * 2. Recursively destroy all nodes in post-order order 
-     * 3. then Free avl structure (root is by value no free))
-     */
+    if (NULL == avl)
+    {
+        return;
+    }
+    
+    DestroyRec(avl->root.children[LEFT]);
+    free(avl);
+}
+
+static void DestroyRec(avl_node_ty* node)
+{
+    if (NULL == node)
+    {
+        return;
+    }
+    
+    DestroyRec(node->children[LEFT]);
+    DestroyRec(node->children[RIGHT]);
+    free(node);
 }
 
 int AvlInsert(avl_ty* avl, void* data)
