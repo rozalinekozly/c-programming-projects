@@ -35,6 +35,8 @@ static avl_node_ty* InsertRec(avl_node_ty* node, void* data,
                                avl_cmp_ty cmp_func, void* param, int* status);
 static avl_node_ty* RemoveRec(avl_node_ty* node, void* data, 
                                avl_cmp_ty cmp_func, void* param, int* status);
+static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
+                      avl_action_func_ty action, void* param);
 /*----------------------------------------------------------------------------*/
 avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
 {
@@ -180,15 +182,85 @@ void* AvlFind(avl_ty* avl, void* elem_to_find)
      */
 }
 
+static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
+                      avl_action_func_ty action, void* param)
+{
+    int status = SUCCESS;
+    
+    if (NULL == node)
+    {
+        return SUCCESS;
+    }
+    
+    if (PRE_ORDER == traverse)
+    {
+        /* action -> left -> right */
+        status = action(node->data, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = ForEachRec(node->children[LEFT], traverse, action, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = ForEachRec(node->children[RIGHT], traverse, action, param);
+        return status;
+    }
+    else if (IN_ORDER == traverse)
+    {
+        /* left -> action -> right */
+        status = ForEachRec(node->children[LEFT], traverse, action, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = action(node->data, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = ForEachRec(node->children[RIGHT], traverse, action, param);
+        return status;
+    }
+    else /* POST_ORDER */
+    {
+        /* left -> right -> action */
+        status = ForEachRec(node->children[LEFT], traverse, action, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = ForEachRec(node->children[RIGHT], traverse, action, param);
+        if (SUCCESS != status)
+        {
+            return status;
+        }
+        
+        status = action(node->data, param);
+        return status;
+    }
+}
+
 int AvlForEach(avl_ty* avl, traverse_ty traverse, avl_action_func_ty action, void* param)
 {
-    /* Algorithm:
-     * 1. Assert avl and action are not NULL
-     * 2. If tree is empty, return 0
-     * 3. Call (according to traverse type), if-else if-else
-     * 4. Return status from recursive traversal
-     */
+    assert(NULL != avl);
+    assert(NULL != action);
+    
+    if (NULL == avl->root.children[LEFT])
+    {
+        return SUCCESS;
+    }
+    
+    return ForEachRec(avl->root.children[LEFT], traverse, action, param);
 }
+
 
 static int CountNodes(void* data, void* param)
 {
