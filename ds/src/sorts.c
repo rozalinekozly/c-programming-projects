@@ -8,8 +8,6 @@ reviewer: shalev
 /*----------------------------------------------------------------------------*/
 #include "sorts.h"		/*API*/
 /*----------------------------------------------------------------------------*/
-#define NOT_FOUND		-1
-/*----------------------------------------------------------------------------*/
 static size_t BinarySearchRecursiveWrapped(int arr[], ssize_t left, ssize_t right , int key);
 
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right);
@@ -58,7 +56,7 @@ ssize_t BinarySearchRecursive(int* arr, size_t arr_size, int key)
 	
 	 if (0 == arr_size)
     {
-        return NOT_FOUND;
+        return (NOT_FOUND);
     }
 	return BinarySearchRecursiveWrapped(arr, left, right, key);
 }
@@ -79,11 +77,11 @@ static size_t BinarySearchRecursiveWrapped(int arr[], ssize_t left, ssize_t righ
 	}
 	if(key > arr[mid])
 	{
-		return BinarySearchRecursiveWrapped(arr, mid + 1, right, key);  
+		return (BinarySearchRecursiveWrapped(arr, mid + 1, right, key));  
 	}
 	else
 	{
-		return BinarySearchRecursiveWrapped(arr, left, mid - 1, key);  
+		return (BinarySearchRecursiveWrapped(arr, left, mid - 1, key));  
 	}
 }
 /*----------------------------------------------------------------------------*/
@@ -95,20 +93,20 @@ int MergeSort(int* arr_to_sort, size_t num_elements)
     
     if (num_elements <= 1)
     {
-        return 0;
+        return (SUCCESS);
     }
     
     temp = (int*)malloc(num_elements * sizeof(int));
     if (NULL == temp)
     {
-        return -1; /*change this to failed */
+        return (FAILURE); 
     }
     
     MergeSortWrapper(arr_to_sort, temp, 0, num_elements - 1);
     
     free(temp);
     
-    return 0; /* this to success*/
+    return (SUCCESS); 
 }
 /*----------------------------------------------------------------------------*/
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right)
@@ -121,7 +119,7 @@ static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right)
     }
     
     mid = left + (right - left) / 2;
-    /*return status*/
+
     MergeSortWrapper(arr, temp, left, mid);
     MergeSortWrapper(arr, temp, mid + 1, right);
     Merge(arr, temp, left, mid, right);
@@ -164,8 +162,8 @@ static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right)
 void QuickSort(void* base, size_t num_elements, size_t element_size,
                int (*compar)(const void*, const void*))
 {
-    assert(base != NULL);
-    assert(compar != NULL);
+    assert(NULL != base);
+    assert(NULL != compar);
     
     if (num_elements <= 1)
     {
@@ -210,7 +208,7 @@ static ssize_t Partition(void* base, ssize_t left, ssize_t right, size_t element
     
     Swap(arr + i * element_size, arr + right * element_size, element_size);
     
-    return i;
+    return (i);
 }
 /*----------------------------------------------------------------------------*/
 static void Swap(void* a, void* b, size_t size)
