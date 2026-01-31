@@ -2,10 +2,10 @@
 #define SORTS_H
 
 #include <stddef.h>		/*size_t*/
+#include <sys/types.h>	/*ssize_t*/
+ssize_t BinarySearchIterative(int arr[], size_t arr_size, int key);
 
-int BinarySearchIterative(int arr[], size_t arr_size, int key);
-
-int BinarySearchRecursive(int* arr, size_t arr_size , int key);
+ssize_t BinarySearchRecursive(int* arr, size_t arr_size , int key);
 
 int MergeSort(int* arr_to_sort, size_t num_elements);
 

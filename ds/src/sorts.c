@@ -4,12 +4,13 @@ reviewer: shalev
 ------------------------------------------------------------------------------*/
 #include <assert.h>		/*assert()*/
 #include <stdlib.h>		/*malloc(), free()*/
+#include <sys/types.h>	/*ssize_t*/
 /*----------------------------------------------------------------------------*/
 #include "sorts.h"		/*API*/
 /*----------------------------------------------------------------------------*/
 #define NOT_FOUND		-1
 /*----------------------------------------------------------------------------*/
-static int BinarySearchRecursiveWrapped(int arr[], int left, int right , int key);
+static size_t BinarySearchRecursiveWrapped(int arr[], ssize_t left, ssize_t right , int key);
 
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right);
 static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right);
@@ -20,11 +21,11 @@ static size_t Partition(void* base, size_t left, size_t right, size_t element_si
                         int (*compar)(const void*, const void*));
 static void Swap(void* a, void* b, size_t size);
 /*----------------------------------------------------------------------------*/
-int BinarySearchIterative(int arr[], size_t arr_size, int key)
+ssize_t BinarySearchIterative(int arr[], size_t arr_size, int key)
 {
-	int left = 0;
-	int right = arr_size - 1;
-    int mid = 0;
+	ssize_t left = 0;
+	ssize_t right = arr_size - 1;
+    ssize_t mid = 0;
     
     assert(arr != NULL);
     
@@ -43,10 +44,6 @@ int BinarySearchIterative(int arr[], size_t arr_size, int key)
         }
         else
         {
-            if (mid == 0)
-            {
-                break;
-            }
             right = mid - 1;
         }
     }
@@ -54,20 +51,21 @@ int BinarySearchIterative(int arr[], size_t arr_size, int key)
     return (NOT_FOUND);
 }
 /*----------------------------------------------------------------------------*/
-int BinarySearchRecursive(int* arr, size_t arr_size, int key)
+ssize_t BinarySearchRecursive(int* arr, size_t arr_size, int key)
 {
-	int left = 0;
-	int right = arr_size - 1;
+	ssize_t left = 0;
+	ssize_t right = arr_size - 1;
 	
-	 if (arr_size == 0)
+	 if (0 == arr_size)
     {
         return NOT_FOUND;
     }
 	return BinarySearchRecursiveWrapped(arr, left, right, key);
 }
-static int BinarySearchRecursiveWrapped(int arr[], int left, int right , int key)
+/*----------------------------------------------------------------------------*/
+static size_t BinarySearchRecursiveWrapped(int arr[], ssize_t left, ssize_t right , int key)
 {
-	int mid = 0;
+	ssize_t mid = 0;
 	
 	if(left > right)
 	{
@@ -103,14 +101,14 @@ int MergeSort(int* arr_to_sort, size_t num_elements)
     temp = (int*)malloc(num_elements * sizeof(int));
     if (NULL == temp)
     {
-        return -1;
+        return -1; /*change this to failed */
     }
     
     MergeSortWrapper(arr_to_sort, temp, 0, num_elements - 1);
     
     free(temp);
     
-    return 0;
+    return 0; /* this to success*/
 }
 /*----------------------------------------------------------------------------*/
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right)
@@ -123,7 +121,7 @@ static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right)
     }
     
     mid = left + (right - left) / 2;
-    
+    /*return status*/
     MergeSortWrapper(arr, temp, left, mid);
     MergeSortWrapper(arr, temp, mid + 1, right);
     Merge(arr, temp, left, mid, right);
