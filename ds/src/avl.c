@@ -201,10 +201,9 @@ size_t AvlSize(avl_ty* avl)
 
 int AvlIsEmpty(const avl_ty* avl)
 {
-    /* Algorithm:
-     * 1. Assert avl is not NULL
-     * 2. Return 1 if root.children[LEFT] is NULL, else 0
-     */
+    assert(NULL != avl);
+    
+    return (NULL == avl->root.children[LEFT]);
 }
 
 size_t AvlHeight(avl_ty* avl)
