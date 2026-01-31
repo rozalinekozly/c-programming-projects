@@ -15,9 +15,9 @@ static size_t BinarySearchRecursiveWrapped(int arr[], ssize_t left, ssize_t righ
 static void MergeSortWrapper(int* arr, int* temp, size_t left, size_t right);
 static void Merge(int* arr, int* temp, size_t left, size_t mid, size_t right);
 
-static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
+static void QuickSortWrapper(void* base, ssize_t left, ssize_t right, size_t element_size,
                               int (*compar)(const void*, const void*));
-static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
+static ssize_t Partition(void* base, ssize_t left, ssize_t right, size_t element_size,
                         int (*compar)(const void*, const void*));
 static void Swap(void* a, void* b, size_t size);
 /*----------------------------------------------------------------------------*/
@@ -172,14 +172,14 @@ void QuickSort(void* base, size_t num_elements, size_t element_size,
         return;
     }
     
-    QuickSortWrapper(base, 0, num_elements - 1, element_size, compar);
+    QuickSortWrapper(base, 0, (ssize_t)(num_elements - 1), element_size, compar);
 }
 /*----------------------------------------------------------------------------*/
 /*define the function ptr later*/
-static void QuickSortWrapper(void* base, size_t left, size_t right, size_t element_size,
+static void QuickSortWrapper(void* base, ssize_t left, ssize_t right, size_t element_size,
                               int (*compar)(const void*, const void*))
 {
-    size_t pivot_index = 0;
+    ssize_t pivot_index = 0;
     
     if (left >= right)
     {
@@ -188,20 +188,17 @@ static void QuickSortWrapper(void* base, size_t left, size_t right, size_t eleme
     
     pivot_index = Partition(base, left, right, element_size, compar);
     
-    if (pivot_index > 0)
-    {
-        QuickSortWrapper(base, left, pivot_index - 1, element_size, compar);
-    }
+    QuickSortWrapper(base, left, pivot_index - 1, element_size, compar);
     QuickSortWrapper(base, pivot_index + 1, right, element_size, compar);
 }
 /*----------------------------------------------------------------------------*/
-static size_t Partition(void* base, size_t left, size_t right, size_t element_size,
+static ssize_t Partition(void* base, ssize_t left, ssize_t right, size_t element_size,
                         int (*compar)(const void*, const void*))
 {
     char* arr = (char*)base;
     void* pivot = arr + right * element_size;
-    size_t i = left;
-    size_t j = left;
+    ssize_t i = left;
+    ssize_t j = left;
     
     for (j = left; j < right; j++)
     {
