@@ -9,8 +9,6 @@ reviewer: Tomer
 
 /*-----------------------aux functions-----------------------------------------*/
 static void InsertSorted(stack_ty* s, int x);
-static void StrcpyWrapped(char* dest, const char* src);
-static void StrcatWrapped(char* cat_to, const char* cat_frm);
 /*-----------------------------------------------------------------------------*/
 int Fibonacci(int x)
 {
@@ -45,6 +43,8 @@ void SortStack(stack_ty *s)
 {
     int x = 0;
     
+    assert(NULL != s);
+    
     if(StackIsEmpty(s))
     {
 		return;
@@ -58,6 +58,8 @@ void SortStack(stack_ty *s)
 static void InsertSorted(stack_ty* s, int x)
 {
     int tmp = 0;
+    
+    assert(NULL != s);
     
     if (StackIsEmpty(s) || *(int*)StackPeek(s) <= x)
     {
@@ -77,7 +79,7 @@ size_t Strlen(const char* str)
     {
         return (0);
     }
-    return (1 + Strlen(++str)); 
+    return (1 + Strlen(str + 1)); 
 }
 /*-----------------------------------------------------------------------------*/
 int Strcmp(const char* str1, const char* str2)
@@ -90,60 +92,42 @@ int Strcmp(const char* str1, const char* str2)
         return (unsigned char)*str1 - (unsigned char)*str2;
     }
 
-    return Strcmp(str1 + 1, str2 + 1);
+    return (Strcmp(str1 + 1, str2 + 1));
 }
 /*-----------------------------------------------------------------------------*/
 char* Strcpy(char* dest, const char* src)
 {
-    char* dest_iter = dest;
-    
     assert(NULL != dest);
     assert(NULL != src);
     
-    StrcpyWrapped(dest_iter, src);
-    
-    return dest;
-}
-/*-----------------------------------------------------------------------------*/
-static void StrcpyWrapped(char* dest, const char* src)
-{
-    if('\0' == *src)
+    if ('\0' == *src)
     {
         *dest = '\0';
-        return;
+        return (dest);
     }
+    
     *dest = *src;
-    ++dest;
-    ++src;
-    StrcpyWrapped(dest, src);
+    Strcpy(dest + 1, src + 1);
+    
+    return (dest);
 }
 /*-----------------------------------------------------------------------------*/
 char* Strcat(char* cat_to, const char* cat_frm)
 {
 	char* cat_to_iter = cat_to;
 	
-	assert(cat_to != NULL);
-	assert(cat_frm != NULL);
+	assert(NULL!= cat_to);
+	assert(NULL != cat_frm);
 	
-	StrcatWrapped(cat_to_iter, cat_frm);
+	if ('\0' != *cat_to)
+    {
+        Strcat(cat_to_iter + 1, cat_frm);
+        return (cat_to);
+    }
 	
-	return cat_to;
-}
-/*-----------------------------------------------------------------------------*/
-static void StrcatWrapped(char* cat_to, const char* cat_frm)
-{
-    if ('\0' != *cat_to)
-    {
-        StrcatWrapped(cat_to + 1, cat_frm);
-        return;
-    }
-    if ('\0' == *cat_frm)
-    {
-        *cat_to = '\0';  
-        return;
-    }
-    *cat_to = *cat_frm;
-    StrcatWrapped(cat_to + 1, cat_frm + 1);
+	Strcpy(cat_to_iter, cat_frm);
+	
+	return (cat_to);
 }
 /*-----------------------------------------------------------------------------*/
 char* Strstr(char* search_str, const char* sub_str)
@@ -166,5 +150,5 @@ char* Strstr(char* search_str, const char* sub_str)
         return (search_str);
     }
     
-    return Strstr(search_str + 1, sub_str);  
+    return (Strstr(search_str + 1, sub_str));  
 }
