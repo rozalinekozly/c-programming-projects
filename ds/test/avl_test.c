@@ -50,10 +50,31 @@ void TestIsEmpty()
     
     AvlDestroy(avl);
 }
+void TestHeight()
+{
+    avl_ty* avl = NULL;
+    
+    printf("Testing AvlHeight...\n");
+    
+    /* Test 1: Empty tree height */
+    avl = AvlCreate(IntCmp, NULL);
+    if (0 != AvlHeight(avl))  /* assuming we return 0 for empty */
+    {
+        printf("FAIL: Empty tree should have height 0 (or -1 cast to size_t)\n");
+        AvlDestroy(avl);
+        return;
+    }
+    printf("PASS: Empty tree has height 0\n");
+    
+    /* TODO: Test with actual nodes once Insert is implemented */
+    
+    AvlDestroy(avl);
+}
 int main()
 {
     TestCreateDestroy();
     TestIsEmpty();
+    TestHeight();
     printf("\nAll tests passed!\n");
     return 0;
 }
