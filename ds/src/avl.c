@@ -40,6 +40,11 @@ static int ForEachRec(avl_node_ty* node, traverse_ty traverse,
 static avl_node_ty* FindMin(avl_node_ty* node);
 static int GetHeight(avl_node_ty* node);
 static void UpdateHeight(avl_node_ty* node);
+
+static avl_node_ty* Balance(avl_node_ty* node);
+static int GetBalanceFactor(avl_node_ty* node);
+static avl_node_ty* RotateLeft(avl_node_ty* node);
+static avl_node_ty* RotateRight(avl_node_ty* node);
 /*----------------------------------------------------------------------------*/
 avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
 {
@@ -134,7 +139,7 @@ static avl_node_ty* InsertRec(avl_node_ty* node, void* data,
     /* Update height (for when we add balancing later) */
     UpdateHeight(node);
     
-    return node;
+    return Balance(node);
 }
 
 int AvlInsert(avl_ty* avl, void* data)
@@ -215,7 +220,7 @@ static avl_node_ty* RemoveRec(avl_node_ty* node, void* data,
     /* Update height */
     UpdateHeight(node);
     
-    return node;
+    return Balance(node);
 }
 
 int AvlRemove(avl_ty* avl, void* data)
@@ -395,4 +400,76 @@ static void UpdateHeight(avl_node_ty* node)
     int right_height = GetHeight(node->children[RIGHT]);
     
     node->height = 1 + (left_height > right_height ? left_height : right_height);
+}
+
+
+static avl_node_ty* Balance(avl_node_ty* node)
+{
+    int balance = 0;
+    
+    UpdateHeight(node);
+    balance = GetBalanceFactor(node);
+    
+    /* Left heavy (balance > 1) */
+    if (balance > 1)
+    {
+        /* Left-Right case - double rotation */
+        if (GetBalanceFactor(node->children[LEFT]) < 0)
+        {
+            node->children[LEFT] = RotateLeft(node->children[LEFT]);
+        }
+        /* Left-Left case - single rotation */
+        return RotateRight(node);
+    }
+    
+    /* Right heavy (balance < -1) */
+    if (balance < -1)
+    {
+        /* Right-Left case - double rotation */
+        if (GetBalanceFactor(node->children[RIGHT]) > 0)
+        {
+            node->children[RIGHT] = RotateRight(node->children[RIGHT]);
+        }
+        /* Right-Right case - single rotation */
+        return RotateLeft(node);
+    }
+    
+    /* Already balanced */
+    return node;
+}
+
+static int GetBalanceFactor(avl_node_ty* node)
+{
+    if (NULL == node)
+    {
+        return 0;
+    }
+    
+    return GetHeight(node->children[LEFT]) - GetHeight(node->children[RIGHT]);
+}
+
+static avl_node_ty* RotateRight(avl_node_ty* node)
+{
+    avl_node_ty* new_root = node->children[LEFT];
+    
+    node->children[LEFT] = new_root->children[RIGHT];
+    new_root->children[RIGHT] = node;
+    
+    UpdateHeight(node);
+    UpdateHeight(new_root);
+    
+    return new_root;
+}
+
+static avl_node_ty* RotateLeft(avl_node_ty* node)
+{
+    avl_node_ty* new_root = node->children[RIGHT];
+    
+    node->children[RIGHT] = new_root->children[LEFT];
+    new_root->children[LEFT] = node;
+    
+    UpdateHeight(node);
+    UpdateHeight(new_root);
+    
+    return new_root;
 }

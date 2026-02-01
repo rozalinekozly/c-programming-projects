@@ -301,6 +301,131 @@ void TestTraversals()
     AvlDestroy(avl);
 }
 
+void TestRotations()
+{
+    avl_ty* avl = NULL;
+    int data1 = 3, data2 = 2, data3 = 1;
+    int data4 = 1, data5 = 2, data6 = 3;
+    int data7 = 3, data8 = 1, data9 = 2;
+    int data10 = 1, data11 = 3, data12 = 2;
+    
+    printf("TESTING Specific Rotation Cases\n");
+    
+    printf("Test LL rotation (insert 3, 2, 1):\n");
+    avl = AvlCreate(IntCmp, NULL);
+    AvlInsert(avl, &data1);
+    AvlInsert(avl, &data2);
+    AvlInsert(avl, &data3);
+    printf("  Tree: ");
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" Height: %lu (should be 1)\n", (unsigned long)AvlHeight(avl));
+    AvlDestroy(avl);
+    
+    printf("Test RR rotation (insert 1, 2, 3):\n");
+    avl = AvlCreate(IntCmp, NULL);
+    AvlInsert(avl, &data4);
+    AvlInsert(avl, &data5);
+    AvlInsert(avl, &data6);
+    printf("  Tree: ");
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" Height: %lu (should be 1)\n", (unsigned long)AvlHeight(avl));
+    AvlDestroy(avl);
+    
+    printf("Test LR rotation (insert 3, 1, 2):\n");
+    avl = AvlCreate(IntCmp, NULL);
+    AvlInsert(avl, &data7);
+    AvlInsert(avl, &data8);
+    AvlInsert(avl, &data9);
+    printf("  Tree: ");
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" Height: %lu (should be 1)\n", (unsigned long)AvlHeight(avl));
+    AvlDestroy(avl);
+    
+    printf("Test RL rotation (insert 1, 3, 2):\n");
+    avl = AvlCreate(IntCmp, NULL);
+    AvlInsert(avl, &data10);
+    AvlInsert(avl, &data11);
+    AvlInsert(avl, &data12);
+    printf("  Tree: ");
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" Height: %lu (should be 1)\n\n", (unsigned long)AvlHeight(avl));
+    AvlDestroy(avl);
+}
+
+void TestAVLBalancing()
+{
+    avl_ty* avl = NULL;
+    int i;
+    int data[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    
+    printf("TESTING AVL Balancing\n");
+    
+    avl = AvlCreate(IntCmp, NULL);
+    
+    printf("Inserting sequential data (1-10) to test balancing\n");
+    for (i = 0; i < 10; ++i)
+    {
+        AvlInsert(avl, &data[i]);
+        printf("After inserting %d, height: %lu, size: %lu\n", 
+               data[i], (unsigned long)AvlHeight(avl), (unsigned long)AvlSize(avl));
+    }
+    
+    printf("\nFor 10 nodes, BST height would be 9, AVL should be ~3\n");
+    if (AvlHeight(avl) > 4)
+    {
+        printf("FAIL: Height too large, tree not balanced properly\n");
+        AvlDestroy(avl);
+        return;
+    }
+    printf("PASS: Tree is balanced (height = %lu)\n", (unsigned long)AvlHeight(avl));
+    
+    printf("Tree contents (in-order): ");
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf("\n\n");
+    
+    AvlDestroy(avl);
+}
+
+void TestAVLRemoveBalancing()
+{
+    avl_ty* avl = NULL;
+    int i;
+    int data[7] = {4, 2, 6, 1, 3, 5, 7};
+    int remove1 = 1, remove2 = 3;
+    
+    printf("TESTING AVL Remove with Balancing\n");
+    
+    avl = AvlCreate(IntCmp, NULL);
+    
+    printf("Building balanced tree: ");
+    for (i = 0; i < 7; ++i)
+    {
+        AvlInsert(avl, &data[i]);
+    }
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" (height: %lu)\n", (unsigned long)AvlHeight(avl));
+    
+    printf("Removing 1: ");
+    AvlRemove(avl, &remove1);
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" (height: %lu)\n", (unsigned long)AvlHeight(avl));
+    
+    printf("Removing 3: ");
+    AvlRemove(avl, &remove2);
+    AvlForEach(avl, IN_ORDER, PrintInt, NULL);
+    printf(" (height: %lu)\n", (unsigned long)AvlHeight(avl));
+    
+    if (AvlHeight(avl) > 3)
+    {
+        printf("FAIL: Height too large after removals\n");
+        AvlDestroy(avl);
+        return;
+    }
+    printf("PASS: Tree remains balanced after removals\n\n");
+    
+    AvlDestroy(avl);
+}
+
 int main()
 {
     TestCreateDestroy();
@@ -312,7 +437,12 @@ int main()
     TestSize();
     TestTraversals();
     
-    printf("All BST tests completed!\n");
+    printf("\nAVL SPECIFIC TESTS\n");
+    TestRotations();
+    TestAVLBalancing();
+    TestAVLRemoveBalancing();
+    
+    printf("All AVL tests completed!\n");
     
     return 0;
 }
