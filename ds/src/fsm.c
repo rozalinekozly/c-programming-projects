@@ -15,59 +15,23 @@ typedef enum
 
 typedef struct fsm fsm_ty; 
 
-typedef void (*transition_func)(fsm_ty* fsm, char input);
+/*typedef void (*transition_func)(fsm_ty* fsm, char input);*/
 
 struct fsm
 {
 	states curr_state;
 	states* accept_states;
-	transition_func transition_func;
+	states (*transition_table)[5];
 };
 
 void Transition(fsm_ty* fsm, char input)
 {
-	states curr_state = fsm->curr_state;
-	if(input == '0')
-	{
-		if(curr_state == START)
-			curr_state = STARTS_WITH_ZERO;
-			
-		else if(curr_state == STARTS_WITH_ZERO || curr_state == STARTS_AND_ENDS_WITH_ZERO) 
-			curr_state = STARTS_AND_ENDS_WITH_ZERO;
-			
-		else if(curr_state == STARTS_WITH_ONE)
-			curr_state = STARTS_WITH_ONE;
-			
-		else 
-			curr_state = INVALID_INPUT;
-	}
-	else if(input == '1')
-	{
-		if(curr_state == START)
-			curr_state = STARTS_WITH_ONE;
-			
-		else if(curr_state == STARTS_WITH_ZERO)
-			curr_state = STARTS_WITH_ZERO;
-			
-		else if(curr_state == STARTS_WITH_ONE)
-			curr_state = STARTS_WITH_ONE;
-		
-		else if(curr_state == STARTS_AND_ENDS_WITH_ZERO)
-			curr_state = STARTS_WITH_ZERO;
-			
-		else
-			curr_state = INVALID_INPUT;
-	}
-	else
-	{
-		curr_state = INVALID_INPUT;
-	}
-	
-	fsm->curr_state = curr_state;
+	fsm->curr_state = fsm->transition_table[input - '0'][fsm->curr_state];
 }
 
-fsm_ty* FSMCreate(states* accept_states, transition_func transition_func)
+fsm_ty* FSMCreate(states* accept_states, states (*transition_table)[5])
 {
+	int i = 0, j = 0;
 	fsm_ty* fsm = (fsm_ty*)malloc(sizeof(fsm_ty)*sizeof(char));
 	if(NULL == fsm)
 	{
@@ -76,7 +40,17 @@ fsm_ty* FSMCreate(states* accept_states, transition_func transition_func)
 	
 	fsm->curr_state = START;
 	fsm->accept_states = accept_states;
-	fsm->transition_func = transition_func;
+	fsm->transition_table = transition_table;
+	
+	for(i = 0 ; i < 3 ; i++)
+	{
+		for(j = 0 ; j < 5 ; j++)
+		{
+			printf("%d\t", transition_table[i][j]);
+		}
+		printf("\n");
+	
+	}
 	
 	return fsm;
 }
@@ -100,6 +74,7 @@ void FSMRun(fsm_ty* fsm, char* input)
 	while(*input != '\0')
 	{
 		Transition(fsm, *input);
+		printf("input is %c then state is %d\n", *input, fsm->curr_state);
 		++input;
 	}
 }
@@ -131,8 +106,15 @@ int main()
 	states accept_states[] = {STARTS_AND_ENDS_WITH_ZERO};
 	char* input1 = "011010";
 	char* input2 = "111010";
+	
+	states transition_table [3][5] = 
+	{
+		{1,3,2,3,4},
+		{2,1,2,1,4},
+		{4,4,4,4,4}
+	};
 	/*add size*/
-	fsm = FSMCreate(accept_states, Transition);
+	fsm = FSMCreate(accept_states, transition_table);
 	
 	FSMRun(fsm, input1);
 	PrintRes(fsm, input1);
