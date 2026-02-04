@@ -1,3 +1,9 @@
+/*
+	make it generic, pass size of each array
+	in checking acceptance, check all i till you get accept_states array size
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
