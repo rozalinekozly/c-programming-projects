@@ -1,9 +1,9 @@
 /*
 submitter: Rozaline kozly
-reviewer: 
+reviewer: Shalev
 ------------------------------------------------------------------------------*/
-#include <stdlib.h>     /* malloc, free */
-#include <assert.h>     /* assert */
+#include <stdlib.h>
+#include <assert.h>
 /*----------------------------------------------------------------------------*/
 #include "avl.h"
 /*----------------------------------------------------------------------------*/
@@ -25,26 +25,28 @@ typedef struct avl_node
 
 struct avl
 {
-    avl_node_ty root;  
+    avl_node_ty* root;  
     avl_cmp_ty cmp_func;
     void* param;
 };
 /*----------------------------------------------------------------------------*/
 static void DestroyRec(avl_node_ty* node);
-static avl_node_ty* InsertRec(avl_node_ty* node, void* data, 
-                               avl_cmp_ty cmp_func, void* param, int* status);
+static avl_node_ty* InsertRec(avl_node_ty* node, avl_node_ty* new_node, 
+                               avl_cmp_ty cmp_func, void* param);
 static avl_node_ty* RemoveRec(avl_node_ty* node, void* data, 
                                avl_cmp_ty cmp_func, void* param, int* status);
+static void* FindRec(avl_node_ty* node, void* elem_to_find, 
+                     avl_cmp_ty cmp_func, void* param);
 static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
                       avl_action_func_ty action, void* param);
 static avl_node_ty* FindMin(avl_node_ty* node);
 static int GetHeight(avl_node_ty* node);
 static void UpdateHeight(avl_node_ty* node);
-
 static avl_node_ty* Balance(avl_node_ty* node);
 static int GetBalanceFactor(avl_node_ty* node);
 static avl_node_ty* RotateLeft(avl_node_ty* node);
 static avl_node_ty* RotateRight(avl_node_ty* node);
+static int CountNodes(void* data, void* param);
 /*----------------------------------------------------------------------------*/
 avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
 {
@@ -58,11 +60,7 @@ avl_ty* AvlCreate(avl_cmp_ty cmp_func, void* param)
         return NULL;
     }
     
-    avl->root.children[LEFT] = NULL;
-    avl->root.children[RIGHT] = NULL;
-    avl->root.height = -1;  /* doesn't matter for dummy */
-    avl->root.data = NULL;
-    
+    avl->root = NULL;
     avl->cmp_func = cmp_func;
     avl->param = param;
     
@@ -76,8 +74,10 @@ void AvlDestroy(avl_ty* avl)
         return;
     }
     
-    DestroyRec(avl->root.children[LEFT]);
+    DestroyRec(avl->root);
+    
     free(avl);
+    avl = NULL;
 }
 
 static void DestroyRec(avl_node_ty* node)
@@ -89,70 +89,75 @@ static void DestroyRec(avl_node_ty* node)
     
     DestroyRec(node->children[LEFT]);
     DestroyRec(node->children[RIGHT]);
+    
     free(node);
-}
-
-static avl_node_ty* InsertRec(avl_node_ty* node, void* data, 
-                               avl_cmp_ty cmp_func, void* param, int* status)
-{
-    int cmp_result = 0;
-    
-    /* Base case - found empty spot */
-    if (NULL == node)
-    {
-        node = (avl_node_ty*)malloc(sizeof(avl_node_ty));
-        if (NULL == node)
-        {
-            *status = FAILURE;
-            return NULL;
-        }
-        
-        node->data = data;
-        node->height = 0;
-        node->children[LEFT] = NULL;
-        node->children[RIGHT] = NULL;
-        
-        *status = SUCCESS;
-        return node;
-    }
-    
-    /* Compare and recurse */
-    cmp_result = cmp_func(data, node->data, param);
-    
-    if (0 == cmp_result)
-    {
-        /* Duplicate */
-        *status = FAILURE;
-        return node;
-    }
-    else if (0 > cmp_result)
-    {
-        /* Go left */
-        node->children[LEFT] = InsertRec(node->children[LEFT], data, cmp_func, param, status);
-    }
-    else
-    {
-        /* Go right */
-        node->children[RIGHT] = InsertRec(node->children[RIGHT], data, cmp_func, param, status);
-    }
-    
-    /* Update height (for when we add balancing later) */
-    UpdateHeight(node);
-    
-    return Balance(node);
+    node = NULL;
 }
 
 int AvlInsert(avl_ty* avl, void* data)
 {
-    int status = SUCCESS;
+    avl_node_ty* new_node = NULL;
     
     assert(NULL != avl);
     assert(NULL != data);
     
-    avl->root.children[LEFT] = InsertRec(avl->root.children[LEFT], data, 
-                                          avl->cmp_func, avl->param, &status);
+    new_node = (avl_node_ty*)malloc(sizeof(avl_node_ty));
+    if (NULL == new_node)
+    {
+        return FAILURE;
+    }
     
-    return status;
+    new_node->data = data;
+    new_node->height = 0;
+    new_node->children[LEFT] = NULL;
+    new_node->children[RIGHT] = NULL;
+    
+    if (NULL == avl->root)
+    {
+        avl->root = new_node;
+        return SUCCESS;
+    }
+    
+    avl->root = InsertRec(avl->root, new_node, avl->cmp_func, avl->param);
+    
+    return SUCCESS;
+}
+
+static avl_node_ty* InsertRec(avl_node_ty* node, avl_node_ty* new_node, 
+                               avl_cmp_ty cmp_func, void* param)
+{
+    int cmp_result = 0;
+    
+    cmp_result = cmp_func(new_node->data, node->data, param);
+    
+    assert(0 != cmp_result);
+    
+    if (0 > cmp_result)
+    {
+        if (NULL == node->children[LEFT])
+        {
+            node->children[LEFT] = new_node;
+        }
+        else
+        {
+            node->children[LEFT] = InsertRec(node->children[LEFT], new_node, cmp_func, param);
+        }
+    }
+    else
+    {
+        if (NULL == node->children[RIGHT])
+        {
+            node->children[RIGHT] = new_node;
+        }
+        else
+        {
+            node->children[RIGHT] = InsertRec(node->children[RIGHT], new_node, cmp_func, param);
+        }
+    }
+    
+    UpdateHeight(node);
+    
+    return Balance(node);
 }
 
 static avl_node_ty* FindMin(avl_node_ty* node)
@@ -171,53 +176,51 @@ static avl_node_ty* RemoveRec(avl_node_ty* node, void* data,
     int cmp_result = 0;
     avl_node_ty* temp = NULL;
     
-    /* Base case - not found */
     if (NULL == node)
     {
         *status = FAILURE;
         return NULL;
     }
     
-    /* Compare and search */
     cmp_result = cmp_func(data, node->data, param);
     
     if (0 > cmp_result)
     {
-        /* Go left */
         node->children[LEFT] = RemoveRec(node->children[LEFT], data, cmp_func, param, status);
     }
     else if (0 < cmp_result)
     {
-        /* Go right */
         node->children[RIGHT] = RemoveRec(node->children[RIGHT], data, cmp_func, param, status);
     }
     else
     {
-        /* Found it! Now remove */
         *status = SUCCESS;
         
-        /* Case 1: No left child */
-        if (NULL == node->children[LEFT])
+        if (NULL == node->children[LEFT] && NULL == node->children[RIGHT])
+        {
+            free(node);
+            return NULL;
+        }
+        else if (NULL == node->children[LEFT])
         {
             temp = node->children[RIGHT];
             free(node);
             return temp;
         }
-        /* Case 2: No right child */
         else if (NULL == node->children[RIGHT])
         {
             temp = node->children[LEFT];
             free(node);
             return temp;
         }
-        
-        /* Case 3: Two children */
-        temp = FindMin(node->children[RIGHT]);
-        node->data = temp->data;
-        node->children[RIGHT] = RemoveRec(node->children[RIGHT], temp->data, cmp_func, param, status);
+        else
+        {
+            temp = FindMin(node->children[RIGHT]);
+            node->data = temp->data;
+            node->children[RIGHT] = RemoveRec(node->children[RIGHT], temp->data, cmp_func, param, status);
+        }
     }
     
-    /* Update height */
     UpdateHeight(node);
     
     return Balance(node);
@@ -230,44 +233,46 @@ int AvlRemove(avl_ty* avl, void* data)
     assert(NULL != avl);
     assert(NULL != data);
     
-    avl->root.children[LEFT] = RemoveRec(avl->root.children[LEFT], data, 
-                                          avl->cmp_func, avl->param, &status);
+    avl->root = RemoveRec(avl->root, data, avl->cmp_func, avl->param, &status);
     
     return status;
 }
 
-void* AvlFind(avl_ty* avl, void* elem_to_find)
+static void* FindRec(avl_node_ty* node, void* elem_to_find, 
+                     avl_cmp_ty cmp_func, void* param)
 {
-    avl_node_ty* current = NULL;
     int cmp_result = 0;
     
+    if (NULL == node)
+    {
+        return NULL;
+    }
+    
+    cmp_result = cmp_func(elem_to_find, node->data, param);
+    
+    if (0 == cmp_result)
+    {
+        return node->data;
+    }
+    else if (0 > cmp_result)
+    {
+        return FindRec(node->children[LEFT], elem_to_find, cmp_func, param);
+    }
+    else
+    {
+        return FindRec(node->children[RIGHT], elem_to_find, cmp_func, param);
+    }
+}
+
+void* AvlFind(avl_ty* avl, void* elem_to_find)
+{
     assert(NULL != avl);
     assert(NULL != elem_to_find);
     
-    current = avl->root.children[LEFT];
-    
-    while (NULL != current)
-    {
-        cmp_result = avl->cmp_func(elem_to_find, current->data, avl->param);
-        
-        if (0 == cmp_result)
-        {
-            return current->data;  /* Found it! */
-        }
-        else if (0 > cmp_result)
-        {
-            current = current->children[LEFT];  /* Go left */
-        }
-        else
-        {
-            current = current->children[RIGHT];  /* Go right */
-        }
-    }
-    
-    return NULL;  /* Not found */
+    return FindRec(avl->root, elem_to_find, avl->cmp_func, avl->param);
 }
 
-static int ForEachRec(avl_node_ty* node, traverse_ty traverse, 
+static int ForEachRec(avl_node_ty* node, traverse_ty traverse,
                       avl_action_func_ty action, void* param)
 {
     int status = SUCCESS;
@@ -279,7 +284,6 @@ static int ForEachRec(avl_node_ty* node, traverse_ty traverse,
     
     if (PRE_ORDER == traverse)
     {
-        /* action -> left -> right */
         status = action(node->data, param);
         if (SUCCESS != status)
         {
@@ -297,7 +301,6 @@ static int ForEachRec(avl_node_ty* node, traverse_ty traverse,
     }
     else if (IN_ORDER == traverse)
     {
-        /* left -> action -> right */
         status = ForEachRec(node->children[LEFT], traverse, action, param);
         if (SUCCESS != status)
         {
@@ -313,9 +316,8 @@ static int ForEachRec(avl_node_ty* node, traverse_ty traverse,
         status = ForEachRec(node->children[RIGHT], traverse, action, param);
         return status;
     }
-    else /* POST_ORDER */
+    else
     {
-        /* left -> right -> action */
         status = ForEachRec(node->children[LEFT], traverse, action, param);
         if (SUCCESS != status)
         {
@@ -338,14 +340,8 @@ int AvlForEach(avl_ty* avl, traverse_ty traverse, avl_action_func_ty action, voi
     assert(NULL != avl);
     assert(NULL != action);
     
-    if (NULL == avl->root.children[LEFT])
-    {
-        return SUCCESS;
-    }
-    
-    return ForEachRec(avl->root.children[LEFT], traverse, action, param);
+    return ForEachRec(avl->root, traverse, action, param);
 }
-
 
 static int CountNodes(void* data, void* param)
 {
@@ -369,19 +365,19 @@ int AvlIsEmpty(const avl_ty* avl)
 {
     assert(NULL != avl);
     
-    return (NULL == avl->root.children[LEFT]);
+    return (NULL == avl->root);
 }
 
 size_t AvlHeight(avl_ty* avl)
 {
     assert(NULL != avl);
     
-    if (NULL == avl->root.children[LEFT])
+    if (NULL == avl->root)
     {
-        return 0;  /* might change check with group later */
+        return 0;
     }
     
-    return avl->root.children[LEFT]->height;
+    return (size_t)(avl->root->height);
 }
 
 static int GetHeight(avl_node_ty* node)
@@ -402,39 +398,32 @@ static void UpdateHeight(avl_node_ty* node)
     node->height = 1 + (left_height > right_height ? left_height : right_height);
 }
 
-
 static avl_node_ty* Balance(avl_node_ty* node)
 {
     int balance = 0;
     
     UpdateHeight(node);
     balance = GetBalanceFactor(node);
-    
-    /* Left heavy (balance > 1) */
+    /*KEY: bf < 0 = rightHeavy need to perform left rotation
+    	   bf > 0 = leftHeavy need to perform right rotation */
     if (balance > 1)
     {
-        /* Left-Right case - double rotation */
         if (GetBalanceFactor(node->children[LEFT]) < 0)
         {
             node->children[LEFT] = RotateLeft(node->children[LEFT]);
         }
-        /* Left-Left case - single rotation */
         return RotateRight(node);
     }
     
-    /* Right heavy (balance < -1) */
     if (balance < -1)
     {
-        /* Right-Left case - double rotation */
         if (GetBalanceFactor(node->children[RIGHT]) > 0)
         {
             node->children[RIGHT] = RotateRight(node->children[RIGHT]);
         }
-        /* Right-Right case - single rotation */
         return RotateLeft(node);
     }
     
-    /* Already balanced */
     return node;
 }
 

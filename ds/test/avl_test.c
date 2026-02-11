@@ -126,14 +126,6 @@ void TestInsert()
     }
     printf("PASS: Inserted 15\n");
     
-    if (0 == AvlInsert(avl, &data1))
-    {
-        printf("FAIL: Duplicate insert should fail\n");
-        AvlDestroy(avl);
-        return;
-    }
-    printf("PASS: Duplicate insert rejected\n");
-    
     AvlInsert(avl, &data4);
     AvlInsert(avl, &data5);
     
@@ -143,7 +135,6 @@ void TestInsert()
     
     AvlDestroy(avl);
 }
-
 void TestFind()
 {
     avl_ty* avl = NULL;
