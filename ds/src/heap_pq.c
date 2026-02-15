@@ -36,3 +36,20 @@ void PQDestroy(pq_ty* pq_)
     /* free the pq struct */
 }
 /*----------------------------------------------------------------------------*/
+size_t PQCount(const pq_ty* pq_)
+{
+    /* assert pq_ not NULL */
+    
+    /* return VectorSize(pq_->vec) */
+}
+/*----------------------------------------------------------------------------*/
+pq_bool_ty PQIsEmpty(const pq_ty* pq_)
+{
+    /* assert pq_ not NULL */
+    
+    /* if VectorSize(pq_->vec) == 0 */
+        /* return PQ_TRUE */
+    /* else */
+        /* return PQ_FALSE */
+}
+/*----------------------------------------------------------------------------*/
