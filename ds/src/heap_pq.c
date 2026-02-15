@@ -1,9 +1,11 @@
 #include <vector.h>		/* underlying data strucutre */
 
+#define INTIAL_CAPACITY				10
 struct heap
 {
     vector_ty* vec;              /* pointer to dynamic array (vector) */
     compare_func_ty cmp;         /* comparison function pointer */
+    void* param;				/* comparison func parameter */
 };
 
 pq_ty* PQCreate(pq_cmp_ty cmp, void* param)
