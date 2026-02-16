@@ -42,7 +42,7 @@ typedef int (*pq_is_match_ty)(const void* data, void* param);
 * 		cmp is NULL
 * 	O(1)
 ******************************************************************************/
-pq_ty* PQCreate(pq_cmp_ty cmp, void* param);
+pq_ty* PQCreate(pq_cmp_ty cmp, const void* param);
 
 /****************************************************************************** 
 * 	Description:
