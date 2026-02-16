@@ -113,6 +113,41 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
             /* current = child */
         /* else */
             /* stop */
+    void** start = NULL;
+    size_t current = 0;
+    size_t left = 0;
+    size_t right = 0;
+    size_t priority_child = 0;
+    size_t size = 0;
+    
+    assert(NULL != pq_);
+    
+    start = GetStartIMP(pq_);
+    current = idx_;
+    size = VectorSize(pq_->vec);
+    
+    while (LChildIMP(current) <= size)
+    {
+        left = LChildIMP(current);
+        right = RChildIMP(current);
+        priority_child = left;
+        
+        if (right <= size && 
+            0 > pq_->cmp(start[right], start[left], pq_->param))
+        {
+            priority_child = right;
+        }
+        
+        if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
+        {
+            SwapIMP(&start[current], &start[priority_child]);
+            current = priority_child;
+        }
+        else
+        {
+            break;
+        }
+    }
 }
 /*---------------------------api implementations--------------------------------*/
 pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
