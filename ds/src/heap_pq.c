@@ -194,6 +194,13 @@ void PQDestroy(pq_ty* pq_)
     
     /* destroy underlying vector */
     /* free priority queue structure */
+    if (NULL == pq_)
+    {
+        return;
+    }
+    
+    VectorDestroy(pq_->vec);
+    free(pq_);
 }
 /*----------------------------------------------------------------------------*/
 size_t PQCount(const pq_ty* pq_)
