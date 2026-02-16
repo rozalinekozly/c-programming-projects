@@ -163,6 +163,29 @@ pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
     /* store parameter */
     
     /* return priority queue */
+    
+    pq_ty* pq = NULL;
+    
+    assert(NULL != cmp_);
+    
+    pq = (pq_ty*)malloc(sizeof(pq_ty));
+    if (NULL == pq)
+    {
+        return NULL;
+    }
+    
+    pq->vec = VectorCreate(INITIAL_CAPACITY, sizeof(void*));
+    if (NULL == pq->vec)
+    {
+        free(pq);
+        pq = NULL;
+    }
+    else
+    {
+    	 pq->cmp = cmp_;
+    	pq->param = param_;
+    }
+    return pq;
 }
 /*----------------------------------------------------------------------------*/
 void PQDestroy(pq_ty* pq_)
