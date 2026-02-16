@@ -42,12 +42,16 @@ static size_t RChildIMP(size_t idx)
 {
 	/*assert*/
 	/*return (2*i)*/
+    assert(idx_ > 0);
+    
+    return (2 * idx_ + 1);
 }
 /*----------------------------------------------------------------------------*/
 static size_t LChildIMP(size_t idx)
 {
-	/*assert*/
-	/*return (2*i + 1)*/
+    assert(idx_ > 0);
+    
+    return (2 * idx_);
 }
 /*----------------------------------------------------------------------------*/
 static void SwapIMP(void* a_, void* b_)
