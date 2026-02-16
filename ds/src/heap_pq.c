@@ -18,12 +18,24 @@ static void** GetStartIMP(pq_ty* pq_)
     /* get pointer to first element (index 0) of vector */
     /* subtract one pointer size to shift back */
     /* return shifted pointer   */
+    void** start = NULL;
+    
+    assert(NULL != pq_);
+    assert(NULL != pq_->vec);
+    
+    start = (void**)VectorGetAccessToElement(pq_->vec, 0);
+    start = start - 1;
+    
+    return start;
 }
 /*----------------------------------------------------------------------------*/
 static size_t GetParentIMP(size_t idx_)
 {
     /* if idx_ is 1 (root), return 1 */
     /* otherwise return idx/2 */
+    assert(idx_ > 0);
+    
+    return (1 == idx_) ? 1 : idx_ / 2;
 }
 /*----------------------------------------------------------------------------*/
 static size_t RChildIMP(size_t idx)
