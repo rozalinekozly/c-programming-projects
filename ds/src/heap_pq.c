@@ -81,6 +81,21 @@ static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
     /* while current not root and current has higher priority than parent */
         /* swap current with parent */
         /* current = parent */
+    void** start = NULL;
+    size_t current = 0;
+    size_t parent = 0;
+    
+    assert(NULL != pq_);
+    
+    start = GetStartIMP(pq_);
+    current = idx_;
+    
+    while (current > 1 && 0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
+    {
+        parent = GetParentIMP(current);
+        SwapIMP(&start[current], &start[parent]);
+        current = parent;
+    }
 }
 /*----------------------------------------------------------------------------*/
 static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
