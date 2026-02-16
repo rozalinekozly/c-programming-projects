@@ -208,6 +208,9 @@ size_t PQCount(const pq_ty* pq_)
     /* assert pq_*/
     
     /* return size of vector */
+   assert(NULL != pq_);
+    
+    return VectorSize(pq_->vec);
 }
 /*----------------------------------------------------------------------------*/
 pq_bool_ty PQIsEmpty(const pq_ty* pq_)
@@ -216,6 +219,9 @@ pq_bool_ty PQIsEmpty(const pq_ty* pq_)
     
     /* check if vector is empty */
     /* return appropriate boolean */
+    assert(NULL != pq_);
+    
+    return (0 == VectorSize(pq_->vec));
 }
 /*----------------------------------------------------------------------------*/
 pq_status_ty PQEnqueue(pq_ty* pq_, void* data_)
