@@ -258,6 +258,10 @@ void* PQPeek(const pq_ty* pq_)
     /* assert not empty */
     
     /* return root element without removing */
+    assert(NULL != pq_);
+    assert(!PQIsEmpty(pq_));
+    
+    return VectorGetAccessToElement(pq_->vec, 0);
 }
 /*----------------------------------------------------------------------------*/
 void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
