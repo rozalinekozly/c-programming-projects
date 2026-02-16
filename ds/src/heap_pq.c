@@ -235,6 +235,17 @@ pq_status_ty PQEnqueue(pq_ty* pq_, void* data_)
     /* restore heap property by bubbling up (heapifyUp)new element */
     
     /* return success */
+    assert(NULL != pq_);
+    assert(NULL != data_);
+    
+    if (0 != VectorPushBack(pq_->vec, &data_))
+    {
+        return PQ_FAIL;
+    }
+    
+    HeapifyUpIMP(pq_, VectorSize(pq_->vec));
+    
+    return PQ_SUCCESS;
 }
 /*----------------------------------------------------------------------------*/
 void* PQDequeue(pq_ty* pq_)
