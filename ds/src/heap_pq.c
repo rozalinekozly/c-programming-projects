@@ -1,13 +1,19 @@
-#include "priority_q.h"
-#include "vector.h"
-/*----------------------------------------------------------------------------*/
-#define INITIAL_CAPACITY    1
+#include <assert.h>     /* assert - used in all functions for parameter validation */
+#include <stdlib.h>     /* malloc - PQCreate
+                           free - PQDestroy */
+#include <stddef.h>     /* size_t - used throughout for indices and sizes */
+
+#include "priority_q.h" /* API header - pq_ty, pq_cmp_ty, pq_is_match_ty, 
+                                       pq_status_ty, pq_bool_ty */
+#include "vector.h"     /* vector_ty, VectorCreate, VectorDestroy, 
+                           VectorPushBack, VectorPopBack, 
+                           VectorGetAccessToElement, VectorSize */
 /*----------------------------------------------------------------------------*/
 struct pq
 {
     vector_ty* vec;
     pq_cmp_ty cmp;
-    void* param;
+    const void* param;
 };
 /*-----------------------auxillary functions-----------------------------------*/
 static void** GetStartIMP(pq_ty* pq_)
@@ -38,7 +44,7 @@ static size_t GetParentIMP(size_t idx_)
     return (1 == idx_) ? 1 : idx_ / 2;
 }
 /*----------------------------------------------------------------------------*/
-static size_t RChildIMP(size_t idx)
+static size_t RChildIMP(size_t idx_)
 {
 	/*assert*/
 	/*return (2*i)*/
@@ -47,7 +53,7 @@ static size_t RChildIMP(size_t idx)
     return (2 * idx_ + 1);
 }
 /*----------------------------------------------------------------------------*/
-static size_t LChildIMP(size_t idx)
+static size_t LChildIMP(size_t idx_)
 {
     assert(idx_ > 0);
     
@@ -65,7 +71,10 @@ static void SwapIMP(void* a_, void* b_)
     
     assert(NULL != a_);
     assert(NULL != b_);
-    
+    TODO: 
+    	1- CHANGE FUNC'S ARGUMENTS: void** arr_, size_t id1_, size_t id2_
+    	2- remove uses of memcpy and performs regular swapping
+
     memcpy(&temp, a_, sizeof(void*));
     memcpy(a_, b_, sizeof(void*));
     memcpy(b_, &temp, sizeof(void*));
@@ -93,6 +102,7 @@ static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
     while (current > 1 && 0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
     {
         parent = GetParentIMP(current);
+        TODO: change arguments sends to SwapIMP to be indexes
         SwapIMP(&start[current], &start[parent]);
         current = parent;
     }
@@ -140,6 +150,7 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
         
         if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
         {
+        	TODO: change arguments sends to SwapIMP to be indexes
             SwapIMP(&start[current], &start[priority_child]);
             current = priority_child;
         }
@@ -163,9 +174,9 @@ pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
     /* store parameter */
     
     /* return priority queue */
-    
+    TODO: change this name to ret
     pq_ty* pq = NULL;
-    
+    TODO: move assertion to where we use this funciton
     assert(NULL != cmp_);
     
     pq = (pq_ty*)malloc(sizeof(pq_ty));
@@ -174,7 +185,7 @@ pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
         return NULL;
     }
     
-    pq->vec = VectorCreate(INITIAL_CAPACITY, sizeof(void*));
+    pq->vec = VectorCreate(1, sizeof(void*));
     if (NULL == pq->vec)
     {
         free(pq);
@@ -201,6 +212,9 @@ void PQDestroy(pq_ty* pq_)
     
     VectorDestroy(pq_->vec);
     free(pq_);
+    TODO: 1- define utils.h file (a c header file that provides macros for conditional debug code execution, include guards to prevent double-inclusion, and a 	
+    		memory debugging constant.)
+		  2- add DEBUG_ONLY(pq_ = BAD_MEM(pq_ty*));
 }
 /*----------------------------------------------------------------------------*/
 size_t PQCount(const pq_ty* pq_)
@@ -236,7 +250,8 @@ pq_status_ty PQEnqueue(pq_ty* pq_, void* data_)
     
     /* return success */
     assert(NULL != pq_);
-    assert(NULL != data_);
+    assert(NULL != q->vec);
+    /*remove assert on data */
     
     if (0 != VectorPushBack(pq_->vec, &data_))
     {
@@ -261,6 +276,25 @@ void* PQDequeue(pq_ty* pq_)
     /* if heap not empty, heapify down(HeapDown) from root */
     
     /* return saved root (popped element)*/
+    void** start = NULL;
+    TODO: rename root to ret
+    void* root = NULL;
+    
+    assert(NULL != pq_);
+    assert(!PQIsEmpty(pq_));
+    
+    start = GetStartIMP(pq_);
+    root = start[1];
+    
+    start[1] = start[VectorSize(pq_->vec)];
+    VectorPopBack(pq_->vec);
+    
+    if (!PQIsEmpty(pq_))
+    {
+        HeapifyDownIMP(pq_, 1);
+    }
+    
+    return root;
 }
 /*----------------------------------------------------------------------------*/
 void* PQPeek(const pq_ty* pq_)
@@ -271,7 +305,8 @@ void* PQPeek(const pq_ty* pq_)
     /* return root element without removing */
     assert(NULL != pq_);
     assert(!PQIsEmpty(pq_));
-    
+    TODO: use GetStartIMP function to get start, then return element at first indexes
+    	(accessing heap must be done only via start func)
     return VectorGetAccessToElement(pq_->vec, 0);
 }
 /*----------------------------------------------------------------------------*/
