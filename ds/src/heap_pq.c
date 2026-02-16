@@ -61,6 +61,14 @@ static void SwapIMP(void* a_, void* b_)
     /* use temp variable to swap pointer values */
     /* use memcpy to copy pointer-sized data */
     /* used by heapify-up and heapify-down to maintain heap property */
+    void* temp = NULL;
+    
+    assert(NULL != a_);
+    assert(NULL != b_);
+    
+    memcpy(&temp, a_, sizeof(void*));
+    memcpy(a_, b_, sizeof(void*));
+    memcpy(b_, &temp, sizeof(void*));
 }
 /*heapifying funcs-------------------------------------------------------------*/
 static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
