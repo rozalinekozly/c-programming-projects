@@ -57,7 +57,6 @@ static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
     /* while current not root and current has higher priority than parent */
         /* swap current with parent */
         /* current = parent */
-    /* used for remove and pop*/
 }
 /*----------------------------------------------------------------------------*/
 static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
@@ -75,7 +74,6 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
             /* current = child */
         /* else */
             /* stop */
-    /*used for remove and pop*/
 }
 /*---------------------------api implementations--------------------------------*/
 pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
