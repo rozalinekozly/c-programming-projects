@@ -8,6 +8,9 @@ static int* GetStartIMP(int* arr);
 static void HeapifyUpIMP(int* arr_, size_t idx_);
 static void HeapifyDownIMP(int* arr_, size_t heap_size_);
 static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_);
+static size_t GetParentIMP(size_t idx_);
+static size_t RChildIMP(size_t idx_);
+static size_t LChildIMP(size_t idx_);
 /*----------------------------------------------------------------------------*/
 void HeapSort(int* arr_, size_t arr_size_)
 {
@@ -49,7 +52,7 @@ static void HeapifyUpIMP(int* arr_, size_t idx_)
 	/* assert valid arr_ */
     /* get start pointer by calling GetStartIMP() */
     /* current = idx_ */
-    /* while current not root and current is larger  than parent */
+    /* while current not root and current > than parent call GetParentIMP() to get parent */
         /* call SwapIMP on current with parent */
         /* current = parent */
 }
@@ -60,8 +63,8 @@ static void HeapifyDownIMP(int* arr_, size_t heap_size_)
 	/* get start pointer by calling GetStartIMP() */
 	/* current = root*/
     /* while current < heap_size_ and has children */
-        /* find highest priority child (smaller than current)*/
-        /* if child < current */
+        /* find maximum child, call LChildIMP() and RChildIMP() for children */
+        /* if child > current */
             /* call SwapIMP on current with child */
             /* current = child */
         /* else */
@@ -72,4 +75,22 @@ static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_)
 {
     /* assert valid array */
     /* use temp variable to swap values */
+}
+/*----------------------------------------------------------------------------*/
+static size_t GetParentIMP(size_t idx_)
+{
+    /* if idx_ is 1 (root), return 1 */
+    /* otherwise return idx/2 */
+}
+/*----------------------------------------------------------------------------*/
+static size_t RChildIMP(size_t idx_)
+{
+    /* assert */
+    /* return (2*idx_ + 1) */
+}
+/*----------------------------------------------------------------------------*/
+static size_t LChildIMP(size_t idx_)
+{
+    /* assert */
+    /* return (2*idx_) */
 }
