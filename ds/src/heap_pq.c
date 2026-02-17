@@ -74,6 +74,36 @@ static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_)
     arr_[idx1_] = arr_[idx2_];
     arr_[idx2_] = temp;
 }
+/*----------------------------------------------------------------------------*/
+static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
+{
+    /* assert valid pq */
+    /* assert valid match function */
+    /* iterate through all elements */
+        /* if current element matches criteria */
+            /* return its index */
+    /* return 0 if not found (0 is invalid in 1-based indexing) */
+    void** start = NULL;
+    size_t size = 0;
+    size_t i = 0;
+    
+    assert(NULL != pq_);
+    assert(NULL != is_match_);
+    
+    start = GetStartIMP(pq_);
+    size = VectorSize(pq_->vec);
+    
+    for (i = 1; i <= size; ++i)
+    {
+        if (is_match_(start[i], param_))
+        {
+            return i;
+        }
+    }
+    
+    return 0;
+}
+/*----------------------------------------------------------------------------*/
 /*heapifying funcs-------------------------------------------------------------*/
 static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
 {
@@ -287,45 +317,40 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
 {
     /* assert pq_ */
     /* assert is_match_ */
-    /* iterate through all elements */
-        /* check if current element matches criteria */
-        /* if match found */
-            /* save element for return */
-            /* replace with last element */
-            /* remove last element */
-            /* restore heap property both up and down */
-            /* return saved element */
-    /* return NULL if not found */
+    /* find index of matching element */
+    /* if not found return NULL */
+    /* save element for return */
+    /* replace with last element */
+    /* remove last element */
+    /* restore heap property both up and down */
+    /* return saved element */
     void** start = NULL;
     size_t size = 0;
-    size_t i = 0;
+    size_t idx = 0;
     void* ret = NULL;
     
     assert(NULL != pq_);
     assert(NULL != is_match_);
     
-    start = GetStartIMP(pq_);
-    size = VectorSize(pq_->vec);
-    
-    for (i = 1; i <= size; ++i)
+    idx = FindIMP(pq_, is_match_, param_);
+    if (0 == idx)
     {
-        if (is_match_(start[i], param_))
-        {
-            ret = start[i];
-            
-            start[i] = start[size];
-            VectorPopBack(pq_->vec);
-            
-            if (!PQIsEmpty(pq_))
-            {
-                HeapifyDownIMP(pq_, i);
-                HeapifyUpIMP(pq_, i);
-            }
-            
-            return ret;
-        }
+        return NULL;
     }
     
-    return NULL;
+    start = GetStartIMP(pq_);
+    size = VectorSize(pq_->vec);
+    ret = start[idx];
+    
+    start[idx] = start[size];
+    VectorPopBack(pq_->vec);
+    
+    if (!PQIsEmpty(pq_))
+    {
+        HeapifyDownIMP(pq_, idx);
+        HeapifyUpIMP(pq_, idx);
+    }
+    
+    return ret;
 }
 /*----------------------------------------------------------------------------*/
