@@ -2,6 +2,7 @@
 #include <stdlib.h>     /* malloc - PQCreate, free - PQDestroy */
 #include <stddef.h>     /* size_t - used throughout for indices and sizes */
 
+#include "utils.h"  /* DEBUG_ONLY, BAD_MEM */
 #include "pqueue.h" /* API header - pq_ty, pq_cmp_ty, pq_is_match_ty, 
                                        pq_status_ty, pq_bool_ty */
 #include "vector.h"     /* vector_ty, VectorCreate, VectorDestroy, 
@@ -149,7 +150,7 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
     }
 }
 /*---------------------------api implementations--------------------------------*/
-pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
+pq_ty* PQCreate(pq_cmp_ty cmp_, const void* param_)
 {
     /* assert cmp_ */
     /* allocate memory for priority queue structure */
@@ -173,7 +174,7 @@ pq_ty* PQCreate(pq_cmp_ty cmp_, void* param_)
     if (NULL == ret->vec)
     {
         free(ret);
-        ret = NULL;
+        DEBUG_ONLY(ret = BAD_MEM(pq_ty*));
     }
     else
     {
@@ -196,6 +197,7 @@ void PQDestroy(pq_ty* pq_)
     
     VectorDestroy(pq_->vec);
     free(pq_);
+    DEBUG_ONLY(pq_ = BAD_MEM(pq_ty*));
 }
 /*----------------------------------------------------------------------------*/
 size_t PQCount(const pq_ty* pq_)
