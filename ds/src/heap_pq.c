@@ -21,7 +21,7 @@ static size_t GetParentIMP(size_t idx_);
 static size_t RChildIMP(size_t idx_);
 static size_t LChildIMP(size_t idx_);
 static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_);
-static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_);
+static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_);
 static void HeapifyUpIMP(pq_ty* pq_, size_t idx_);
 static void HeapifyDownIMP(pq_ty* pq_, size_t idx_);
 
@@ -160,7 +160,7 @@ void* PQPeek(const pq_ty* pq_)
     return start[1];
 }
 /*----------------------------------------------------------------------------*/
-void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
+void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
 {
     /* assert pq_ */
     /* assert is_match_ */
@@ -212,6 +212,7 @@ static void** GetStartIMP(pq_ty* pq_)
     
     assert(NULL != pq_);
     assert(NULL != pq_->vec);
+    assert(!PQIsEmpty(pq_));
     
     start = (void**)VectorGetAccessToElement(pq_->vec, 0);
     start = start - 1;
@@ -260,7 +261,7 @@ static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_)
     arr_[idx2_] = temp;
 }
 /*----------------------------------------------------------------------------*/
-static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
+static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
 {
     /* assert valid pq */
     /* assert valid match function */
