@@ -19,7 +19,7 @@ typedef struct task
 /* --- Helper Functions --- */
 
 /* Higher priority means a SMALLER priority number */
-static int TaskCmp(const void* data1, const void* data2, void* param)
+static int TaskCmp(const void* data1, const void* data2, const void* param)
 {
     task_ty* t1 = (task_ty*)data1;
     task_ty* t2 = (task_ty*)data2;
