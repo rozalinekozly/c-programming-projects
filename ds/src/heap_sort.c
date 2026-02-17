@@ -86,11 +86,11 @@ static size_t GetParentIMP(size_t idx_)
 static size_t RChildIMP(size_t idx_)
 {
     /* assert */
-    /* return (2*idx_ + 1) */
+    /* return (2*idx_ + 1)*/
 }
 /*----------------------------------------------------------------------------*/
 static size_t LChildIMP(size_t idx_)
 {
     /* assert */
-    /* return (2*idx_) */
+    /* return (2*idx_)*/
 }
