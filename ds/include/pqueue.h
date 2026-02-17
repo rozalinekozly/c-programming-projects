@@ -23,7 +23,7 @@ typedef enum bool
 * 		0 < result if data2 comes before data1,
 *		0 == result if data1 and data2 are equal
 ******************************************************************************/
-typedef int (*pq_cmp_ty)(const void* data1, const void* data2, void* param);
+typedef int (*pq_cmp_ty)(const void* data1, const void* data2, const void* param);
 
 /****************************************************************************** 
 *   Function receives element's data ("data"), any other parameter may be
