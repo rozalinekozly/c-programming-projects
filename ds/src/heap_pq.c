@@ -2,7 +2,7 @@
 #include <stdlib.h>     /* malloc - PQCreate, free - PQDestroy */
 #include <stddef.h>     /* size_t - used throughout for indices and sizes */
 
-#include "utils.h"  /* DEBUG_ONLY, BAD_MEM */
+#include "utils.h"  /* DEBUG_ONLY, BAD_MEM - used in handling dangling ptrs whiile debugging*/
 #include "pqueue.h" /* API header - pq_ty, pq_cmp_ty, pq_is_match_ty, 
                                        pq_status_ty, pq_bool_ty */
 #include "vector.h"     /* vector_ty, VectorCreate, VectorDestroy, 
@@ -15,170 +15,16 @@ struct pq
     pq_cmp_ty cmp;
     const void* param;
 };
-/*-----------------------auxillary functions-----------------------------------*/
-static void** GetStartIMP(pq_ty* pq_)
-{
-    /* assert valid pq */
-    /* assert valid vector */
-    /* get pointer to first element (index 0) of vector */
-    /* subtract one pointer size to shift back */
-    /* return shifted pointer */
-    void** start = NULL;
-    
-    assert(NULL != pq_);
-    assert(NULL != pq_->vec);
-    
-    start = (void**)VectorGetAccessToElement(pq_->vec, 0);
-    start = start - 1;
-    
-    return start;
-}
-/*----------------------------------------------------------------------------*/
-static size_t GetParentIMP(size_t idx_)
-{
-    /* if idx_ is 1 (root), return 1 */
-    /* otherwise return idx/2 */
-    assert(idx_ > 0);
-    
-    return (1 == idx_) ? 1 : idx_ / 2;
-}
-/*----------------------------------------------------------------------------*/
-static size_t RChildIMP(size_t idx_)
-{
-    /* assert */
-    /* return (2*idx_ + 1) */
-    assert(idx_ > 0);
-    
-    return (2 * idx_ + 1);
-}
-/*----------------------------------------------------------------------------*/
-static size_t LChildIMP(size_t idx_)
-{
-    /* assert */
-    /* return (2*idx_) */
-    assert(idx_ > 0);
-    
-    return (2 * idx_);
-}
-/*----------------------------------------------------------------------------*/
-static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_)
-{
-    /* assert valid array */
-    /* use temp variable to swap pointer values */
-    /* used by heapify-up and heapify-down to maintain heap property */
-    void* temp = NULL;
-    
-    assert(NULL != arr_);
-    
-    temp = arr_[idx1_];
-    arr_[idx1_] = arr_[idx2_];
-    arr_[idx2_] = temp;
-}
-/*----------------------------------------------------------------------------*/
-static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
-{
-    /* assert valid pq */
-    /* assert valid match function */
-    /* iterate through all elements */
-        /* if current element matches criteria */
-            /* return its index */
-    /* return 0 if not found (0 is invalid in 1-based indexing) */
-    void** start = NULL;
-    size_t size = 0;
-    size_t i = 0;
-    
-    assert(NULL != pq_);
-    assert(NULL != is_match_);
-    
-    start = GetStartIMP(pq_);
-    size = VectorSize(pq_->vec);
-    
-    for (i = 1; i <= size; ++i)
-    {
-        if (is_match_(start[i], param_))
-        {
-            return i;
-        }
-    }
-    
-    return 0;
-}
-/*----------------------------------------------------------------------------*/
-/*heapifying funcs-------------------------------------------------------------*/
-static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
-{
-    /* assert valid pq_ */
-    /* get start pointer */
-    /* current = idx_ */
-    /* while current not root and current has higher priority than parent */
-        /* swap current with parent */
-        /* current = parent */
-    void** start = NULL;
-    size_t current = 0;
-    size_t parent = 0;
-    
-    assert(NULL != pq_);
-    
-    start = GetStartIMP(pq_);
-    current = idx_;
-    
-    while (current > 1 && 
-           0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
-    {
-        parent = GetParentIMP(current);
-        SwapIMP(start, current, parent);
-        current = parent;
-    }
-}
-/*----------------------------------------------------------------------------*/
-static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
-{
-    /* assert valid pq */
-    /* get start pointer */
-    /* current = idx_ (starting position passed as argument) */
-    /* while current has children */
-        /* find highest priority child */
-        /* if child has higher priority than current */
-            /* swap current with child */
-            /* current = child */
-        /* else */
-            /* stop */
-    void** start = NULL;
-    size_t current = 0;
-    size_t left = 0;
-    size_t right = 0;
-    size_t priority_child = 0;
-    size_t size = 0;
-    
-    assert(NULL != pq_);
-    
-    start = GetStartIMP(pq_);
-    current = idx_;
-    size = VectorSize(pq_->vec);
-    
-    while (LChildIMP(current) <= size)
-    {
-        left = LChildIMP(current);
-        right = RChildIMP(current);
-        priority_child = left;
-        
-        if (right <= size && 
-            0 > pq_->cmp(start[right], start[left], pq_->param))
-        {
-            priority_child = right;
-        }
-        
-        if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
-        {
-            SwapIMP(start, current, priority_child);
-            current = priority_child;
-        }
-        else
-        {
-            break;
-        }
-    }
-}
+/*-----------------------forward declarations---------------------------------*/
+static void** GetStartIMP(pq_ty* pq_);
+static size_t GetParentIMP(size_t idx_);
+static size_t RChildIMP(size_t idx_);
+static size_t LChildIMP(size_t idx_);
+static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_);
+static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_);
+static void HeapifyUpIMP(pq_ty* pq_, size_t idx_);
+static void HeapifyDownIMP(pq_ty* pq_, size_t idx_);
+
 /*---------------------------api implementations--------------------------------*/
 pq_ty* PQCreate(pq_cmp_ty cmp_, const void* param_)
 {
@@ -353,4 +199,173 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
     
     return ret;
 }
+/*-----------------------auxillary functions-----------------------------------*/
+static void** GetStartIMP(pq_ty* pq_)
+{
+    /* assert valid pq */
+    /* assert valid vector */
+    /* get pointer to first element (index 0) of vector */
+    /* subtract one pointer size to shift back */
+    /* return shifted pointer */
+    void** start = NULL;
+    
+    assert(NULL != pq_);
+    assert(NULL != pq_->vec);
+    
+    start = (void**)VectorGetAccessToElement(pq_->vec, 0);
+    start = start - 1;
+    
+    return start;
+}
 /*----------------------------------------------------------------------------*/
+static size_t GetParentIMP(size_t idx_)
+{
+    /* if idx_ is 1 (root), return 1 */
+    /* otherwise return idx/2 */
+    assert(idx_ > 0);
+    
+    return (1 == idx_) ? 1 : idx_ / 2;
+}
+/*----------------------------------------------------------------------------*/
+static size_t RChildIMP(size_t idx_)
+{
+    /* assert */
+    /* return (2*idx_ + 1) */
+    assert(idx_ > 0);
+    
+    return (2 * idx_ + 1);
+}
+/*----------------------------------------------------------------------------*/
+static size_t LChildIMP(size_t idx_)
+{
+    /* assert */
+    /* return (2*idx_) */
+    assert(idx_ > 0);
+    
+    return (2 * idx_);
+}
+/*----------------------------------------------------------------------------*/
+static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_)
+{
+    /* assert valid array */
+    /* use temp variable to swap pointer values */
+    /* used by heapify-up and heapify-down to maintain heap property */
+    void* temp = NULL;
+    
+    assert(NULL != arr_);
+    
+    temp = arr_[idx1_];
+    arr_[idx1_] = arr_[idx2_];
+    arr_[idx2_] = temp;
+}
+/*----------------------------------------------------------------------------*/
+static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
+{
+    /* assert valid pq */
+    /* assert valid match function */
+    /* if heap is empty return not_found = 0 (illegal index)*/
+    /* iterate through all elements */
+        /* if current element matches criteria */
+            /* return its index */
+    /* return 0 if not found (0 is invalid in 1-based indexing) */
+    void** start = NULL;
+    size_t size = 0;
+    size_t i = 0;
+    
+    assert(NULL != pq_);
+    assert(NULL != is_match_);
+    
+    if (PQIsEmpty(pq_))
+    {
+        return 0;	/*not found*/
+    }
+    
+    start = GetStartIMP(pq_);
+    size = VectorSize(pq_->vec);
+    
+    for (i = 1; i <= size; ++i)
+    {
+        if (is_match_(start[i], param_))
+        {
+            return i;
+        }
+    }
+    
+    return 0;	/*not found*/
+}
+/*----------------------------------------------------------------------------*/
+/*heapifying funcs-------------------------------------------------------------*/
+static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
+{
+    /* assert valid pq_ */
+    /* get start pointer */
+    /* current = idx_ */
+    /* while current not root and current has higher priority than parent */
+        /* swap current with parent */
+        /* current = parent */
+    void** start = NULL;
+    size_t current = 0;
+    size_t parent = 0;
+    
+    assert(NULL != pq_);
+    
+    start = GetStartIMP(pq_);
+    current = idx_;
+    
+    while (current > 1 && 
+           0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
+    {
+        parent = GetParentIMP(current);
+        SwapIMP(start, current, parent);
+        current = parent;
+    }
+}
+/*----------------------------------------------------------------------------*/
+static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
+{
+    /* assert valid pq */
+    /* get start pointer */
+    /* current = idx_ (starting position passed as argument) */
+    /* while current has children */
+        /* find highest priority child */
+        /* if child has higher priority than current */
+            /* swap current with child */
+            /* current = child */
+        /* else */
+            /* stop */
+    void** start = NULL;
+    size_t current = 0;
+    size_t left = 0;
+    size_t right = 0;
+    size_t priority_child = 0;
+    size_t size = 0;
+    
+    assert(NULL != pq_);
+    
+    start = GetStartIMP(pq_);
+    current = idx_;
+    size = VectorSize(pq_->vec);
+    
+    while (LChildIMP(current) <= size)
+    {
+        left = LChildIMP(current);
+        right = RChildIMP(current);
+        priority_child = left;
+        
+        if (right <= size && 
+            0 > pq_->cmp(start[right], start[left], pq_->param))
+        {
+            priority_child = right;
+        }
+        
+        if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
+        {
+            SwapIMP(start, current, priority_child);
+            current = priority_child;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
