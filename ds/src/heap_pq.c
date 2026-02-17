@@ -72,6 +72,7 @@ void PQDestroy(pq_ty* pq_)
     }
     
     VectorDestroy(pq_->vec);
+    DEBUG_ONLY(pq_->vec = BAD_MEM(vector_ty*));
     free(pq_);
     DEBUG_ONLY(pq_ = BAD_MEM(pq_ty*));
 }
