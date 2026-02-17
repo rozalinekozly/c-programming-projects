@@ -1,12 +1,13 @@
-#include <stddef.h>     /* size_t */
+#include <stddef.h>		/* size_t */
 
-#include "heap_sort.h"
+#include "heap_sort.h"	/*API*/
 /*--------------------------forward declarations------------------------------*/
 static void BuildHeapIMP(int* arr_, size_t arr_size_);
 static void BuildSortedArrayFromHeapIMP(int* arr_, size_t arr_size_);
 static int* GetStartIMP(int* arr);
 static void HeapifyUpIMP(int* arr_, size_t idx_);
 static void HeapifyDownIMP(int* arr_, size_t heap_size_);
+static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_);
 /*----------------------------------------------------------------------------*/
 void HeapSort(int* arr_, size_t arr_size_)
 {
@@ -29,10 +30,10 @@ static void BuildSortedArrayFromHeapIMP(int* arr_, size_t arr_size_)
 	/* get start pointer by calling GetStartIMP() */
 	/*point at rightmost leaf(end of heap) = arr_size_ (from start) as write_idx*/
 	/*iterate on array*/
-		/*swap root with rightmost leaf*/
+		/*call SwapIMP on root with rightmost write_idx*/
 		/*decrement heap size by 1*/
 				/*actually: decrement write pointer by 1*/
-		/*fix heap by calling HeapifyDownIMP() with write_idx*/
+		/*fix heap by calling HeapifyDownIMP() with write_idx as heap size*/
 }
 /*----------------------------------------------------------------------------*/
 static int* GetStartIMP(int* arr_)
@@ -49,7 +50,7 @@ static void HeapifyUpIMP(int* arr_, size_t idx_)
     /* get start pointer by calling GetStartIMP() */
     /* current = idx_ */
     /* while current not root and current is larger  than parent */
-        /* swap current with parent */
+        /* call SwapIMP on current with parent */
         /* current = parent */
 }
 /*----------------------------------------------------------------------------*/
@@ -61,9 +62,14 @@ static void HeapifyDownIMP(int* arr_, size_t heap_size_)
     /* while current < heap_size_ and has children */
         /* find highest priority child (smaller than current)*/
         /* if child < current */
-            /* swap current with child */
+            /* call SwapIMP on current with child */
             /* current = child */
         /* else */
             /* stop */
 }
 /*----------------------------------------------------------------------------*/
+static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_)
+{
+    /* assert valid array */
+    /* use temp variable to swap values */
+}
