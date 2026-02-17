@@ -314,7 +314,6 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
 {
     /* assert pq_ */
     /* assert is_match_*/
-    
     /* iterate through all elements */
         /* check if current element matches criteria */
         
@@ -329,5 +328,37 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, void* param_)
             /* return saved element */
     
     /* return NULL if not found */
+    
+    void** start = NULL;
+    size_t size = 0;
+    size_t i = 0;
+    void* ret = NULL;
+    
+    assert(NULL != pq_);
+    assert(NULL != is_match_);
+    
+    start = GetStartIMP(pq_);
+    size = VectorSize(pq_->vec);
+    
+    for (i = 1; i <= size; ++i)
+    {
+        if (is_match_(start[i], param_))
+        {
+            ret = start[i];
+            
+            start[i] = start[size];
+            VectorPopBack(pq_->vec);
+            
+            if (!PQIsEmpty(pq_))
+            {
+                HeapifyDownIMP(pq_, i);
+                HeapifyUpIMP(pq_, i);
+            }
+            
+            return ret;
+        }
+    }
+    
+    return NULL;
 }
 /*----------------------------------------------------------------------------*/
