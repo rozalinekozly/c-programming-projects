@@ -130,7 +130,7 @@ int VectorReserve(vector_ty* vec, size_t new_capacity)
 	/* to hold the result of the realloc, in case of failure, return the 
 	    original vector without resizing 
 	    so we won't lose the original vector */
-	vector_ty* tmp = NULL; 
+	char* tmp = NULL;
 	assert(NULL != vec);
 	assert((vec -> size) <= new_capacity);
 	/*"new capcity represents number of new elements within the vector
