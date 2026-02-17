@@ -79,8 +79,8 @@ static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_)
 /*----------------------------------------------------------------------------*/
 static size_t GetParentIMP(size_t idx_)
 {
-    /* if idx_ is 1 (root), return 1 */
-    /* otherwise return idx/2 */
+    /* assert*/
+    /* return idx/2 */
 }
 /*----------------------------------------------------------------------------*/
 static size_t RChildIMP(size_t idx_)
