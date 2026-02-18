@@ -1,3 +1,7 @@
+/*
+developer: rozaline
+reviewer: steve
+*/
 #include <assert.h>     /* assert - used in all functions for parameter validation */
 #include <stdlib.h>     /* malloc - PQCreate, free - PQDestroy */
 #include <stddef.h>     /* size_t - used throughout for indices and sizes */
@@ -36,15 +40,13 @@ pq_ty* PQCreate(pq_cmp_ty cmp_, const void* param_)
     /* store comparison function */
     /* store parameter */
     /* return priority queue */
-    pq_ty* ret = NULL;
-    
-    assert(NULL != cmp_);
-    
-    ret = (pq_ty*)malloc(sizeof(pq_ty));
+    pq_ty* ret = (pq_ty*)malloc(sizeof(pq_ty));
     if (NULL == ret)
     {
         return NULL;
     }
+    
+    assert(NULL != cmp_);
     
     ret->vec = VectorCreate(1, sizeof(void*));
     if (NULL == ret->vec)
@@ -104,7 +106,6 @@ pq_status_ty PQEnqueue(pq_ty* pq_, void* data_)
     /* restore heap property by bubbling up new element */
     /* return success */
     assert(NULL != pq_);
-    assert(NULL != pq_->vec);
     
     if (0 != VectorPushBack(pq_->vec, &data_))
     {
@@ -125,16 +126,16 @@ void* PQDequeue(pq_ty* pq_)
     /* pop last element */
     /* if heap not empty, heapify down from root */
     /* return saved root */
-    void** start = NULL;
+    void** heap = NULL;
     void* ret = NULL;
     
     assert(NULL != pq_);
     assert(!PQIsEmpty(pq_));
     
-    start = GetStartIMP(pq_);
-    ret = start[1];
+    heap = GetStartIMP(pq_);
+    ret = heap[1];
     
-    start[1] = start[VectorSize(pq_->vec)];
+    heap[1] = heap[VectorSize(pq_->vec)];
     VectorPopBack(pq_->vec);
     
     if (!PQIsEmpty(pq_))
@@ -150,14 +151,14 @@ void* PQPeek(const pq_ty* pq_)
     /* assert pq_ */
     /* assert not empty */
     /* return root element without removing */
-    void** start = NULL;
-    
+    void** heap = NULL;
+    void* ret = NULL;
     assert(NULL != pq_);
     assert(!PQIsEmpty(pq_));
     
-    start = GetStartIMP((pq_ty*)pq_);
-    
-    return start[1];
+    heap = GetStartIMP((pq_ty*)pq_);
+    ret = heap[1];
+    return ret;
 }
 /*----------------------------------------------------------------------------*/
 void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
@@ -171,7 +172,7 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
     /* remove last element */
     /* restore heap property both up and down */
     /* return saved element */
-    void** start = NULL;
+    void** heap = NULL;
     size_t size = 0;
     size_t idx = 0;
     void* ret = NULL;
@@ -185,11 +186,11 @@ void* PQRemove(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
         return NULL;
     }
     
-    start = GetStartIMP(pq_);
+    heap = GetStartIMP(pq_);
     size = VectorSize(pq_->vec);
-    ret = start[idx];
+    ret = heap[idx];
     
-    start[idx] = start[size];
+    heap[idx] = heap[size];
     VectorPopBack(pq_->vec);
     
     if (!PQIsEmpty(pq_))
@@ -208,16 +209,16 @@ static void** GetStartIMP(pq_ty* pq_)
     /* get pointer to first element (index 0) of vector */
     /* subtract one pointer size to shift back */
     /* return shifted pointer */
-    void** start = NULL;
+    void** heap = NULL;
     
     assert(NULL != pq_);
     assert(NULL != pq_->vec);
     assert(!PQIsEmpty(pq_));
     
-    start = (void**)VectorGetAccessToElement(pq_->vec, 0);
-    start = start - 1;
+    heap = (void**)VectorGetAccessToElement(pq_->vec, 0);
+    heap = heap - 1;
     
-    return start;
+    return heap;
 }
 /*----------------------------------------------------------------------------*/
 static size_t GetParentIMP(size_t idx_)
@@ -271,24 +272,19 @@ static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
         /* if current element matches criteria */
             /* return its index */
     /* return 0 if not found (0 is invalid in 1-based indexing) */
-    void** start = NULL;
+    void** heap = NULL;
     size_t size = 0;
     size_t i = 0;
     
     assert(NULL != pq_);
     assert(NULL != is_match_);
     
-    if (PQIsEmpty(pq_))
-    {
-        return 0;	/*not found*/
-    }
-    
-    start = GetStartIMP(pq_);
+    heap = GetStartIMP(pq_);
     size = VectorSize(pq_->vec);
     
     for (i = 1; i <= size; ++i)
     {
-        if (is_match_(start[i], param_))
+        if (is_match_(heap[i], param_))
         {
             return i;
         }
@@ -301,25 +297,25 @@ static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
 static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
 {
     /* assert valid pq_ */
-    /* get start pointer */
+    /* get heap pointer */
     /* current = idx_ */
     /* while current not root and current has higher priority than parent */
         /* swap current with parent */
         /* current = parent */
-    void** start = NULL;
+    void** heap = NULL;
     size_t current = 0;
     size_t parent = 0;
     
     assert(NULL != pq_);
     
-    start = GetStartIMP(pq_);
+    heap = GetStartIMP(pq_);
     current = idx_;
     
     while (current > 1 && 
-           0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
+           0 > pq_->cmp(heap[current], heap[GetParentIMP(current)], pq_->param))
     {
         parent = GetParentIMP(current);
-        SwapIMP(&start[current], &start[parent]);
+        SwapIMP(&heap[current], &heap[parent]);
         current = parent;
     }
 }
@@ -327,8 +323,8 @@ static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
 static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
 {
     /* assert valid pq */
-    /* get start pointer */
-    /* current = idx_ (starting position passed as argument) */
+    /* get heap pointer */
+    /* current = idx_ (heaping position passed as argument) */
     /* while current has children */
         /* find highest priority child */
         /* if child has higher priority than current */
@@ -336,7 +332,7 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
             /* current = child */
         /* else */
             /* stop */
-    void** start = NULL;
+    void** heap = NULL;
     size_t current = 0;
     size_t left = 0;
     size_t right = 0;
@@ -345,7 +341,7 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
     
     assert(NULL != pq_);
     
-    start = GetStartIMP(pq_);
+    heap = GetStartIMP(pq_);
     current = idx_;
     size = VectorSize(pq_->vec);
     
@@ -356,14 +352,14 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
         priority_child = left;
         
         if (right <= size && 
-            0 > pq_->cmp(start[right], start[left], pq_->param))
+            0 > pq_->cmp(heap[right], heap[left], pq_->param))
         {
             priority_child = right;
         }
         
-        if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
+        if (0 > pq_->cmp(heap[priority_child], heap[current], pq_->param))
         {
-            SwapIMP(&start[current], &start[priority_child]);
+            SwapIMP(&heap[current], &heap[priority_child]);
             current = priority_child;
         }
         else
