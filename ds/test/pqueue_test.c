@@ -29,7 +29,7 @@ static int TaskCmp(const void* data1, const void* data2, const void* param)
 }
 
 /* Match based on Task ID */
-static int MatchId(const void* data, void* param)
+static int MatchId(const void* data, const void* param)
 {
     return (((task_ty*)data)->id == *(int*)param);
 }

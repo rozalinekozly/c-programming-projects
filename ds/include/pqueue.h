@@ -30,7 +30,7 @@ typedef int (*pq_cmp_ty)(const void* data1, const void* data2, const void* param
 *		passed with "param".
 *	Function should return 1 if match was found, or 0 otherwise.
 ******************************************************************************/
-typedef int (*pq_is_match_ty)(const void* data, void* param);
+typedef int (*pq_is_match_ty)(const void* data, const void* param);
 
 /****************************************************************************** 
 * 	Description:
@@ -110,7 +110,7 @@ void* PQDequeue(pq_ty* q);
 *		"is_match" is NULL
 *   O(n)
 ******************************************************************************/
-void* PQRemove(pq_ty* q, pq_is_match_ty is_match, void* param);
+void* PQRemove(pq_ty* q, pq_is_match_ty is_match, const void* param);
 
 /****************************************************************************** 
 *   Description:
