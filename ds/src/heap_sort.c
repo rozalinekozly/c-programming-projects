@@ -7,7 +7,7 @@ static void BuildSortedArrayFromHeapIMP(int* arr_, size_t arr_size_);
 static int* GetStartIMP(int* arr);
 static void HeapifyUpIMP(int* arr_, size_t idx_);
 static void HeapifyDownIMP(int* arr_, size_t heap_size_);
-static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_);
+static void SwapIMP(int* idx1_, int* idx2_);
 static size_t GetParentIMP(size_t idx_);
 static size_t RChildIMP(size_t idx_);
 static size_t LChildIMP(size_t idx_);
@@ -71,9 +71,9 @@ static void HeapifyDownIMP(int* arr_, size_t heap_size_)
             /* stop */
 }
 /*----------------------------------------------------------------------------*/
-static void SwapIMP(int* arr_, size_t idx1_, size_t idx2_)
+static void SwapIMP(int* idx1_, int* idx2_)
 {
-    /* assert valid array */
+
     /* use temp variable to swap values */
 }
 /*----------------------------------------------------------------------------*/
