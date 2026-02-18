@@ -20,7 +20,7 @@ static void** GetStartIMP(pq_ty* pq_);
 static size_t GetParentIMP(size_t idx_);
 static size_t RChildIMP(size_t idx_);
 static size_t LChildIMP(size_t idx_);
-static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_);
+static void SwapIMP(void** a_, void** b_);
 static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_);
 static void HeapifyUpIMP(pq_ty* pq_, size_t idx_);
 static void HeapifyDownIMP(pq_ty* pq_, size_t idx_);
@@ -247,18 +247,19 @@ static size_t LChildIMP(size_t idx_)
     return (2 * idx_);
 }
 /*----------------------------------------------------------------------------*/
-static void SwapIMP(void** arr_, size_t idx1_, size_t idx2_)
+static void SwapIMP(void** a_, void** b_)
 {
-    /* assert valid array */
+    /* assert*/
     /* use temp variable to swap pointer values */
     /* used by heapify-up and heapify-down to maintain heap property */
     void* temp = NULL;
     
-    assert(NULL != arr_);
+    assert(NULL != a_);
+    assert(NULL != b_);
     
-    temp = arr_[idx1_];
-    arr_[idx1_] = arr_[idx2_];
-    arr_[idx2_] = temp;
+    temp = *a_;
+    *a_ = *b_;
+    *b_ = temp;
 }
 /*----------------------------------------------------------------------------*/
 static size_t FindIMP(pq_ty* pq_, pq_is_match_ty is_match_, const void* param_)
@@ -318,7 +319,7 @@ static void HeapifyUpIMP(pq_ty* pq_, size_t idx_)
            0 > pq_->cmp(start[current], start[GetParentIMP(current)], pq_->param))
     {
         parent = GetParentIMP(current);
-        SwapIMP(start, current, parent);
+        SwapIMP(&start[current], &start[parent]);
         current = parent;
     }
 }
@@ -362,7 +363,7 @@ static void HeapifyDownIMP(pq_ty* pq_, size_t idx_)
         
         if (0 > pq_->cmp(start[priority_child], start[current], pq_->param))
         {
-            SwapIMP(start, current, priority_child);
+            SwapIMP(&start[current], &start[priority_child]);
             current = priority_child;
         }
         else
