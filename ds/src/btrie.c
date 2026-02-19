@@ -4,6 +4,10 @@ reviewer:
 */
 #include "btrie.h"	/*API*/
 /*--------------------------forward declarations------------------------------*/
+static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty *num_,
+                  size_t total_bits_);
+static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
+                       size_t total_bits_);
 /*----------------------------------------------------------------------------*/
 typedef struct btrie_node
 {
@@ -37,23 +41,51 @@ void BTrieDestroy(btrie_ty* trie_)
 	/* if trie_ is NULL return */
 	/* recursively destroy all children nodes */
 	/* free root */
+	/*handle dangling pointer*/
 	/* free trie_ */
+	/*handle dangling pointer*/
+}
+/*----------------------------------------------------------------------------*/
+static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
+                       size_t total_bits_)
+{
+    /* if NULL return */
+    /* if leaf, turn off is_full, return */
+    /* extract bit, recurse down */
+    /* turn off is_full */
 }
 /*----------------------------------------------------------------------------*/
 void BTrieRelease(btrie_ty* trie_, num_ty num_)
 {
-	/* if trie_ is NULL return */
-	/* search for the node representing num_ */
-	/* if not found or already free return */
-	/* mark leaf's field is_full as not full*/
-	/* while climbing up
-		turn off is_full flag*/
+    /* if NULL return */
+    /* ReleaseIMP from root */
 }
 /*----------------------------------------------------------------------------*/
-
-
-
-
+num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
+{
+    /* assert trie_ */
+    /* if root full return 0  )invalid address) */
+    /* call GetIMP, return result or 0 (indicates an invalid address ) */
+}
+/*----------------------------------------------------------------------------*/
+static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
+                  size_t total_bits_)
+{
+    /* if node _ is NULL*/
+    /*allocate and init*/
+    
+    /*  if node_ is leaf:
+    	/* if full return FAIL*/
+    	/* else mark full then return SUCCESS */
+    	
+    /* extract current bit */
+		/* if child[bit] full, flip bit */
+		/* if child[bit] still full return FAIL */
+		/* if flipped, fix num_ at this position, clear lower bits */
+    /* recurse, if FAIL return FAIL(save status) */
+    /* update is_full */
+    /* return SUCCESS */
+}
 
 
 
