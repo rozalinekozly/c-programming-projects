@@ -4,7 +4,7 @@
 #include <stddef.h>     /* size_t */
 
 typedef struct btrie btrie_ty;
-typedef size_t addr_ty;
+typedef size_t num_ty;
  
 /*
 *   On failure returns NULL
@@ -14,7 +14,6 @@ btrie_ty* BTrieCreate(size_t num_bits_);
 
 /*
 *   NULL is allowed
-*   
 */
 void BTrieDestroy(btrie_ty* trie_);
 
@@ -22,17 +21,17 @@ void BTrieDestroy(btrie_ty* trie_);
 *   Frees "addr" from "trie"
 *   O(1)
 */
-void BTrieRelease(btrie_ty* trie_, addr_ty addr_);
+void BTrieRelease(btrie_ty* trie_, num_ty num_);
 
 /*
 * 	Return value:	
-* 		On success, returns the nearest address available to "addr_"
+* 		On success, returns the nearest address available to "num_"
 *       On fail, returns address with 0 value.
 * 	Undefined behaviour:
 *        "trie_" is NULL
 *   O(1)
 */
-addr_ty BTrieGet(btrie_ty* trie_, addr_ty addr_);
+num_ty BTrieGet(btrie_ty* trie_, num_ty num_);
     
 /*
 * 	Undefined behaviour:
