@@ -26,7 +26,10 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* allocate root node */
     /* if fail free trie, return NULL */
     
+    /*assign fields of created root to be null children and is_flag is off*/
     /* assign fields of created btrie(root, num_bits)*/
     
     /* return trie */
 }
+/*----------------------------------------------------------------------------*/
+
