@@ -40,3 +40,21 @@ void BTrieDestroy(btrie_ty* trie_)
 	/* free trie_ */
 }
 /*----------------------------------------------------------------------------*/
+void BTrieRelease(btrie_ty* trie_, num_ty num_)
+{
+	/* if trie_ is NULL return */
+	/* search for the node representing num_ */
+	/* if not found or already free return */
+	/* mark leaf's field is_full as not full*/
+	/* while climbing up
+		turn off is_full flag*/
+}
+/*----------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
