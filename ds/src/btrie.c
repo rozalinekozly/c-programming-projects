@@ -32,4 +32,11 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* return trie */
 }
 /*----------------------------------------------------------------------------*/
-
+void BTrieDestroy(btrie_ty* trie_)
+{
+	/* if trie_ is NULL return */
+	/* recursively destroy all children nodes */
+	/* free root */
+	/* free trie_ */
+}
+/*----------------------------------------------------------------------------*/
