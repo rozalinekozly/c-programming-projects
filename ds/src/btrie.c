@@ -2,6 +2,10 @@
 developer: rozaline
 reviewer: 
 */
+/*----------------------------------------------------------------------------*/
+#include <stdlib.h>	/*malloc, free, NULL*/
+#include <assert.h>	/*assert*/
+#include <stddef.h>	/*size_t*/
 #include "btrie.h"	/*API*/
 /*--------------------------forward declarations------------------------------*/
 static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty *num_,
@@ -30,9 +34,13 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* allocate root node */
     /* if fail free trie, return NULL */
     
-    /*assign fields of created root to be null children and is_flag is off*/
-    /* assign fields of created btrie(root, num_bits)*/
+    /*set fields of created root to be null children and is_flag is off*/
+    /* set fields of created btrie(root, num_bits)*/
     
+    /* reserve illegal address 000...0 */
+        /* num = 0 */
+        /* call BTrieGet(trie, num) */
+        
     /* return trie */
 }
 /*----------------------------------------------------------------------------*/
@@ -46,19 +54,11 @@ void BTrieDestroy(btrie_ty* trie_)
 	/*handle dangling pointer*/
 }
 /*----------------------------------------------------------------------------*/
-static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
-                       size_t total_bits_)
-{
-    /* if NULL return */
-    /* if leaf, turn off is_full, return */
-    /* extract bit, recurse down */
-    /* turn off is_full */
-}
-/*----------------------------------------------------------------------------*/
 void BTrieRelease(btrie_ty* trie_, num_ty num_)
 {
     /* if NULL return */
-    /* ReleaseIMP from root */
+    /*assert num_ is not 000..*/
+    /* call ReleaseIMP from root */
 }
 /*----------------------------------------------------------------------------*/
 num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
@@ -68,25 +68,74 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
     /* call GetIMP, return result or 0 (indicates an invalid address ) */
 }
 /*----------------------------------------------------------------------------*/
+size_t BTrieCountAvailable(trie_)
+{
+    /* assert trie_ */
+
+    /* return CountAvailableIMP(root, 0, num_bits) */
+}
+/*----------------------------------------------------------------------------*/
+static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
+                       size_t total_bits_)
+{
+    /* if NULL return */
+    /* if leaf*/
+    	/* turn off is_full flag */
+    	/*return*/
+    /* extract bit, recurse down */
+    /* turn off is_full */
+}
+/*----------------------------------------------------------------------------*/
 static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
                   size_t total_bits_)
 {
     /* if node _ is NULL*/
-    /*allocate and init*/
+        /*allocate node*/
+    	/*init children to NULL, is_full = 0*/
     
-    /*  if node_ is leaf:
+    /*  if node_ is leaf:*/
     	/* if full return FAIL*/
     	/* else mark full then return SUCCESS */
     	
-    /* extract current bit */
-		/* if child[bit] full, flip bit */
-		/* if child[bit] still full return FAIL */
-		/* if flipped, fix num_ at this position, clear lower bits */
-    /* recurse, if FAIL return FAIL(save status) */
-    /* update is_full */
-    /* return SUCCESS */
+    /* extract current bit MSB to LSB*/
+		/* if child[bit] exit && is_full*/
+			/*if bit is 0*/
+				/* flip bit to 1*/
+				/*fix num_ at this bit*/
+				/* clear lower bits */
+				/*if child[1] exists && is_full*/
+					/*return FAIL*/
+		/* else (bit is 1)*/
+			/*return FAIL */
+		
+    /* recurse and save status*/
+    
+    /* if FAIL */
+    	/*return FAIL*/
+    	
+    /*else*/
+		/* if both children exist and both are full*/
+			/*mark node is full*/
+		/* return SUCCESS */
 }
+/*----------------------------------------------------------------------------*/
+CountAvailableIMP(node_, bit_index_, total_bits_)
+{
+    /* if node_ is NULL */
+        /* return 2^(total_bits_ - bit_index_) 
+        (can be performed by shifting)*/
 
+    /* if node_.is_full */
+        /* return 0 */
 
+    /* if leaf(bit_index_ == total_bits_) */
+        /* return 1 */
+
+    /* recurse return
+        CountAvailableIMP(left,  bit_index_ + 1, total_bits_)
+        +
+        CountAvailableIMP(right, bit_index_ + 1, total_bits_)
+    */
+}
 
 
