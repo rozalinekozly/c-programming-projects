@@ -97,19 +97,34 @@ void DhcpDestroy(dhcp_ty* dhcp_)
 
 addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
 {
-	/* assert dhcp_ */
+    addr_ty host = 0;
+    addr_ty ret = 0;
 
-	/* extract host part from addr_ */
-	/* host = addr_ & ~dhcp_->subnet_mask */
+    /* assert dhcp_ */
+    assert(dhcp_);
 
-	/* ret = BTrieGet(trie, host) */
+    /* extract host part from addr_ */
+    /* host = addr_ & ~dhcp_->subnet_mask */
+    host = addr_ & ~dhcp_->subnet_mask;
 
-	/* if 0 == ret (failed) */
-		/* ret = BTrieGet(trie, 0) */
-		/* if 0 == ret (failed) */
-		    /* return 0 */
+    /* ret = BTrieGet(trie, host) */
+    ret = BTrieGet(dhcp_->trie, host);
 
-	/* return ret | dhcp_->subnet_id */
+    /* if 0 == ret (failed) */
+    if (0 == ret)
+    {
+        /* ret = BTrieGet(trie, 0) */
+        ret = BTrieGet(dhcp_->trie, 0);
+        /* if 0 == ret (failed) */
+        if (0 == ret)
+        {
+            /* return 0 */
+            return 0;
+        }
+    }
+
+    /* return ret | dhcp_->subnet_id */
+    return ret | dhcp_->subnet_id;
 }
 size_t DhcpCountFree(const dhcp_ty* dhcp_)
 {
