@@ -95,15 +95,19 @@ void BTrieDestroy(btrie_ty* trie_)
 /*----------------------------------------------------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_)
 {
+	/*if node is null*/
     if (NULL == node_)
     {
+    		/*do nothing*/
         return;
     }
-
+	/*recursively call subtrees*/
     DestroyIMP(node_->children[0]);
     DestroyIMP(node_->children[1]);
-
+	
+	/*recursion tail: free node */
     free(node_);
+    /*handle dangling pointer*/
     DEBUG_BAD_MEM(node_, btrie_node_ty*);
 }
 /*----------------------------------------------------------------------------*/
