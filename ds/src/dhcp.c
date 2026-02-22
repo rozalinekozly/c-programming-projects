@@ -76,7 +76,10 @@ dhcp_ty* DhcpCreate(addr_ty subnet_id_, unsigned int host_numb_)
 
 void DhcpDestroy(dhcp_ty* dhcp_)
 {
-    (void)dhcp_;
+    /* if dhcp_ is NULL return */
+	/* destroy trie */
+	/* set bad mem on trie field */
+	/* free dhcp */
 }
 
 size_t DhcpCountFree(const dhcp_ty* dhcp_)
