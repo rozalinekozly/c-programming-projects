@@ -10,6 +10,7 @@ reviewer:
 #include "btrie.h"	/*API*/
 #include "utils.h"
 /*----------------------------------------------------------------------------*/
+/*change this to enums*/
 #define SUCCESS (0)
 #define FAIL    (1)
 /*----------------------------------------------------------------------------*/
@@ -28,8 +29,8 @@ struct btrie
 static void DestroyIMP(btrie_node_ty* node_);
 static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty *num_,
                   size_t max_depth_);
-static void ReleaseIMP(btrie_node_ty* node_, size_t current_depth_, num_ty num_,
-                       size_t max_depth_);
+static size_t GetBitIMP(num_ty num_, size_t bit_index_);
+static void ReleaseIMP(btrie_node_ty* node_, size_t remaining_depth_, num_ty num_);
 static size_t CountAvailableIMP(btrie_node_ty* node_, size_t current_depth_, size_t max_depth_);
 /*----------------------------------------------------------------------------*/
 btrie_ty* BTrieCreate(size_t num_bits_)
@@ -104,17 +105,19 @@ static void DestroyIMP(btrie_node_ty* node_)
 	/*if node is null*/
     if (NULL == node_)
     {
-    		/*do nothing*/
+    	/*do nothing*/
         return;
     }
 	/*recursively call subtrees*/
     DestroyIMP(node_->children[0]);
     DestroyIMP(node_->children[1]);
 	
+	/*handle dangling pointer*/
+	DEBUG_BAD_MEM(node_->children[0], btrie_node_ty*);
+	DEBUG_BAD_MEM(node_->children[1], btrie_node_ty*);
+	
 	/*recursion tail: free node */
     free(node_);
-    /*handle dangling pointer*/
-    DEBUG_BAD_MEM(node_, btrie_node_ty*);
 }
 /*----------------------------------------------------------------------------*/
 void BTrieRelease(btrie_ty* trie_, num_ty num_)
@@ -126,43 +129,46 @@ void BTrieRelease(btrie_ty* trie_, num_ty num_)
     assert(num_ > 0);
 
     /* call ReleaseIMP from root */
-    ReleaseIMP(trie_->root, 0, num_, trie_->num_bits);
+    ReleaseIMP(trie_->root, trie_->num_bits, num_);
 }
 /*----------------------------------------------------------------------------*/
-static void ReleaseIMP(btrie_node_ty* node_, size_t current_depth_, num_ty num_,
-                       size_t max_depth_)
+static void ReleaseIMP(btrie_node_ty* node_, size_t remaining_depth_, num_ty num_)
 {
-    size_t shift = 0;
     size_t bit = 0;
 
     assert(NULL != node_);
 
     /* if leaf */
-    if (current_depth_ == max_depth_)
+    if (0 == remaining_depth_)
     {
+        assert(node_->is_full);
         node_->is_full = 0;
         return;
     }
 
-    /* extract current bit */
-    shift = max_depth_ - 1 - current_depth_;
-    bit = (num_ >> shift) & 1;
+    /* extract current bit (MSB to LSB) */
+    bit = GetBitIMP(num_, remaining_depth_ - 1);
 
-    /* recurse down */
-    ReleaseIMP(node_->children[bit],
-               current_depth_ + 1,
-               num_,
-               max_depth_);
+    /* recurse */
+    ReleaseIMP(node_->children[bit], remaining_depth_ - 1, num_);
 
-    /* after recursion – node cannot be full anymore */
+    /* update parent state */
     node_->is_full = 0;
+}
+/*----------------------------------------------------------------------------*/
+static size_t GetBitIMP(num_ty num_, size_t bit_index_)
+{
+    return (num_ >> bit_index_) & 1;
 }
 /*----------------------------------------------------------------------------*/
 num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
 {
+    num_ty ret = num_; /*and this is what u need to return do not change the argument val!*/
+    /*standart: do not change value of a perameter */
     /* assert trie_ */
     assert(trie_);
 
+	/*redundant */
     /* if root full return 0  )invalid address) */
     if (trie_->root->is_full)
     {
@@ -170,16 +176,22 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
     }
 
     /* call GetIMP, return result or 0 (indicates an invalid address ) */
-    if (FAIL == GetIMP(&(trie_->root), 0, &num_, trie_->num_bits))
+    /*here send &ret*/
+    if (FAIL == GetIMP(&(trie_->root), 0, &ret, trie_->num_bits))
     {
         return 0;
     }
 
-    return num_;
+    return ret;
 }
 /*----------------------------------------------------------------------------*/
-static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
-                  size_t max_depth_)
+/*TODO: 
+	1- remove max_depth argument
+	2- travrse on number from msb to lsb
+	3- and --depth to reach 0 (then it is a leaf)
+	*/
+static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
+                  size_t total_bits_)
 {
 	size_t shift = 0;
 	size_t bit = 0;
@@ -188,16 +200,21 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
     /* if node _ is NULL*/
     if (NULL == *node_)
     {
-        /*allocate node and init fields to 0 */
-        *node_ = calloc(1, sizeof(btrie_node_ty));
+        /*allocate node*/
+        *node_ = malloc(sizeof(btrie_node_ty));
         if (NULL == *node_)
         {
             return FAIL;
         }
+
+        /*init children to NULL, is_full = 0*/
+        (*node_)->children[0] = NULL;
+        (*node_)->children[1] = NULL;
+        (*node_)->is_full = 0;
     }
 
     /*  if node_ is leaf:*/
-    if (current_depth_ == max_depth_)
+    if (bit_index_ == total_bits_)
     {
         /* if full return FAIL*/
         if ((*node_)->is_full)
@@ -211,7 +228,7 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
     }
 
     /* extract current bit MSB to LSB*/
-    shift = max_depth_ - 1 - current_depth_;
+    shift = total_bits_ - 1 - bit_index_;
     bit = (*num_ >> shift) & 1;
 
     /* if child[bit] exit && is_full*/
@@ -245,7 +262,7 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
     }
 
     /* recurse and save status*/
-    ret = GetIMP(&((*node_)->children[bit]), current_depth_ + 1, num_, max_depth_);
+    ret = GetIMP(&((*node_)->children[bit]), bit_index_ + 1, num_, total_bits_);
 
     /* if FAIL */
     if (FAIL == ret)
@@ -268,6 +285,7 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
     /* return SUCCESS */
     return SUCCESS;
 }
+
 /*----------------------------------------------------------------------------*/
 size_t BTrieCountAvailable(const btrie_ty* trie_)
 {
