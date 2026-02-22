@@ -12,6 +12,7 @@ static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty *num_,
                   size_t total_bits_);
 static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
                        size_t total_bits_);
+static size_t CountAvailableIMP(node_, bit_index_, total_bits_);
 /*----------------------------------------------------------------------------*/
 typedef struct btrie_node
 {
@@ -29,10 +30,13 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 {
 	/*asserts*/
 	/* allocate btrie_ty */
-    /* if fail return NULL */
+    /* if fail*/
+    	/*return NULL */
     
     /* allocate root node */
-    /* if fail free trie, return NULL */
+    /* if fail*/
+    	/*free trie*/
+    	/* return NULL */
     
     /*set fields of created root to be null children and is_flag is off*/
     /* set fields of created btrie(root, num_bits)*/
@@ -119,7 +123,7 @@ static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
 		/* return SUCCESS */
 }
 /*----------------------------------------------------------------------------*/
-CountAvailableIMP(node_, bit_index_, total_bits_)
+static size_t CountAvailableIMP(node_, bit_index_, total_bits_)
 {
     /* if node_ is NULL */
         /* return 2^(total_bits_ - bit_index_) 
