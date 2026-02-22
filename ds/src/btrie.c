@@ -162,17 +162,10 @@ static size_t GetBitIMP(num_ty num_, size_t bit_index_)
 /*----------------------------------------------------------------------------*/
 num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
 {
-    num_ty ret = num_; /*and this is what u need to return do not change the argument val!*/
-    /*standart: do not change value of a perameter */
+    num_ty ret = num_; 
+    
     /* assert trie_ */
     assert(trie_);
-
-	/*redundant */
-    /* if root full return 0  )invalid address) */
-    if (trie_->root->is_full)
-    {
-        return 0;
-    }
 
     /* call GetIMP, return result or 0 (indicates an invalid address ) */
     /*here send &ret*/
@@ -210,7 +203,7 @@ static int GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty* num_)
         return SUCCESS;
     }
 
-    /* extract current bit (MSB → LSB) */
+    /* extract current bit (MSB to LSB) */
     bit = GetBitIMP(*num_, remaining_depth_ - 1);
 
     /* if child exists and is full */
