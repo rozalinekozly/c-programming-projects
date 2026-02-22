@@ -126,6 +126,13 @@ addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
     /* return ret | dhcp_->subnet_id */
     return ret | dhcp_->subnet_id;
 }
+
+void DhcpFreeIp(dhcp_ty* dhcp_, addr_ty addr_)
+{
+	/* assert dhcp_ */
+	/* extract host part: host = addr_ & ~dhcp_->subnet_mask */
+	/* call BTrieRelease(trie, host) */
+}
 size_t DhcpCountFree(const dhcp_ty* dhcp_)
 {
     (void)dhcp_;
