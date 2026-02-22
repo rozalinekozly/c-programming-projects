@@ -55,7 +55,7 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 	if (NULL == root)
 	{
 		free(ret);
-		DEBUG_ONLY(ret = BAD_MEM(btrie_ty*));
+		DEBUG_BAD_MEM(ret, btrie_ty*);
 		return NULL;
 	}
     
@@ -90,7 +90,7 @@ void BTrieDestroy(btrie_ty* trie_)
 	free(trie_);
 
 	/*handle dangling pointer*/
-	DEBUG_ONLY(trie_ = BAD_MEM(btrie_ty*));
+	DEBUG_BAD_MEM(trie_, btrie_ty*);
 }
 /*----------------------------------------------------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_)
@@ -104,7 +104,7 @@ static void DestroyIMP(btrie_node_ty* node_)
     DestroyIMP(node_->children[1]);
 
     free(node_);
-    DEBUG_ONLY(node_ = BAD_MEM(btrie_node_ty*));
+    DEBUG_BAD_MEM(node_, btrie_node_ty*);
 }
 /*----------------------------------------------------------------------------*/
 void BTrieRelease(btrie_ty* trie_, num_ty num_)
