@@ -132,32 +132,29 @@ void BTrieRelease(btrie_ty* trie_, num_ty num_)
 static void ReleaseIMP(btrie_node_ty* node_, size_t current_depth_, num_ty num_,
                        size_t max_depth_)
 {
-	 size_t shift = 0;
-	 size_t bit = 0;
-	 
-    /* if NULL return this situation happens if someone trys to free of not given address its better be assert*/
-    if (NULL == node_)
-    {
-        return;
-    }
-    /*    node_->is_full = 0; <- add this here to prevent duplication*/
-	/*this is the base case*/
-    /* if leaf*/
+    size_t shift = 0;
+    size_t bit = 0;
+
+    assert(NULL != node_);
+
+    /* if leaf */
     if (current_depth_ == max_depth_)
     {
-        /* turn off is_full flag */
         node_->is_full = 0;
-        /*return*/
         return;
     }
 
-    /* extract bit, recurse down */
+    /* extract current bit */
     shift = max_depth_ - 1 - current_depth_;
     bit = (num_ >> shift) & 1;
 
-    ReleaseIMP(node_->children[bit], current_depth_ + 1, num_, max_depth_);
+    /* recurse down */
+    ReleaseIMP(node_->children[bit],
+               current_depth_ + 1,
+               num_,
+               max_depth_);
 
-    /* turn off is_full */
+    /* after recursion – node cannot be full anymore */
     node_->is_full = 0;
 }
 /*----------------------------------------------------------------------------*/
@@ -197,7 +194,6 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
         {
             return FAIL;
         }
-
     }
 
     /*  if node_ is leaf:*/
