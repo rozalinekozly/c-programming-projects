@@ -95,6 +95,22 @@ void DhcpDestroy(dhcp_ty* dhcp_)
     DEBUG_BAD_MEM(dhcp, dhcp_ty*);
 }
 
+addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
+{
+	/* assert dhcp_ */
+
+	/* extract host part from addr_ */
+	/* host = addr_ & ~dhcp_->subnet_mask */
+
+	/* ret = BTrieGet(trie, host) */
+
+	/* if 0 == ret (failed) */
+		/* ret = BTrieGet(trie, 0) */
+		/* if 0 == ret (failed) */
+		    /* return 0 */
+
+	/* return ret | dhcp_->subnet_id */
+}
 size_t DhcpCountFree(const dhcp_ty* dhcp_)
 {
     (void)dhcp_;
