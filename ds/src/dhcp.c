@@ -7,17 +7,30 @@ struct dhcp
 
 dhcp_ty* DhcpCreate(addr_ty subnet_id_, unsigned int host_numb_)
 {
-	/* asserts */
-	/* allocate dhcp */
-	/* if failed return NULL */
-	/* calculate host_numb (32 - subnet bits) */
-	/* allocate btrie using BTrieCreate(host_numb) */
-	/* if failed free dhcp and return NULL */
-	/* set fields (trie, subnet_id, subnet_mask) */
-	/* reserve server address 111...110 using BTrieGet */
-	/* reserve broadcast address 111...111 using BTrieGet */
-	/* if any reservation failed destroy trie, free dhcp and return NULL */
-	/* return dhcp */
+/* assert host_numb_ > 0 */
+/* assert host_numb_ <= 32 */
+
+/* allocate dhcp */
+/* if failed return NULL */
+
+/* num_bits = 32 - host_numb_ */
+/* subnet_mask = all ones shifted left by host_numb_ bits */
+
+/* create trie with num_bits */
+/* if failed free dhcp and return NULL */
+
+/* set dhcp fields (trie, subnet_id, subnet_mask) */
+
+/* server = (1 << host_numb_) - 2 */
+/* broadcast = (1 << host_numb_) - 1 */
+
+/* reserve server with BTrieGet */
+/* if failed destroy trie, free dhcp, return NULL */
+
+/* reserve broadcast with BTrieGet */
+/* if failed destroy trie, free dhcp, return NULL */
+
+/* return dhcp */
 }
 
 
