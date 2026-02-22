@@ -1,6 +1,6 @@
 /*
 developer: rozaline
-reviewer: 
+reviewer: Itay
 */
 /*----------------------------------------------------------------------------*/
 #include <stdlib.h>	/*malloc, calloc, free, NULL*/
@@ -8,11 +8,13 @@ reviewer:
 #include <stddef.h>	/*size_t*/
 
 #include "btrie.h"	/*API*/
-#include "utils.h"
+#include "utils.h"	/*reusable tasks and perform macros(debug mode)*/
 /*----------------------------------------------------------------------------*/
-/*change this to enums*/
-#define SUCCESS (0)
-#define FAIL    (1)
+typedef enum
+{
+	SUCCESS = 0,
+	FAIL = 1
+} status_ty;
 /*----------------------------------------------------------------------------*/
 typedef struct btrie_node
 {
@@ -27,7 +29,7 @@ struct btrie
 };
 /*--------------------------forward declarations------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_);
-static int GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty *num_);
+static status_ty GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty *num_);
 static size_t GetBitIMP(num_ty num_, size_t bit_index_);
 static void ReleaseIMP(btrie_node_ty* node_, size_t remaining_depth_, num_ty num_);
 static size_t CountAvailableIMP(btrie_node_ty* node_, size_t remaining_depth_);
@@ -177,7 +179,7 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
     return ret;
 }
 /*----------------------------------------------------------------------------*/
-static int GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty* num_)
+static status_ty GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty* num_)
 {
     size_t bit = 0;
 
