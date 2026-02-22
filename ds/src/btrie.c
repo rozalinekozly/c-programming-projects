@@ -3,7 +3,7 @@ developer: rozaline
 reviewer: 
 */
 /*----------------------------------------------------------------------------*/
-#include <stdlib.h>	/*malloc, free, NULL*/
+#include <stdlib.h>	/*malloc, calloc, free, NULL*/
 #include <assert.h>	/*assert*/
 #include <stddef.h>	/*size_t*/
 
@@ -21,7 +21,7 @@ typedef struct btrie_node
 
 struct btrie
 {
-    btrie_node_ty* root;
+    btrie_node_ty* root; 
     size_t num_bits;
 };
 /*--------------------------forward declarations------------------------------*/
@@ -37,6 +37,7 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 	btrie_ty* ret = NULL;
 	btrie_node_ty* root  = NULL;
 	/*asserts*/
+	assert(num_bits_ > 0);
 	/* allocate btrie_ty */
 	ret = (btrie_ty*)malloc(sizeof(btrie_ty));
     /* if fail*/
@@ -46,22 +47,18 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 		return NULL;
 	}
     
-    /* allocate root node */
-	root = (btrie_node_ty*)malloc(sizeof(btrie_node_ty));
+    /* allocate root node and intialize fields*/
+	root = (btrie_node_ty *)calloc(1, sizeof(btrie_node_ty));
     /* if fail*/
     	/*free trie*/
     	/* return NULL */
 	if (NULL == root)
 	{
 		free(ret);
+		DEBUG_ONLY(ret = BAD_MEM(btrie_ty*));
 		return NULL;
 	}
     
-    /*set fields of created root to be null children and is_flag is off*/
-	root->children[0] = NULL;
-	root->children[1] = NULL;
-	root->is_full = 0;
-
     /* set fields of created btrie(root, num_bits)*/
 	ret->root = root;
 	ret->num_bits = num_bits_;
@@ -69,7 +66,7 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* reserve illegal address 000...0 */
         /* num = 0 */
         /* call BTrieGet(trie, num) */
-	BTrieGet(ret, 0);
+    BTrieGet(ret, 0);
         
     /* return trie */
 	return ret;
@@ -87,7 +84,7 @@ void BTrieDestroy(btrie_ty* trie_)
 	DestroyIMP(trie_->root);
 
 	/*handle dangling pointer*/
-	DEBUG_ONLY(trie_->root = BAD_MEM(btrie_node_ty*));
+	DEBUG_BAD_MEM(trie_->root, btrie_node_ty*);
 	
 	/* free trie_ */
 	free(trie_);
@@ -130,12 +127,14 @@ static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
 {
 	 size_t shift = 0;
 	 size_t bit = 0;
-    /* if NULL return */
+	 
+    /* if NULL return this situation happens if someone trys to free of not given address its better be assert*/
     if (NULL == node_)
     {
         return;
     }
-
+    /*    node_->is_full = 0; <- add this here to prevent duplication*/
+	/*this is the base case*/
     /* if leaf*/
     if (bit_index_ == total_bits_)
     {
