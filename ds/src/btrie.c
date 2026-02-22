@@ -191,17 +191,13 @@ static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
     /* if node _ is NULL*/
     if (NULL == *node_)
     {
-        /*allocate node*/
-        *node_ = malloc(sizeof(btrie_node_ty));
+        /*allocate node and init fields to 0 */
+        *node_ = calloc(1, sizeof(btrie_node_ty));
         if (NULL == *node_)
         {
             return FAIL;
         }
 
-        /*init children to NULL, is_full = 0*/
-        (*node_)->children[0] = NULL;
-        (*node_)->children[1] = NULL;
-        (*node_)->is_full = 0;
     }
 
     /*  if node_ is leaf:*/
