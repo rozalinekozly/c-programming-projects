@@ -26,11 +26,11 @@ struct btrie
 };
 /*--------------------------forward declarations------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_);
-static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty *num_,
-                  size_t total_bits_);
-static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
-                       size_t total_bits_);
-static size_t CountAvailableIMP(btrie_node_ty* node_, size_t bit_index_, size_t total_bits_);
+static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty *num_,
+                  size_t max_depth_);
+static void ReleaseIMP(btrie_node_ty* node_, size_t current_depth_, num_ty num_,
+                       size_t max_depth_);
+static size_t CountAvailableIMP(btrie_node_ty* node_, size_t current_depth_, size_t max_depth_);
 /*----------------------------------------------------------------------------*/
 btrie_ty* BTrieCreate(size_t num_bits_)
 {
@@ -80,7 +80,7 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 /*----------------------------------------------------------------------------*/
 void BTrieDestroy(btrie_ty* trie_)
 {
-	/* if trie_ is NULL return */
+	/* if trie_ is NULL do nothing */
 	if (NULL == trie_)
 	{
 		return;
@@ -129,8 +129,8 @@ void BTrieRelease(btrie_ty* trie_, num_ty num_)
     ReleaseIMP(trie_->root, 0, num_, trie_->num_bits);
 }
 /*----------------------------------------------------------------------------*/
-static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
-                       size_t total_bits_)
+static void ReleaseIMP(btrie_node_ty* node_, size_t current_depth_, num_ty num_,
+                       size_t max_depth_)
 {
 	 size_t shift = 0;
 	 size_t bit = 0;
@@ -143,7 +143,7 @@ static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
     /*    node_->is_full = 0; <- add this here to prevent duplication*/
 	/*this is the base case*/
     /* if leaf*/
-    if (bit_index_ == total_bits_)
+    if (current_depth_ == max_depth_)
     {
         /* turn off is_full flag */
         node_->is_full = 0;
@@ -152,10 +152,10 @@ static void ReleaseIMP(btrie_node_ty* node_, size_t bit_index_, num_ty num_,
     }
 
     /* extract bit, recurse down */
-    shift = total_bits_ - 1 - bit_index_;
+    shift = max_depth_ - 1 - current_depth_;
     bit = (num_ >> shift) & 1;
 
-    ReleaseIMP(node_->children[bit], bit_index_ + 1, num_, total_bits_);
+    ReleaseIMP(node_->children[bit], current_depth_ + 1, num_, max_depth_);
 
     /* turn off is_full */
     node_->is_full = 0;
@@ -181,8 +181,8 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
     return num_;
 }
 /*----------------------------------------------------------------------------*/
-static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
-                  size_t total_bits_)
+static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty* num_,
+                  size_t max_depth_)
 {
 	size_t shift = 0;
 	size_t bit = 0;
@@ -205,7 +205,7 @@ static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
     }
 
     /*  if node_ is leaf:*/
-    if (bit_index_ == total_bits_)
+    if (current_depth_ == max_depth_)
     {
         /* if full return FAIL*/
         if ((*node_)->is_full)
@@ -219,7 +219,7 @@ static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
     }
 
     /* extract current bit MSB to LSB*/
-    shift = total_bits_ - 1 - bit_index_;
+    shift = max_depth_ - 1 - current_depth_;
     bit = (*num_ >> shift) & 1;
 
     /* if child[bit] exit && is_full*/
@@ -253,7 +253,7 @@ static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
     }
 
     /* recurse and save status*/
-    ret = GetIMP(&((*node_)->children[bit]), bit_index_ + 1, num_, total_bits_);
+    ret = GetIMP(&((*node_)->children[bit]), current_depth_ + 1, num_, max_depth_);
 
     /* if FAIL */
     if (FAIL == ret)
@@ -286,16 +286,16 @@ size_t BTrieCountAvailable(const btrie_ty* trie_)
     return CountAvailableIMP(trie_->root, 0, trie_->num_bits);
 }
 /*----------------------------------------------------------------------------*/
-static size_t CountAvailableIMP(btrie_node_ty* node_, size_t bit_index_, size_t total_bits_)
+static size_t CountAvailableIMP(btrie_node_ty* node_, size_t current_depth_, size_t max_depth_)
 {
     size_t remaining_bits = 0;
 
     /* if node_ is NULL */
     if (NULL == node_)
     {
-        /* return 2^(total_bits_ - bit_index_) 
+        /* return 2^(max_depth_- current_depth_) 
         (can be performed by shifting)*/
-        remaining_bits = total_bits_ - bit_index_;
+        remaining_bits = max_depth_- current_depth_;
         return (size_t)1 << remaining_bits;
     }
 
@@ -306,20 +306,20 @@ static size_t CountAvailableIMP(btrie_node_ty* node_, size_t bit_index_, size_t 
         return 0;
     }
 
-    /* if leaf(bit_index_ == total_bits_) */
-    if (bit_index_ == total_bits_)
+    /* if leaf(current_depth_ == max_depth_) */
+    if (current_depth_ == max_depth_)
     {
         /* return 1 */
         return 1;
     }
 
     /* recurse return
-        CountAvailableIMP(left,  bit_index_ + 1, total_bits_)
+        CountAvailableIMP(left,  current_depth_ + 1, max_depth_)
         +
-        CountAvailableIMP(right, bit_index_ + 1, total_bits_)
+        CountAvailableIMP(right, current_depth_ + 1, max_depth_)
     */
-    return CountAvailableIMP(node_->children[0], bit_index_ + 1, total_bits_)
-         + CountAvailableIMP(node_->children[1], bit_index_ + 1, total_bits_);
+    return CountAvailableIMP(node_->children[0], current_depth_ + 1, max_depth_)
+         + CountAvailableIMP(node_->children[1], current_depth_ + 1, max_depth_);
 }
 
 
