@@ -36,6 +36,8 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 {
 	btrie_ty* ret = NULL;
 	btrie_node_ty* root  = NULL;
+	num_ty num = 0;
+	
 	/*asserts*/
 	assert(num_bits_ > 0);
 	/* allocate btrie_ty */
@@ -66,8 +68,12 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* reserve illegal address 000...0 */
         /* num = 0 */
         /* call BTrieGet(trie, num) */
-    BTrieGet(ret, 0);
-        
+    if(FAIL == GetIMP(&ret->root, 0, &num, num_bits_))
+    {
+    	BTrieDestroy(ret);
+    	return NULL;
+    }
+
     /* return trie */
 	return ret;
 }
@@ -113,14 +119,11 @@ static void DestroyIMP(btrie_node_ty* node_)
 /*----------------------------------------------------------------------------*/
 void BTrieRelease(btrie_ty* trie_, num_ty num_)
 {
-    /* if NULL return */
-    if (NULL == trie_)
-    {
-        return;
-    }
+	/*assert trie not null*/
+    assert(NULL != trie_);
 
-    /*assert num_ is not 000..*/
-    assert(num_ != 0);
+    /*assert num_ larger than 0*/
+    assert(num_ > 0);
 
     /* call ReleaseIMP from root */
     ReleaseIMP(trie_->root, 0, num_, trie_->num_bits);
