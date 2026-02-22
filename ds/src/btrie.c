@@ -27,11 +27,10 @@ struct btrie
 };
 /*--------------------------forward declarations------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_);
-static int GetIMP(btrie_node_ty** node_, size_t current_depth_, num_ty *num_,
-                  size_t max_depth_);
+static int GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty *num_);
 static size_t GetBitIMP(num_ty num_, size_t bit_index_);
 static void ReleaseIMP(btrie_node_ty* node_, size_t remaining_depth_, num_ty num_);
-static size_t CountAvailableIMP(btrie_node_ty* node_, size_t current_depth_, size_t max_depth_);
+static size_t CountAvailableIMP(btrie_node_ty* node_, size_t remaining_depth_);
 /*----------------------------------------------------------------------------*/
 btrie_ty* BTrieCreate(size_t num_bits_)
 {
@@ -69,7 +68,7 @@ btrie_ty* BTrieCreate(size_t num_bits_)
     /* reserve illegal address 000...0 */
         /* num = 0 */
         /* call BTrieGet(trie, num) */
-    if(FAIL == GetIMP(&ret->root, 0, &num, num_bits_))
+    if(FAIL == GetIMP(&ret->root, num_bits_, &num))
     {
     	BTrieDestroy(ret);
     	return NULL;
@@ -177,7 +176,7 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
 
     /* call GetIMP, return result or 0 (indicates an invalid address ) */
     /*here send &ret*/
-    if (FAIL == GetIMP(&(trie_->root), 0, &ret, trie_->num_bits))
+    if (FAIL == GetIMP(&(trie_->root),  trie_->num_bits, &ret))
     {
         return 0;
     }
@@ -185,107 +184,76 @@ num_ty BTrieGet(btrie_ty* trie_, num_ty num_)
     return ret;
 }
 /*----------------------------------------------------------------------------*/
-/*TODO: 
-	1- remove max_depth argument
-	2- travrse on number from msb to lsb
-	3- and --depth to reach 0 (then it is a leaf)
-	*/
-static int GetIMP(btrie_node_ty** node_, size_t bit_index_, num_ty* num_,
-                  size_t total_bits_)
+static int GetIMP(btrie_node_ty** node_, size_t remaining_depth_, num_ty* num_)
 {
-	size_t shift = 0;
-	size_t bit = 0;
-	int ret = 0;
-	
-    /* if node _ is NULL*/
+    size_t bit = 0;
+
+    /* allocate node if needed */
     if (NULL == *node_)
     {
-        /*allocate node*/
-        *node_ = malloc(sizeof(btrie_node_ty));
+        *node_ = calloc(1, sizeof(btrie_node_ty));
         if (NULL == *node_)
         {
             return FAIL;
         }
-
-        /*init children to NULL, is_full = 0*/
-        (*node_)->children[0] = NULL;
-        (*node_)->children[1] = NULL;
-        (*node_)->is_full = 0;
     }
 
-    /*  if node_ is leaf:*/
-    if (bit_index_ == total_bits_)
+    /* if leaf */
+    if (0 == remaining_depth_)
     {
-        /* if full return FAIL*/
         if ((*node_)->is_full)
         {
             return FAIL;
         }
 
-        /* else mark full then return SUCCESS */
         (*node_)->is_full = 1;
         return SUCCESS;
     }
 
-    /* extract current bit MSB to LSB*/
-    shift = total_bits_ - 1 - bit_index_;
-    bit = (*num_ >> shift) & 1;
+    /* extract current bit (MSB → LSB) */
+    bit = GetBitIMP(*num_, remaining_depth_ - 1);
 
-    /* if child[bit] exit && is_full*/
-    if ((*node_)->children[bit] && (*node_)->children[bit]->is_full)
+    /* if child exists and is full */
+    if ((*node_)->children[bit] &&
+        (*node_)->children[bit]->is_full)
     {
-        /*if bit is 0*/
         if (0 == bit)
         {
-            /* flip bit to 1*/
-            bit = 1;
-
-            /*fix num_ at this bit*/
-            *num_ |= ((num_ty)1 << shift);
+            /* flip current bit to 1 */
+            *num_ |= ((num_ty)1 << (remaining_depth_ - 1));
 
             /* clear lower bits */
-            *num_ &= ~(((num_ty)1 << shift) - 1);
+            *num_ &= ~(((num_ty)1 << (remaining_depth_ - 1)) - 1);
 
-            /*if child[1] exists && is_full*/
-            if ((*node_)->children[1] && (*node_)->children[1]->is_full)
+            bit = 1;
+
+            if ((*node_)->children[1] &&
+                (*node_)->children[1]->is_full)
             {
-                /*return FAIL*/
                 return FAIL;
             }
         }
-        /* else (bit is 1)*/
         else
         {
-            /*return FAIL */
             return FAIL;
         }
     }
 
-    /* recurse and save status*/
-    ret = GetIMP(&((*node_)->children[bit]), bit_index_ + 1, num_, total_bits_);
-
-    /* if FAIL */
-    if (FAIL == ret)
+    /* recurse */
+    if(FAIL == GetIMP(&((*node_)->children[bit]), remaining_depth_ - 1, num_))
     {
-        /*return FAIL*/
-        return FAIL;
+    	return FAIL;
     }
 
-    /*else*/
-    /* if both children exist and both are full*/
-    if ((*node_)->children[0] &&
-        (*node_)->children[1] &&
-        (*node_)->children[0]->is_full &&
-        (*node_)->children[1]->is_full)
+    /* update fullness */
+    if ((*node_)->children[0] && (*node_)->children[1] &&
+        (*node_)->children[0]->is_full && (*node_)->children[1]->is_full)
     {
-        /*mark node is full*/
         (*node_)->is_full = 1;
     }
 
-    /* return SUCCESS */
     return SUCCESS;
 }
-
 /*----------------------------------------------------------------------------*/
 size_t BTrieCountAvailable(const btrie_ty* trie_)
 {
@@ -293,43 +261,32 @@ size_t BTrieCountAvailable(const btrie_ty* trie_)
     assert(trie_);
 
     /* return CountAvailableIMP(root, 0, num_bits) */
-    return CountAvailableIMP(trie_->root, 0, trie_->num_bits);
+    return CountAvailableIMP(trie_->root, trie_->num_bits);
 }
 /*----------------------------------------------------------------------------*/
-static size_t CountAvailableIMP(btrie_node_ty* node_, size_t current_depth_, size_t max_depth_)
+static size_t CountAvailableIMP(btrie_node_ty* node_, size_t remaining_depth_)
 {
-    size_t remaining_bits = 0;
-
-    /* if node_ is NULL */
+    /* if node is NULL then whole subtree is free */
     if (NULL == node_)
     {
-        /* return 2^(max_depth_- current_depth_) 
-        (can be performed by shifting)*/
-        remaining_bits = max_depth_- current_depth_;
-        return (size_t)1 << remaining_bits;
+        return (size_t)1 << remaining_depth_;
     }
 
-    /* if node_.is_full */
+    /* if node is full */
     if (node_->is_full)
     {
-        /* return 0 */
         return 0;
     }
 
-    /* if leaf(current_depth_ == max_depth_) */
-    if (current_depth_ == max_depth_)
+    /* if leaf */
+    if (0 == remaining_depth_)
     {
-        /* return 1 */
         return 1;
     }
 
-    /* recurse return
-        CountAvailableIMP(left,  current_depth_ + 1, max_depth_)
-        +
-        CountAvailableIMP(right, current_depth_ + 1, max_depth_)
-    */
-    return CountAvailableIMP(node_->children[0], current_depth_ + 1, max_depth_)
-         + CountAvailableIMP(node_->children[1], current_depth_ + 1, max_depth_);
+    /* recurse */
+    return CountAvailableIMP(node_->children[0], remaining_depth_ - 1)
+         + CountAvailableIMP(node_->children[1], remaining_depth_ - 1);
 }
 
 
