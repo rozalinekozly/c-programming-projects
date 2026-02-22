@@ -47,9 +47,41 @@ void TestAllocateIp()
     DhcpDestroy(dhcp);
 }
 
+void TestFreeIp()
+{
+    dhcp_ty* dhcp = DhcpCreate(0, 8);
+    addr_ty ip = 0;
+
+    /* allocate address */
+    ip = DhcpAllocateIp(dhcp, 10);
+    if (10 != ip)
+    {
+        printf("FAIL: could not allocate address 10\n");
+        DhcpDestroy(dhcp);
+        return;
+    }
+
+    /* free it */
+    DhcpFreeIp(dhcp, 10);
+
+    /* allocate same address again - should get 10 back */
+    ip = DhcpAllocateIp(dhcp, 10);
+    if (10 == ip)
+    {
+        printf("PASS: address freed and reallocated correctly\n");
+    }
+    else
+    {
+        printf("FAIL: expected 10 after free, got %lu\n", ip);
+    }
+
+    DhcpDestroy(dhcp);
+}
+
 int main()
 {
     TestCreateDestroy();
     TestAllocateIp();
+    TestFreeIp();
     return 0;
 }
