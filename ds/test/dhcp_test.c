@@ -78,10 +78,49 @@ void TestFreeIp()
     DhcpDestroy(dhcp);
 }
 
+void TestCountFree()
+{
+    dhcp_ty* dhcp = DhcpCreate(0, 8);
+
+    /* 256 - 3 reserved = 253 */
+    if (253 == DhcpCountFree(dhcp))
+    {
+        printf("PASS: count free correct after create\n");
+    }
+    else
+    {
+        printf("FAIL: expected 253, got %lu\n", DhcpCountFree(dhcp));
+    }
+
+    /* allocate one, count should drop by 1 */
+    DhcpAllocateIp(dhcp, 10);
+    if (252 == DhcpCountFree(dhcp))
+    {
+        printf("PASS: count free correct after allocate\n");
+    }
+    else
+    {
+        printf("FAIL: expected 252, got %lu\n", DhcpCountFree(dhcp));
+    }
+
+    /* free it, count should go back up */
+    DhcpFreeIp(dhcp, 10);
+    if (253 == DhcpCountFree(dhcp))
+    {
+        printf("PASS: count free correct after free\n");
+    }
+    else
+    {
+        printf("FAIL: expected 253, got %lu\n", DhcpCountFree(dhcp));
+    }
+
+    DhcpDestroy(dhcp);
+}
 int main()
 {
     TestCreateDestroy();
     TestAllocateIp();
     TestFreeIp();
+    TestCountFree();
     return 0;
 }

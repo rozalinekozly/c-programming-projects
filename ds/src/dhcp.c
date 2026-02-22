@@ -140,10 +140,14 @@ void DhcpFreeIp(dhcp_ty* dhcp_, addr_ty addr_)
     /* call BTrieRelease(trie, host) */
     BTrieRelease(dhcp_->trie, host);
 }
+
 size_t DhcpCountFree(const dhcp_ty* dhcp_)
 {
-    (void)dhcp_;
-    return 0;
+    /* assert dhcp_ */
+    assert(dhcp_);
+
+    /* return BTrieCountAvailable(trie) */
+    return BTrieCountAvailable(dhcp_->trie);
 }
 
 
