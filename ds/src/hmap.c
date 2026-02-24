@@ -68,7 +68,7 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 
     /* idx = hash_func(key, hash_param) % capacity */
 
-    /* DListInsertBefore(DListBegin(buckets[idx]), pair) */
+    /* DListInsertBefore(buckets[idx], DListBeginIter(buckets[idx]), pair) */
     /* if fail free pair and return FAIL */
 
     /* return SUCCESS */
@@ -95,7 +95,7 @@ pair_ty HMapFind(hmap_ty* hmap_, const void* key)
 
     /* idx = hash_func(key, hash_param) % capacity */
 
-    /* it = DListFind(buckets[idx], start, end, IsPairMatch, key) */
+	/* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsPairMatch, &match_param) */
     /* if it == end return ret */
 
     /* ret = *(pair_ty*)DListGetData(it) */
