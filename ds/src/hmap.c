@@ -33,3 +33,29 @@ void HMapDestroy(hmap_ty* hmap)
         /* destroy the DList */
     /* free hmap structure */
 }
+
+int HMapInsert(hmap_ty* hmap, const void* key, void* data)
+{
+    /* assert hmap and key are not NULL */
+    /* allocate new pair */
+    /* if allocation failed return FAILURE */
+    /* initialize pair->first = key and pair->second = data */
+    /* calculate idx using GetEntry(hmap, key) */
+    /* get list = hmap->entries[idx] */
+    /* insert pair into list */
+    /* if insertion failed free pair and return FAILURE */
+    /* return SUCCESS */
+}
+
+void HMapRemove(hmap_ty* hmap, const void* key)
+{
+    /* assert hmap and key are not NULL */
+    /* calculate idx using GetEntry(hmap, key) */
+    /* get list = hmap->entries[idx] */
+    /* initialize match_param with hmap and key */
+    /* find iterator using DListFind with IsPairMatch */
+    /* if iterator equals end return */
+    /* extract pair from iterator */
+    /* remove iterator from list */
+    /* free pair */
+}
