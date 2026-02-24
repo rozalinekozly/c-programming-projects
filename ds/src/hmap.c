@@ -52,12 +52,10 @@ hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
 void HMapDestroy(hmap_ty* hmap_)
 {
     /* if hmap_ is NULL return */
-
     /* for i = 0 to < capacity */
-        /* DListForEach to free each pair */
-        /* DListDestroy(hmap_->buckets[i]) */
+        /* DListForEach(DListBeginIter(buckets[i]), DListEndIter(buckets[i]), FreePair, NULL) */
         /* DEBUG_BAD_MEM(hmap_->buckets[i], dlist_ty*) */
-
+        /* DListDestroy(hmap_->buckets[i]) */
     /* free hmap_ */
 }
 /*----------------------------------------------------------------------------*/
@@ -139,3 +137,33 @@ int HMapForEach(hmap_ty* hmap_, hmap_action_ty action, void* param)
     /* return ret */
 }
 /*----------------------------------------------------------------------------*/
+static size_t HashToIndex(hmap_ty* hmap_, const void* key)
+{
+    /* assert hmap_ */
+    /* return hmap_->hash_func(key, hmap_->hash_param) % hmap_->capacity */
+}
+
+static int IsKeyMatch(const void* pair_, void* param_)
+{
+    /* assert pair_ */
+    /* assert param_ */
+    /* extract key1 from pair_ */
+    /* extract key2 from find_param */
+    /* return hmap->is_match(key1, key2, hmap->match_param) */
+}
+
+static int WrapAction(void* pair_, void* param_)
+{
+    /* assert pair_ */
+    /* assert param_ */
+    /* extract action_func from foreach_param */
+    /* extract action_param from foreach_param */
+    /* return action_func(pair->key, pair->data, action_param) */
+}
+
+static int FreePair(void* pair_, void* param_)
+{
+    /* (void)param_ */
+    /* free pair_ */
+    /* return SUCCESS */
+}
