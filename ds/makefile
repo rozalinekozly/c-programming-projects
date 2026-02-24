@@ -80,7 +80,7 @@ $(OBJDIR)/%.o: %.c | $(OBJDIR)
 $(OBJDIR)/%_test: %_test.c $(LIB) $(UTILS_LIB) | $(OBJDIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MT $@ -MF $@.d -o $@ $< \
 	-L$(OBJDIR) -L$(dir $(UTILS_LIB)) -lds -lutils \
-	-Wl,-rpath,'\$$ORIGIN:$(abspath $(dir $(UTILS_LIB)))' \
+	-Wl,-rpath,$(abspath $(OBJDIR)):$(abspath $(dir $(UTILS_LIB))) \
 	$(LDLIBS)
 
 $(OBJDIR):

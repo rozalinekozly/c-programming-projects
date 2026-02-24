@@ -101,13 +101,11 @@ void HMapDestroy(hmap_ty* hmap_)
 {
     dlist_ty** curr = NULL;
     dlist_ty** end = NULL;
-
     /* if hmap_ is NULL return */
     if (NULL == hmap_)
     {
         return;
     }
-
     /* curr = hmap_->buckets */
     curr = hmap_->buckets;
     /* end = hmap_->buckets + hmap_->capacity */
@@ -122,15 +120,14 @@ void HMapDestroy(hmap_ty* hmap_)
             dlist_iter_ty end_it = DListEndIter(*curr);
             /* DListForEach(DListBeginIter(*curr), end_it, FreePairIMP, NULL) */
             DListForEach(DListBeginIter(*curr), end_it, FreePairIMP, NULL);
-            /* DEBUG_BAD_MEM(*curr, dlist_ty*) */
-            DEBUG_BAD_MEM(*curr, dlist_ty*);
             /* DListDestroy(*curr) */
             DListDestroy(*curr);
+            /* DEBUG_BAD_MEM(*curr, dlist_ty*) */
+            DEBUG_BAD_MEM(*curr, dlist_ty*);
         }
         /* ++curr */
         ++curr;
     }
-
     /* free hmap_->buckets */
     free(hmap_->buckets);
     /* free hmap_ */
