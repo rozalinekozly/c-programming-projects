@@ -2,8 +2,10 @@
 #include <assert.h>  /* assert */
 #include "dlist.h"   /* DListCreate, DListDestroy, DListInsertBefore, DListFind, DListRemove, DListForEach, DListCount */
 #include "utils.h"   /* DEBUG_BAD_MEM */
+#include <stddef.h>  /* offsetof */
+/*----------------------------------------------------------------------------*/
 #include "hmap.h"
-
+/*----------------------------------------------------------------------------*/
 struct pair
 {
     const void* key;   /* key used for lookup */
@@ -19,7 +21,7 @@ struct hmap
     const void* match_param;    /* extra param passed to is_match */
     dlist_ty* buckets[1];       /* flexible array of dlist pointers */
 };
-
+/*----------------------------------------------------------------------------*/
 hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
                     const void* hash_param, hmap_is_match_ty is_match,
                     const void* match_param)
@@ -34,25 +36,25 @@ hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
 
     /* set hmap->capacity, hash_func, hash_param, is_match, match_param */
 
-    /* for i = 0 to capacity */
+    /* for i = 0 to < capacity */
         /* hmap->buckets[i] = DListCreate() */
         /* if NULL call HMapDestroy and return NULL */
 
     /* return hmap */
 }
-
+/*----------------------------------------------------------------------------*/
 void HMapDestroy(hmap_ty* hmap_)
 {
     /* if hmap_ is NULL return */
 
-    /* for i = 0 to capacity */
+    /* for i = 0 to < capacity */
         /* DListForEach to free each pair */
         /* DListDestroy(hmap_->buckets[i]) */
         /* DEBUG_BAD_MEM(hmap_->buckets[i], dlist_ty*) */
 
     /* free hmap_ */
 }
-
+/*----------------------------------------------------------------------------*/
 int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 {
     /* assert hmap_ */
@@ -66,12 +68,12 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 
     /* idx = hash_func(key, hash_param) % capacity */
 
-    /* DListInsertBefore(buckets[idx], begin_it, pair) */
+    /* DListInsertBefore(DListBegin(buckets[idx]), pair) */
     /* if fail free pair and return FAIL */
 
     /* return SUCCESS */
 }
-
+/*----------------------------------------------------------------------------*/
 void HMapRemove(hmap_ty* hmap_, const void* key)
 {
     /* assert hmap_ */
@@ -85,7 +87,7 @@ void HMapRemove(hmap_ty* hmap_, const void* key)
     /* DListRemove(it) */
     /* free pair */
 }
-
+/*----------------------------------------------------------------------------*/
 pair_ty HMapFind(hmap_ty* hmap_, const void* key)
 {
     /* init ret = {0} */
@@ -99,33 +101,34 @@ pair_ty HMapFind(hmap_ty* hmap_, const void* key)
     /* ret = *(pair_ty*)DListGetData(it) */
     /* return ret */
 }
-
+/*----------------------------------------------------------------------------*/
 size_t HMapSize(const hmap_ty* hmap_)
 {
     /* init size = 0 */
     /* assert hmap_ */
 
-    /* for i = 0 to capacity */
+    /* for i = 0 to < capacity */
         /* size += DListCount(buckets[i]) */
 
     /* return size */
 }
-
+/*----------------------------------------------------------------------------*/
 int HMapIsEmpty(const hmap_ty* hmap_)
 {
     /* assert hmap_ */
 
     /* return 0 == HMapSize(hmap_) */
 }
-
+/*----------------------------------------------------------------------------*/
 int HMapForEach(hmap_ty* hmap_, hmap_action_ty action, void* param)
 {
     /* init ret = 0 */
     /* assert hmap_ */
     /* assert action */
 
-    /* for i = 0 to capacity and ret == 0 */
+    /* for i = 0 to < capacity and ret == 0 */
         /* ret = DListForEach(buckets[i], action, param) */
 
     /* return ret */
 }
+/*----------------------------------------------------------------------------*/
