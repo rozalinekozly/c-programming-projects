@@ -131,10 +131,11 @@ int HMapForEach(hmap_ty* hmap_, hmap_action_ty action, void* param)
     /* init ret = 0 */
     /* assert hmap_ */
     /* assert action */
-
+    /* foreach_param_ty foreach_param = {0} */
+    /* foreach_param.action_func = action */
+    /* foreach_param.action_param = param */
     /* for i = 0 to < capacity and ret == 0 */
-        /* ret = DListForEach(buckets[i], action, param) */
-
+        /* ret = DListForEach(DListBeginIter(buckets[i]), DListEndIter(buckets[i]), WrapAction, &foreach_param) */
     /* return ret */
 }
 /*----------------------------------------------------------------------------*/
