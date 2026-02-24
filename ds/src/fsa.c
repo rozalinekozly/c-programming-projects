@@ -5,7 +5,7 @@
 
 #define WORD_SIZE (sizeof(size_t))
 
-/* Struct Definition /
+/* Struct Definition */
 
 struct fsa
 {
