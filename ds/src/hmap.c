@@ -147,11 +147,10 @@ static size_t HashToIndex(hmap_ty* hmap_, const void* key)
 /*----------------------------------------------------------------------------*/
 static int IsKeyMatch(const void* pair_, void* param_)
 {
-    /* assert pair_ */
-    /* assert param_ */
-    /* extract key1 from pair_ */
-    /* extract key2 from find_param */
-    /* return hmap->is_match(key1, key2, hmap->match_param) */
+	/* find_param_ty* find_param = (find_param_ty*)param_ */
+	/* key1 = ((pair_ty*)pair_)->key */
+	/* key2 = find_param->key */
+	/* return find_param->hmap->is_match(key1, key2, find_param->hmap->match_param) */
 }
 /*----------------------------------------------------------------------------*/
 static int WrapAction(void* pair_, void* param_)
