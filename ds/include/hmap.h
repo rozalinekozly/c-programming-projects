@@ -2,7 +2,12 @@
 #define __HMAP_H__
 
 typedef struct hmap hmap_ty;
-typedef struct pair pair_ty;
+
+typedef struct pair 
+{
+	const void* key;
+	void* data;
+}pair_ty;
 
 /* hash function */
 typedef size_t (*hmap_hash_ty) (const void* key, const void* param);
@@ -24,6 +29,14 @@ int HMapInsert(hmap_ty* hmap, const void* key, void* data);
 
 size_t HMapSize(const hmap_ty* hmap_);
 int HMapIsEmpty(const hmap_ty* hmap_);
+
+/*
+*   Undefined for:
+*        "hmap" is NULL
+*        "key" is NULL
+*
+*if not found return {0}
+*/
 pair_ty HMapFind(hmap_ty* hmap, const void* key);
 
 /*order is not specified*/
