@@ -92,7 +92,7 @@ void DhcpDestroy(dhcp_ty* dhcp_)
     free(dhcp_);
     
     /*handle dangling pointer*/
-    DEBUG_BAD_MEM(dhcp, dhcp_ty*);
+    DEBUG_BAD_MEM(dhcp_, dhcp_ty*);
 }
 
 addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
