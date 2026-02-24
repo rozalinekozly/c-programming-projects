@@ -63,18 +63,13 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 {
     /* assert hmap_ */
     /* assert key */
-
     /* pair = malloc(sizeof(pair_ty)) */
     /* if NULL return FAIL */
-
     /* pair->key = key */
     /* pair->data = data */
-
-    /* idx = hash_func(key, hash_param) % capacity */
-
-    /* DListInsertBefore(buckets[idx], DListBeginIter(buckets[idx]), pair) */
+    /* idx = HashToIndex(hmap_, key) */
+    /* DListInsertBefore(buckets[idx], DListEndIter(buckets[idx]), pair) */
     /* if fail free pair and return FAIL */
-
     /* return SUCCESS */
 }
 /*----------------------------------------------------------------------------*/
@@ -82,12 +77,12 @@ void HMapRemove(hmap_ty* hmap_, const void* key)
 {
     /* assert hmap_ */
     /* find_param_ty find_param = {0} */
-    /* idx = hash_func(key, hash_param) % capacity */
+    /* idx = HashToIndex(hmap_, key) */
     /* find_param.hmap = hmap_ */
     /* find_param.key = key */
     /* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsKeyMatch, &find_param) */
     /* if it == end return */
-    /* pair = DListGetData(it) */
+    /* pair = DListIterGetData(it) */
     /* DListRemove(it) */
     /* free pair */
 }
@@ -97,7 +92,7 @@ pair_ty HMapFind(hmap_ty* hmap_, const void* key)
     /* init ret = {0} */
     /* assert hmap_ */
     /* find_param_ty find_param = {0} */
-    /* idx = hash_func(key, hash_param) % capacity */
+    /* idx = HashToIndex(hmap_, key) */
     /* find_param.hmap = hmap_ */
     /* find_param.key = key */
     /* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsKeyMatch, &find_param) */
