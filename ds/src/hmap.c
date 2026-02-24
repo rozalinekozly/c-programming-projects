@@ -83,12 +83,12 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 void HMapRemove(hmap_ty* hmap_, const void* key)
 {
     /* assert hmap_ */
-
+    /* find_param_ty find_param = {0} */
     /* idx = hash_func(key, hash_param) % capacity */
-
-    /* it = DListFind(buckets[idx], start, end, IsPairMatch, key) */
+    /* find_param.hmap = hmap_ */
+    /* find_param.key = key */
+    /* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsKeyMatch, &find_param) */
     /* if it == end return */
-
     /* pair = DListGetData(it) */
     /* DListRemove(it) */
     /* free pair */
