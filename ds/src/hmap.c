@@ -6,12 +6,6 @@
 /*----------------------------------------------------------------------------*/
 #include "hmap.h"
 /*----------------------------------------------------------------------------*/
-struct pair
-{
-    const void* key;   /* key used for lookup */
-    void* data;        /* value stored */
-};
-
 struct hmap
 {
     size_t capacity;            /* number of buckets */
@@ -21,6 +15,18 @@ struct hmap
     const void* match_param;    /* extra param passed to is_match */
     dlist_ty* buckets[1];       /* flexible array of dlist pointers */
 };
+
+typedef struct
+{
+    hmap_ty* hmap;
+    const void* key;
+} find_param_ty;
+
+typedef struct
+{
+    hmap_action_ty action_func;
+    void* action_param;
+} foreach_param_ty;
 /*----------------------------------------------------------------------------*/
 hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
                     const void* hash_param, hmap_is_match_ty is_match,
