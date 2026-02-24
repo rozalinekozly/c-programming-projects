@@ -1,10 +1,10 @@
 #include <stdlib.h>  /* malloc, free */
 #include <assert.h>  /* assert */
-#include "dlist.h"   /* DListCreate, DListDestroy, DListInsertBefore, DListFind, DListRemove, DListForEach, DListCount */
-#include "utils.h"   /* DEBUG_BAD_MEM */
 #include <stddef.h>  /* offsetof */
 /*----------------------------------------------------------------------------*/
 #include "hmap.h"
+#include "dlist.h"   /* DListCreate, DListDestroy, DListInsertBefore, DListFind, DListRemove, DListForEach, DListCount */
+#include "utils.h"   /* DEBUG_BAD_MEM */
 /*----------------------------------------------------------------------------*/
 struct hmap
 {
@@ -15,18 +15,23 @@ struct hmap
     const void* match_param;    /* extra param passed to is_match */
     dlist_ty* buckets[1];       /* flexible array of dlist pointers */
 };
-
+/*----------------------------------------------------------------------------*/
 typedef struct
 {
     hmap_ty* hmap;
     const void* key;
 } find_param_ty;
-
+/*----------------------------------------------------------------------------*/
 typedef struct
 {
     hmap_action_ty action_func;
     void* action_param;
 } foreach_param_ty;
+/*---------------------forward declarations-----------------------------------*/
+static size_t HashToIndex(hmap_ty* hmap_, const void* key);
+static int IsKeyMatch(const void* pair_, void* param_);
+static int WrapAction(void* pair_, void* param_);
+static int FreePair(void* pair_, void* param_);
 /*----------------------------------------------------------------------------*/
 hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
                     const void* hash_param, hmap_is_match_ty is_match,
@@ -76,6 +81,7 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 void HMapRemove(hmap_ty* hmap_, const void* key)
 {
     /* assert hmap_ */
+    /* assert key */
     /* find_param_ty find_param = {0} */
     /* idx = HashToIndex(hmap_, key) */
     /* find_param.hmap = hmap_ */
@@ -91,6 +97,7 @@ pair_ty HMapFind(hmap_ty* hmap_, const void* key)
 {
     /* init ret = {0} */
     /* assert hmap_ */
+    /* assert key */
     /* find_param_ty find_param = {0} */
     /* idx = HashToIndex(hmap_, key) */
     /* find_param.hmap = hmap_ */
@@ -137,7 +144,7 @@ static size_t HashToIndex(hmap_ty* hmap_, const void* key)
     /* assert hmap_ */
     /* return hmap_->hash_func(key, hmap_->hash_param) % hmap_->capacity */
 }
-
+/*----------------------------------------------------------------------------*/
 static int IsKeyMatch(const void* pair_, void* param_)
 {
     /* assert pair_ */
@@ -146,7 +153,7 @@ static int IsKeyMatch(const void* pair_, void* param_)
     /* extract key2 from find_param */
     /* return hmap->is_match(key1, key2, hmap->match_param) */
 }
-
+/*----------------------------------------------------------------------------*/
 static int WrapAction(void* pair_, void* param_)
 {
     /* assert pair_ */
@@ -155,7 +162,7 @@ static int WrapAction(void* pair_, void* param_)
     /* extract action_param from foreach_param */
     /* return action_func(pair->key, pair->data, action_param) */
 }
-
+/*----------------------------------------------------------------------------*/
 static int FreePair(void* pair_, void* param_)
 {
     /* (void)param_ */
