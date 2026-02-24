@@ -13,6 +13,7 @@ struct hmap
     const void* hash_param;     /* extra param passed to hash_func */
     hmap_is_match_ty is_match;  /* function to compare two keys */
     const void* match_param;    /* extra param passed to is_match */
+TODO: change this to dlist_ty**
     dlist_ty* buckets[1];       /* flexible array of dlist pointers */
 };
 /*----------------------------------------------------------------------------*/
@@ -33,6 +34,12 @@ static int IsKeyMatch(const void* pair_, void* param_);
 static int WrapAction(void* pair_, void* param_);
 static int FreePair(void* pair_, void* param_);
 /*----------------------------------------------------------------------------*/
+TODO:
+	- change each iteration on arrays with iteration via pointers (current etc)
+	- each time you use end of list store it in a specific var (end) 
+	- define as function (internal) repetitve blocks (during psudo)
+	- add IMP on each helper function
+	
 hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
                     const void* hash_param, hmap_is_match_ty is_match,
                     const void* match_param)
@@ -56,11 +63,14 @@ hmap_ty* HMapCreate(size_t capacity, hmap_hash_ty hash_func,
 /*----------------------------------------------------------------------------*/
 void HMapDestroy(hmap_ty* hmap_)
 {
+	TODO: allocate space via calloc to prevent 
+		  destroy from free-ing unintialized ptrs (when failed 
+		  during allocating)
     /* if hmap_ is NULL return */
     /* for i = 0 to < capacity */
         /* DListForEach(DListBeginIter(buckets[i]), DListEndIter(buckets[i]), FreePair, NULL) */
         /* DEBUG_BAD_MEM(hmap_->buckets[i], dlist_ty*) */
-        /* DListDestroy(hmap_->buckets[i]) */
+        /* DListDestroy(hmap_->buckets[i]) and assign bad_mem to it */
     /* free hmap_ */
 }
 /*----------------------------------------------------------------------------*/
@@ -68,11 +78,15 @@ int HMapInsert(hmap_ty* hmap_, const void* key, void* data)
 {
     /* assert hmap_ */
     /* assert key */
+    TODO: assert key do not exist in hashmap using find (UB & update interface doc)
     /* pair = malloc(sizeof(pair_ty)) */
     /* if NULL return FAIL */
     /* pair->key = key */
     /* pair->data = data */
-    /* idx = HashToIndex(hmap_, key) */
+    /* find idx = HashToIndex(hmap_, key)
+    	internal function to help find index */
+    TODO: insert it to the begining of the dlist 
+    (this is not optimization)
     /* DListInsertBefore(buckets[idx], DListEndIter(buckets[idx]), pair) */
     /* if fail free pair and return FAIL */
     /* return SUCCESS */
@@ -89,13 +103,13 @@ void HMapRemove(hmap_ty* hmap_, const void* key)
     /* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsKeyMatch, &find_param) */
     /* if it == end return */
     /* pair = DListIterGetData(it) */
-    /* DListRemove(it) */
+    /* DListRemove(it) and set it's fields to bad mem*/
     /* free pair */
 }
 /*----------------------------------------------------------------------------*/
 pair_ty HMapFind(hmap_ty* hmap_, const void* key)
 {
-    /* init ret = {0} */
+    /* init ret (pair_ty) = {0} */
     /* assert hmap_ */
     /* assert key */
     /* find_param_ty find_param = {0} */
@@ -105,7 +119,7 @@ pair_ty HMapFind(hmap_ty* hmap_, const void* key)
     /* it = DListFind(DListBeginIter(buckets[idx]), DListEndIter(buckets[idx]), IsKeyMatch, &find_param) */
     /* if it == end return ret */
     /* ret = *(pair_ty*)DListIterGetData(it) */
-    /* return ret */
+    /* return ret (a copy of it i.e by value))*/
 }
 /*----------------------------------------------------------------------------*/
 size_t HMapSize(const hmap_ty* hmap_)
@@ -134,8 +148,10 @@ int HMapForEach(hmap_ty* hmap_, hmap_action_ty action, void* param)
     /* foreach_param_ty foreach_param = {0} */
     /* foreach_param.action_func = action */
     /* foreach_param.action_param = param */
+    TODO: change iteration to via ptrs
     /* for i = 0 to < capacity and ret == 0 */
         /* ret = DListForEach(DListBeginIter(buckets[i]), DListEndIter(buckets[i]), WrapAction, &foreach_param) */
+        TODO: change this to 0 (already ret is 0 or SUCCESS)
     /* return ret */
 }
 /*----------------------------------------------------------------------------*/
@@ -147,6 +163,7 @@ static size_t HashToIndex(hmap_ty* hmap_, const void* key)
 /*----------------------------------------------------------------------------*/
 static int IsKeyMatch(const void* pair_, void* param_)
 {
+	TODO: change param's type to const (to match dlist types) and within function apply casting
 	/* find_param_ty* find_param = (find_param_ty*)param_ */
 	/* key1 = ((pair_ty*)pair_)->key */
 	/* key2 = find_param->key */
