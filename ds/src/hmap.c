@@ -59,3 +59,14 @@ void HMapRemove(hmap_ty* hmap, const void* key)
     /* remove iterator from list */
     /* free pair */
 }
+
+pair_ty HMapFind(hmap_ty* hmap, const void* key)
+{
+    /* assert hmap and key are not NULL */
+    /* calculate idx using GetEntry(hmap, key) */
+    /* get list = hmap->entries[idx] */
+    /* initialize match_param with hmap and key */
+    /* find iterator using DListFind with IsPairMatch */
+    /* if iterator equals end return empty pair */
+    /* return pair stored in iterator */
+}
