@@ -30,6 +30,7 @@ typedef struct offset_pair
 	int d_col;
 }offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
+/*change this function's argument to include path point_ty* (array)'*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_);
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_);
 static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
@@ -46,6 +47,8 @@ status_ty IsKnightTour(int row_, int col_)
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
 	bit_array_ty board = 0;
 	
+	/*declare on path array of size 64 (8*8)*/
+	
 	start_point.row = row_;
 	start_point.col = col_;
 
@@ -53,7 +56,7 @@ status_ty IsKnightTour(int row_, int col_)
 	assert(IsValidCordinate(row_) && IsValidCordinate(col_));
 
 	/* return recursive function:
-	   CanVisitAllIMP(start_point_, board) */
+	   CanVisitAllIMP(start_point_, board, path) */
 	return CanVisitAllIMP(start_point, board);
 	/* return result of recursive call */
 }
@@ -79,6 +82,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 	/* mark position as visited:
 	   board_ = SetVisitedIMP(p_, board_) */
 	board_ = SetVisitedIMP(point_, board_);
+	/*add point to path*/
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
 	  if(IsAllBoardVisitedIMP(board_))
@@ -91,7 +95,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 	{	/* compute next position:
 		   next = GetNextpointIMP(p_, i) */
 		next = GetNextPointIMP(point_, i);
-		   /*if (CanVisitAllIMP(next, board_) == SUCCESS)*/
+		   /*if (CanVisitAllIMP(next, board_,path+1) == SUCCESS)*/
 		 if(CanVisitAllIMP(next, board_) == SUCCESS)  
 		  {
 		  	/* return SUCCESS */
