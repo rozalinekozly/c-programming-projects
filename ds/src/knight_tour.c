@@ -16,6 +16,11 @@ typedef struct point
 	size_t col;
 } point_ty;
 
+typedef struct offset_pair
+{
+	int d_row;
+	int d_col;
+}offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
 static int CanVisitAllIMP(point_ty point_, bit_array_ty board_);
 
@@ -26,18 +31,6 @@ static size_t PointToIndexIMP(point_ty p_);
 
 static int IsValidPointIMP(point_ty p_);
 static IsValidCordinate(int cord_);
-/*---------------------------LUT of valid moves(offsets)-----------------------*/
-static const point_ty knight_moves[8] =
-{
-	{-2, -1},
-	{-2,  1},
-	{-1,  2},
-	{ 1,  2},
-	{ 2,  1},
-	{ 2, -1},
-	{ 1, -2},
-	{-1, -2}
-};
 /*----------------------------------------------------------------------------*/
 int IsKnightTour(size_t row_, size_t col_)
 {
@@ -83,6 +76,17 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 {
 	/*assert dir is valid < 8*/
 	/*assert point is valid*/
+	/*const offset_pair_ty knight_moves[8] =
+	{
+		{-2, -1},
+		{-2,  1},
+		{-1,  2},
+		{ 1,  2},
+		{ 2,  1},
+		{ 2, -1},
+		{ 1, -2},
+		{-1, -2}
+	};*/
 	/*cast to int */
 	/*add offset from knight_moves[dir]*/
 	/*check range */
