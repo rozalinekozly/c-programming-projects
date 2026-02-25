@@ -31,7 +31,7 @@ typedef struct offset_pair
 }offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
 /*change this function's argument to include path point_ty* (array)'*/
-static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_);
+static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_, point_ty* path);
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_);
 static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_);
@@ -46,8 +46,8 @@ status_ty IsKnightTour(int row_, int col_)
 	point_ty start_point;
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
 	bit_array_ty board = 0;
-	
 	/*declare on path array of size 64 (8*8)*/
+	point_ty path[64] = {0};
 	
 	start_point.row = row_;
 	start_point.col = col_;
@@ -57,11 +57,11 @@ status_ty IsKnightTour(int row_, int col_)
 
 	/* return recursive function:
 	   CanVisitAllIMP(start_point_, board, path) */
-	return CanVisitAllIMP(start_point, board);
+	return CanVisitAllIMP(start_point, board, path);
 	/* return result of recursive call */
 }
 /*----------------------------------------------------------------------------*/
-static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
+static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* path)
 {
 	size_t i = 0;
 	point_ty next ={0, 0};
@@ -83,6 +83,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 	   board_ = SetVisitedIMP(p_, board_) */
 	board_ = SetVisitedIMP(point_, board_);
 	/*add point to path*/
+	*path = point_;
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
 	  if(IsAllBoardVisitedIMP(board_))
@@ -96,7 +97,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 		   next = GetNextpointIMP(p_, i) */
 		next = GetNextPointIMP(point_, i);
 		   /*if (CanVisitAllIMP(next, board_,path+1) == SUCCESS)*/
-		 if(CanVisitAllIMP(next, board_) == SUCCESS)  
+		 if(CanVisitAllIMP(next, board_, path+1) == SUCCESS)  
 		  {
 		  	/* return SUCCESS */
 		  	return SUCCESS;
