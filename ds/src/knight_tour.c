@@ -41,7 +41,7 @@ int IsAllBoardVisitedIMP(bit_array_ty board_);
 int IsKnightTour(int row_, int col_)
 {
 	/* assert row_ and col_ are within the board's range*/
-	
+	assert()
 	/*create a point_ty instance set fields to row_ and col_*/
 	
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
@@ -106,9 +106,7 @@ static int IsValidPointIMP(point_ty p_)
 /*----------------------------------------------------------------------------*/
 static IsValidCordinate(int cord_)
 {
-	/*if cord_ < 0 OR cord_ > 8*/
-		/*return FALSE*/
-	/*return TRUE*/
+	return (cord_ > 0 && cord_ < 8);
 }
 /*----------------------------------------------------------------------------*/
 static int IsVisitedIMP(point_ty p_, bit_array_ty board_)
