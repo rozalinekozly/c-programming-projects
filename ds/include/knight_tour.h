@@ -6,6 +6,12 @@ typedef enum
 	SUCCESS = 1
 }status_ty;
 
-status_ty IsKnightTour(int row_, int col_);
+typedef struct point
+{
+	int row;
+	int col;
+} point_ty;
+
+status_ty IsKnightTour(int row_, int col_, point_ty* path);
 
 #endif
