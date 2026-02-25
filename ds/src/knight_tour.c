@@ -31,19 +31,19 @@ typedef struct offset_pair
 	int d_col;
 }offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
-static int CanVisitAllIMP(point_ty point_, bit_array_ty board_);
+static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_);
 
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_);
-static int IsVisitedIMP(point_ty p_, bit_array_ty board_);
+static status_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_);
 static size_t PointToIndexIMP(point_ty p_);
 
-static int IsValidPointIMP(point_ty p_);
-static IsValidCordinate(int cord_);
+static status_ty IsValidPointIMP(point_ty p_);
+static status_ty IsValidCordinate(int cord_);
 
-int IsAllBoardVisitedIMP(bit_array_ty board_);
+status_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
-int IsKnightTour(int row_, int col_)
+status_ty IsKnightTour(int row_, int col_)
 {
 	/* assert row_ and col_ are within the board's range*/
 	assert()
@@ -57,7 +57,7 @@ int IsKnightTour(int row_, int col_)
 	/* return result of recursive call */
 }
 /*----------------------------------------------------------------------------*/
-static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
+static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
 	/* if point_ is out of range:
 		(!IsValidPointIMP(point_)) return FALSE */
@@ -104,7 +104,7 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 	/*cast back and set return point*/
 }
 /*----------------------------------------------------------------------------*/
-static int IsValidPointIMP(point_ty p_)
+static status_ty IsValidPointIMP(point_ty p_)
 {
 	return (IsValidCordinate(p_->row) && IsValidCordinate(P_->col));
 }
@@ -114,7 +114,7 @@ static IsValidCordinate(int cord_)
 	return (cord_ > 0 && cord_ < 8);
 }
 /*----------------------------------------------------------------------------*/
-static int IsVisitedIMP(point_ty p_, bit_array_ty board_)
+static status_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
 {
 	/* assert*/
 	/*mapped_num = PointToIndex(p_) to get mapped number*/
@@ -135,7 +135,7 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	/*BitArraySetOn(board_, index_)*/
 }
 /*----------------------------------------------------------------------------*/
-int IsAllBoardVisitedIMP(bit_array_ty board_) 
+status_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
 	/*return (0 == board_)*/
 }
