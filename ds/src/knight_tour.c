@@ -15,7 +15,7 @@ typedef struct point
 	size_t row;
 	size_t col;
 } point_ty;
-
+/*----------------------------------------------------------------------------*/
 typedef struct offset_pair
 {
 	int d_row;
@@ -92,6 +92,7 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 	/*check range */
 	/*cast back and set return point*/
 }
+/*----------------------------------------------------------------------------*/
 static int IsValidPointIMP(point_ty p_)
 {
 	/* return TRUE if row and col are between 0 and 7 */
