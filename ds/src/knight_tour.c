@@ -1,23 +1,15 @@
+#include <assert.h>
+/*----------------------------------------------------------------------------*/
+
 #define BOARD_SIZE 8
 #define TOTAL_SQUARES (BOARD_SIZE * BOARD_SIZE)
-
+/*----------------------------------------------------------------------------*/
 typedef struct point
 {
 	int row;
 	int col;
 } point_ty;
-
-typedef struct board
-{
-	bit_array_ty visited;
-} board_ty;
-
-typedef struct offset
-{
-	int drow;
-	int dcol;
-} offset_ty;
-
+/*----------------------------------------------------------------------------*/
 static const offset_ty knight_moves[8] =
 {
 	{-2, -1},
@@ -29,36 +21,35 @@ static const offset_ty knight_moves[8] =
 	{ 1, -2},
 	{-1, -2}
 };
-
-int IsKnightTour(size_t row_, size_t col_)
+/*----------------------------------------------------------------------------*/
+int IsKnightTour(point_ty start_point_)
 {
-	/* assert valid input using assert(row_ < 8 && col_ < 8) */
-	/* create empty bit board using BitArrayResetAll(0) */
-
-	/* create start point: 
-	   point_ty start = {row_, col_} */
+	/* assert IsValidPosIMP(start_point_)*/
+	
+	/* create empty bit board using BitArrayResetAll(0) for tracking visited*/
 
 	/* call recursive function:
-	   CanVisitAllIMP(start, board) */
+	   CanVisitAllIMP(start_point_, board) */
 
 	/* return result of recursive call */
 }
 
-static int CanVisitAllIMP(point_ty p_, bit_array_ty board_)
+static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
-	/* if position is invalid:
-	   if (!IsValidPosIMP(p_)) return FALSE */
+	/* if point_ is out of range:
+	(!IsValidPosIMP(point_)) return FALSE */
 
+	/* if all board visited:
+	   if (IsAllBoardVisitedIMP(board_)) return TRUE */
+	   
 	/* if position already visited:
-	   if (IsVisitedIMP(p_, board_)) return FALSE */
+	   if (IsVisitedIMP(point_, board_)) return FALSE */
 
 	/* mark position as visited:
 	   board_ = SetVisitedIMP(p_, board_) */
 
-	/* if all board visited:
-	   if (IsAllBoardVisitedIMP(board_)) return TRUE */
 
-	/* for each direction i from 0 to 7 */
+	/* for each direction i from 0 to 7 (valid direction from point_)*/
 	{
 		/* compute next position:
 		   next = GetNextStepIMP(p_, i) */
