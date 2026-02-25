@@ -59,6 +59,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* p
 {
 	size_t i = 0;
 	point_ty next ={0, 0};
+	/*declare neighbours array (candidates to check will sort later)*/
 	
 	/* if point_ is out of range:
 		(!IsValidPointIMP(point_)) return FAIL */
@@ -78,6 +79,9 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* p
 	board_ = SetVisitedIMP(point_, board_);
 	/*add point to path*/
 	*path = point_;
+	/* fill in neighbours array (point_ty, degree)*/
+	/*sort neighbours array*/
+	
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
 	  if(IsAllBoardVisitedIMP(board_))
@@ -89,6 +93,8 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* p
 	for(i = 0 ; i < DIRS ; i++)
 	{	/* compute next position:
 		   next = GetNextpointIMP(p_, i) */
+		   /*replace this with neightbour array [i]*/
+		   
 		next = GetNextPointIMP(point_, i);
 		   /*if (CanVisitAllIMP(next, board_,path+1) == SUCCESS)*/
 		 if(CanVisitAllIMP(next, board_, path+1) == SUCCESS)  
