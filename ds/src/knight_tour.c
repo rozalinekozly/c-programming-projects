@@ -1,28 +1,22 @@
 #include <assert.h>		/*assert()*/
-
+#include "knight_tour.h"
 #include "bit_array.h"		/**/
 /*-------------------------magic numbers---------------------------------------*/
-typedef enum
+enum
 {
-	BOARD_SIZE = 5,
-}BOARD_SIZE;
+	BOARD_SIZE = 5
+};
 
-typedef enum
+enum
 {
-	DIRS = 8,
-}DIRS;
+	DIRS = 8
+};
 /*----------------------------------------------------------------------------*/
 typedef enum 
 {
 	FALSE = 0,
 	TRUE = 1
 }bool_ty;
-	
-typedef enum
-{
-	FAIL = 0,
-	SUCCESS = 1
-}status_ty;
 /*----------------------------------------------------------------------------*/
 typedef struct point
 {
@@ -48,9 +42,13 @@ static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 status_ty IsKnightTour(int row_, int col_)
 {
 	/*create a point_ty instance set fields to row_ and col_*/
-	point_ty start_point = {row_, col_};
+	point_ty start_point;
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
 	bit_array_ty board = 0;
+	
+	start_point.row = row_;
+	start_point.col = col_;
+
 	/* assert row_ and col_ are within the board's range*/
 	assert(IsValidCordinate(row_) && IsValidCordinate(col_));
 
@@ -107,7 +105,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 {
 	point_ty ret = {0, 0};
-	static const offset_pair_ty knight_moves[DIRS] =
+	static const offset_pair_ty knight_moves[8] =
     {
         {-2, -1},
         {-2,  1},
@@ -137,7 +135,7 @@ static bool_ty IsValidPointIMP(point_ty p_)
 /*----------------------------------------------------------------------------*/
 static bool_ty IsValidCordinate(int cord_)
 {
-	return (cord_ >= 0 && cord_ < BOARD_SIZE);
+	return (cord_ >= 0 && cord_ < (int)BOARD_SIZE);
 }
 /*----------------------------------------------------------------------------*/
 static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
