@@ -46,15 +46,10 @@ status_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 status_ty IsKnightTour(int row_, int col_)
 {
 	/* assert row_ and col_ are within the board's range*/
-	assert()
 	/*create a point_ty instance set fields to row_ and col_*/
-	
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
-
-	/* call recursive function:
-	   CanVisitAllIMP(start_point_, board) */
-
-	/* return result of recursive call */
+	/* return recursive function:
+	   CanVisitAllIMP(start_point_, board) *//
 }
 /*----------------------------------------------------------------------------*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
@@ -137,6 +132,6 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 /*----------------------------------------------------------------------------*/
 status_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
-	/*return (0 == board_)*/
+	return (0 == board_);
 }
 
