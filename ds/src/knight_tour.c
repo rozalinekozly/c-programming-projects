@@ -1,12 +1,17 @@
 #include <assert.h>		/*assert()*/
 
 #include "bit_array.h"		/**/
-/*----------------------------------------------------------------------------*/
+/*-------------------------magic numbers---------------------------------------*/
 typedef enum
 {
-	BOARD_SIZE = 5;
+	BOARD_SIZE = 5,
 }BOARD_SIZE;
 
+typedef enum
+{
+	DIRS = 8,
+}DIRS;
+/*----------------------------------------------------------------------------*/
 typedef enum 
 {
 	FALSE = 0,
@@ -32,25 +37,23 @@ typedef struct offset_pair
 }offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_);
-
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_);
-static status_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
+static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_);
 static size_t PointToIndexIMP(point_ty p_);
-
-static status_ty IsValidPointIMP(point_ty p_);
-static status_ty IsValidCordinate(int cord_);
-
-status_ty IsAllBoardVisitedIMP(bit_array_ty board_);
+static bool_ty IsValidPointIMP(point_ty p_);
+static bool_ty IsValidCordinate(int cord_);
+static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
 status_ty IsKnightTour(int row_, int col_)
 {
+	/*create a point_ty instance set fields to row_ and col_*/
+	point_ty start_point = {row_, col_};
+	/* create empty bit board for tracking visited by defining a bit_array instance*/
+	bit_array_ty board = 0;
 	/* assert row_ and col_ are within the board's range*/
 	assert(IsValidCordinate(row_) && IsValidCordinate(col_));
-	/*create a point_ty instance set fields to row_ and col_*/
-	point_ty start_point {row_, col_};
-	/* create empty bit board for tracking visited by defining a bit_array instance*/
-	bit_array board = 0;
+
 	/* return recursive function:
 	   CanVisitAllIMP(start_point_, board) */
 	return CanVisitAllIMP(start_point, board);
@@ -60,34 +63,38 @@ status_ty IsKnightTour(int row_, int col_)
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
 	size_t i = 0;
+	point_ty next ={0, 0};
+	
 	/* if point_ is out of range:
 		(!IsValidPointIMP(point_)) return FAIL */
 	 if(!IsValidPointIMP(point_))
 	 {
 	 		return FAIL;
 	 }
+	/* if position already visited:
+	   if (IsVisitedIMP(point_, board_)) return FAIL */
+		if(IsVisitedIMP(point_, board_))
+		{
+			return FAIL;
+		}
+
+	/* mark position as visited:
+	   board_ = SetVisitedIMP(p_, board_) */
+	board_ = SetVisitedIMP(point_, board_);
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
 	  if(IsAllBoardVisitedIMP(board_))
 	  {
 	  	return SUCCESS;
 	  }
-	/* if position already visited:
-	   if (IsVisitedIMP(point_, board_)) return FAIL */
-		if(IsVisitedIMP(point_, board))
-		{
-			return FAIL;
-		}
-	/* mark position as visited:
-	   board_ = SetVisitedIMP(p_, board_) */
-	board_ = SetVisitedIMP(p_, borad_);
+	  
 	/* for each direction i from 0 to 7 (valid direction from point_)*/
-	for(i = 0 ; i < BOARD_SIZE ; i++)
+	for(i = 0 ; i < DIRS ; i++)
 	{	/* compute next position:
 		   next = GetNextpointIMP(p_, i) */
-		next = GetNextPointIMP(p_, i);
-		   /*if (CanVisitAllIMP(next, board_) == TRUE)*/
-		 if(CanVisitAllIMP(next, board_) == TRUE)  
+		next = GetNextPointIMP(point_, i);
+		   /*if (CanVisitAllIMP(next, board_) == SUCCESS)*/
+		 if(CanVisitAllIMP(next, board_) == SUCCESS)  
 		  {
 		  	/* return SUCCESS */
 		  	return SUCCESS;
@@ -100,7 +107,7 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 {
 	point_ty ret = {0, 0};
-	static const offset_ty knight_moves[8] =
+	static const offset_pair_ty knight_moves[DIRS] =
     {
         {-2, -1},
         {-2,  1},
@@ -113,26 +120,24 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
     };
 
 	/*assert dir is valid < BOARD_SIZE*/
-	assert(dir_ < BOARD_SIZE);
+	assert(dir_ < DIRS);
 	/*assert point is valid*/
 	assert(IsValidPointIMP(p_));
 
 	/*add offset from knight_moves[dir]*/
-	ret = {p_.row + knight_moves[dir_].d_row,
-           p_.col + knight_moves[dir_].d_col};
-    return next;
-	/*check range */
-	/*cast back and set return point*/
+	ret.row = p_.row + knight_moves[dir_].d_row;
+    ret.col = p_.col + knight_moves[dir_].d_col;
+    return ret;
 }
 /*----------------------------------------------------------------------------*/
 static bool_ty IsValidPointIMP(point_ty p_)
 {
-	return (IsValidCordinate(p_->row) && IsValidCordinate(P_->col));
+	return (IsValidCordinate(p_.row) && IsValidCordinate(p_.col));
 }
 /*----------------------------------------------------------------------------*/
 static bool_ty IsValidCordinate(int cord_)
 {
-	return (cord_ > 0 && cord_ < 8);
+	return (cord_ >= 0 && cord_ < BOARD_SIZE);
 }
 /*----------------------------------------------------------------------------*/
 static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
@@ -141,17 +146,17 @@ static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
 	/* assert*/
 	assert(IsValidPointIMP(p_));
 	/*index = PointToIndex(p_) to get mapped number*/
-	index = PointToIndex(p_);
+	index = PointToIndexIMP(p_);
 	/* return BitArrayGetBitVal(mapped_num) */
-	return (BitArrayGetBitVal(index));
+	return (BitArrayGetBitVal(board_, index));
 }
 /*----------------------------------------------------------------------------*/
 static size_t PointToIndexIMP(point_ty p_)
 {
 	/*assert*/
 	assert(IsValidPointIMP(p_));
-	/* return (8 * row + col) */
-	return (BOARD_SIZE * p_->row + p_->col);
+	/* return (BOARD_SIZE* row + col) */
+	return (BOARD_SIZE * p_.row + p_.col);
 }
 /*----------------------------------------------------------------------------*/
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
@@ -160,13 +165,13 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	/* assert*/
 	assert(IsValidPointIMP(p_));
 	/*index = PointToIndex(p_)*/
-	index = PointToIndex(p_);
+	index = PointToIndexIMP(p_);
 	/*return BitArraySetOn(board_, index_)*/
 	return (BitArraySetOn(board_, index));
 }
 /*----------------------------------------------------------------------------*/
 bool_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
-	return (0 == board_);
+	return (BitArrayCountOn(board_) == BOARD_SIZE * BOARD_SIZE);
 }
 
