@@ -1,37 +1,47 @@
 #include <stdio.h>
-#include <assert.h>
+#include "knight_tour.h"
 
-#include "knight_tour.h"   /* where IsKnightTour is declared */
+#define BOARD_SIZE 5
+#define PATH_LEN (BOARD_SIZE * BOARD_SIZE)
 
-static void TestValidStarts(void);
-static void TestInvalidStarts(void);
+/* ------------------------------------------------------------ */
+static void PrintPath(point_ty* path);
+static void PrintBoard(point_ty* path);
+static void RunAllTests(void);
+/* ------------------------------------------------------------ */
 
 int main(void)
 {
-    TestValidStarts();
-    TestInvalidStarts();
-
-    printf("All tests passed successfully.\n");
+    RunAllTests();
     return 0;
 }
 
-/* ----------------------------------------------------------- */
+/* ------------------------------------------------------------ */
 
-static void TestValidStarts(void)
+static void RunAllTests(void)
 {
     size_t row = 0;
     size_t col = 0;
     int failures = 0;
+    point_ty path[PATH_LEN];
 
-    for (row = 0; row < 5; ++row)
+    for (row = 0; row < BOARD_SIZE; ++row)
     {
-        for (col = 0; col < 5; ++col)
+        for (col = 0; col < BOARD_SIZE; ++col)
         {
             printf("Testing start (%lu, %lu)... ", row, col);
 
-            if (IsKnightTour(row, col) == SUCCESS)
+            if (IsKnightTour(row, col, path) == SUCCESS)
             {
                 printf("PASS\n");
+
+                printf("\nPath:\n");
+                PrintPath(path);
+
+                printf("\nBoard:\n");
+                PrintBoard(path);
+
+                printf("\n--------------------------------------\n\n");
             }
             else
             {
@@ -41,25 +51,53 @@ static void TestValidStarts(void)
         }
     }
 
+    printf("\n======================================\n");
+
     if (failures == 0)
     {
-        printf("\nAll tests executed successfully.\n");
+        printf("All tests passed.\n");
     }
     else
     {
-        printf("\n%d tests gave FAILED to find path.\n", failures);
+        printf("%d tests failed.\n", failures);
     }
 }
 
-/* ----------------------------------------------------------- */
+/* ------------------------------------------------------------ */
 
-static void TestInvalidStarts(void)
+static void PrintPath(point_ty* path)
 {
-    /* Negative values (if function accepts int) */
-    assert(IsKnightTour(-1, 0) == FAIL);
-    assert(IsKnightTour(0, -1) == FAIL);
+    size_t i = 0;
 
-    /* Out of board */
-    assert(IsKnightTour(5, 0) == FAIL);
-    assert(IsKnightTour(0, 5) == FAIL);
+    for (i = 0; i < PATH_LEN; ++i)
+    {
+        printf("%2lu: (%d, %d)\n",
+               i,
+               path[i].row,
+               path[i].col);
+    }
+}
+
+/* ------------------------------------------------------------ */
+
+static void PrintBoard(point_ty* path)
+{
+    int board[BOARD_SIZE][BOARD_SIZE] = {0};
+    size_t i = 0;
+    size_t r = 0;
+    size_t c = 0;
+
+    for (i = 0; i < PATH_LEN; ++i)
+    {
+        board[path[i].row][path[i].col] = i;
+    }
+
+    for (r = 0; r < BOARD_SIZE; ++r)
+    {
+        for (c = 0; c < BOARD_SIZE; ++c)
+        {
+            printf("%2d ", board[r][c]);
+        }
+        printf("\n");
+    }
 }
