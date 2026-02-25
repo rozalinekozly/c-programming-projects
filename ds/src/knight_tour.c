@@ -6,8 +6,8 @@
 /*----------------------------------------------------------------------------*/
 typedef struct point
 {
-	int row;
-	int col;
+	size_t row;
+	size_t col;
 } point_ty;
 /*----------------------------------------------------------------------------*/
 static const offset_ty knight_moves[8] =
@@ -22,9 +22,9 @@ static const offset_ty knight_moves[8] =
 	{-1, -2}
 };
 /*----------------------------------------------------------------------------*/
-int IsKnightTour(point_ty start_point_)
+int IsKnightTour(size_t row_, size_t col)
 {
-	/* assert IsValidPosIMP(start_point_)*/
+	/* assert row_ and col_ are within the board's range'*/
 	
 	/* create empty bit board using BitArrayResetAll(0) for tracking visited*/
 
