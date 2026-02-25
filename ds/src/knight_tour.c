@@ -14,7 +14,11 @@ typedef enum
 	TRUE = 1
 }bool_ty;
 /*----------------------------------------------------------------------------*/
-
+typedef struct 
+{
+    point_ty point;
+    size_t degree;
+}neighbours;
 /*----------------------------------------------------------------------------*/
 typedef struct offset_pair
 {
@@ -22,7 +26,6 @@ typedef struct offset_pair
 	int d_col;
 }offset_pair_ty;
 /*--------------------------forward declarations-------------------------------*/
-/*change this function's argument to include path point_ty* (array)'*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_, point_ty* path);
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_);
 static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_);
@@ -31,6 +34,8 @@ static size_t PointToIndexIMP(point_ty p_);
 static bool_ty IsValidPointIMP(point_ty p_);
 static bool_ty IsValidCordinate(int cord_);
 static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
+/*phase 3*/
+static int CountValidMovesIMP(point_ty p_, bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
 status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 {
@@ -48,7 +53,6 @@ status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 	/* return recursive function:
 	   CanVisitAllIMP(start_point_, board, path) */
 	return CanVisitAllIMP(start_point, board, path_);
-	/* return result of recursive call */
 }
 /*----------------------------------------------------------------------------*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* path)
@@ -167,4 +171,22 @@ bool_ty IsAllBoardVisitedIMP(bit_array_ty board_)
 {
 	return (BitArrayCountOn(board_) == BOARD_SIZE * BOARD_SIZE);
 }
+/*----------------------------------------------------------------------------*/
+static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
+{
+    int count = 0;
+    size_t i = 0;
+    point_ty next = {0, 0};
+
+    for (i = 0; i < DIRS; ++i)
+    {
+        next = GetNextPointIMP(p_, i);
+        if (IsValidPointIMP(next) && !IsVisitedIMP(next, board_))
+        {
+            ++count;
+        }
+    }
+    return count;
+}
+/*----------------------------------------------------------------------------*/
 
