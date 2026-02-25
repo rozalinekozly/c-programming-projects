@@ -2,6 +2,11 @@
 
 #include "bit_array.h"		/**/
 /*----------------------------------------------------------------------------*/
+TODO: replace these with enums (even if it's 1 magic number)
+	 add IsAllBoardVisitedIMP(board_) function
+	 add offset_pair_ty for the (static const offset.. [8]) within the nextpoint func
+	 
+	 
 #define BOARD_SIZE 8
 #define TOTAL_SQUARES (BOARD_SIZE * BOARD_SIZE)
 /*----------------------------------------------------------------------------*/
@@ -10,6 +15,7 @@ typedef struct point
 	size_t row;
 	size_t col;
 } point_ty;
+
 /*--------------------------forward declarations-------------------------------*/
 static int CanVisitAllIMP(point_ty point_, bit_array_ty board_);
 
@@ -49,15 +55,15 @@ int IsKnightTour(size_t row_, size_t col_)
 /*----------------------------------------------------------------------------*/
 static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
+	/* if point_ is out of range:
+		(!IsValidPointIMP(point_)) return FALSE */
+	
+	/* if position already visited:
+	   if (IsVisitedIMP(point_, board_)) return FALSE */
+	   	
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return TRUE */
 	   
-	/* if point_ is out of range:
-		(!IsValidPointIMP(point_)) return FALSE */
-
-	/* if position already visited:
-	   if (IsVisitedIMP(point_, board_)) return FALSE */
-
 	/* mark position as visited:
 	   board_ = SetVisitedIMP(p_, board_) */
 
@@ -75,7 +81,8 @@ static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 /*----------------------------------------------------------------------------*/
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 {
-	/*assert*/
+	/*assert dir is valid < 8*/
+	/*assert point is valid*/
 	/*cast to int */
 	/*add offset from knight_moves[dir]*/
 	/*check range */
@@ -103,6 +110,7 @@ static int IsVisitedIMP(point_ty p_, bit_array_ty board_)
 /*----------------------------------------------------------------------------*/
 static size_t PointToIndexIMP(point_ty p_)
 {
+	/*assert*/
 	/* return (8 * row + col) */
 }
 /*----------------------------------------------------------------------------*/
@@ -112,4 +120,6 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	/*index = PointToIndex(p_)*/
 	/*BitArraySetOn(board_, index_)*/
 }
+
+
 
