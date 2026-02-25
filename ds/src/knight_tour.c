@@ -2,13 +2,9 @@
 
 #include "bit_array.h"		/**/
 /*----------------------------------------------------------------------------*/
-TODO: replace these with enums (even if it's 1 magic number)
+TODO: 
 	 add IsAllBoardVisitedIMP(board_) function
 	 add offset_pair_ty for the (static const offset.. [8]) within the nextpoint func
-	 
-	 
-#define BOARD_SIZE 8
-#define TOTAL_SQUARES (BOARD_SIZE * BOARD_SIZE)
 /*----------------------------------------------------------------------------*/
 typedef struct point
 {
@@ -31,6 +27,8 @@ static size_t PointToIndexIMP(point_ty p_);
 
 static int IsValidPointIMP(point_ty p_);
 static IsValidCordinate(int cord_);
+
+int IsAllBoardVisitedIMP(bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
 int IsKnightTour(size_t row_, size_t col_)
 {
@@ -125,6 +123,9 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	/*index = PointToIndex(p_)*/
 	/*BitArraySetOn(board_, index_)*/
 }
-
-
+/*----------------------------------------------------------------------------*/
+int IsAllBoardVisitedIMP(bit_array_ty board_) 
+{
+	/*return (0 == board_)*/
+}
 
