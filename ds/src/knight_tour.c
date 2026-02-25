@@ -115,17 +115,17 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 	/*cast back and set return point*/
 }
 /*----------------------------------------------------------------------------*/
-static status_ty IsValidPointIMP(point_ty p_)
+static bool_ty IsValidPointIMP(point_ty p_)
 {
 	return (IsValidCordinate(p_->row) && IsValidCordinate(P_->col));
 }
 /*----------------------------------------------------------------------------*/
-static IsValidCordinate(int cord_)
+static bool_ty IsValidCordinate(int cord_)
 {
 	return (cord_ > 0 && cord_ < 8);
 }
 /*----------------------------------------------------------------------------*/
-static status_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
+static bool_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
 {
 	size_t index = 0;
 	/* assert*/
@@ -155,7 +155,7 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	return (BitArraySetOn(board_, index));
 }
 /*----------------------------------------------------------------------------*/
-status_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
+bool_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
 	return (0 == board_);
 }
