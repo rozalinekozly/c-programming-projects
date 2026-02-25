@@ -2,6 +2,11 @@
 
 #include "bit_array.h"		/**/
 /*----------------------------------------------------------------------------*/
+typedef enum
+{
+	BOARD_SIZE = 5;
+}BOARD_SIZE;
+
 typedef enum 
 {
 	FALSE = 0,
@@ -101,7 +106,7 @@ static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 /*----------------------------------------------------------------------------*/
 static int IsValidPointIMP(point_ty p_)
 {
-	/* return TRUE if row and col are between 0 and 7 */
+	return (IsValidCordinate(p_->row) && IsValidCordinate(P_->col));
 }
 /*----------------------------------------------------------------------------*/
 static IsValidCordinate(int cord_)
