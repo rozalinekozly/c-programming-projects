@@ -22,9 +22,11 @@ static const offset_ty knight_moves[8] =
 	{-1, -2}
 };
 /*----------------------------------------------------------------------------*/
-int IsKnightTour(size_t row_, size_t col)
+int IsKnightTour(size_t row_, size_t col_)
 {
 	/* assert row_ and col_ are within the board's range'*/
+	
+	/*create a point_ty instance set fields to row_ and col_*/
 	
 	/* create empty bit board using BitArrayResetAll(0) for tracking visited*/
 
@@ -36,12 +38,12 @@ int IsKnightTour(size_t row_, size_t col)
 
 static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
-	/* if point_ is out of range:
-	(!IsValidPosIMP(point_)) return FALSE */
-
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return TRUE */
 	   
+	/* if point_ is out of range:
+	(!IsValidPosIMP(point_)) return FALSE */
+
 	/* if position already visited:
 	   if (IsVisitedIMP(point_, board_)) return FALSE */
 
