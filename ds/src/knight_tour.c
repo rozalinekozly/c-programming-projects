@@ -18,7 +18,7 @@ typedef struct
 {
     point_ty point;
     size_t degree;
-}neighbours;
+}neighbours_ty;
 /*----------------------------------------------------------------------------*/
 typedef struct offset_pair
 {
@@ -35,7 +35,10 @@ static bool_ty IsValidPointIMP(point_ty p_);
 static bool_ty IsValidCordinate(int cord_);
 static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 /*phase 3*/
+static void FillNeighboursArray(point_ty point_, neighbours_ty* arr_, bit_array_ty board_);
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_);
+static void SortNeighboursArray(neighbours_ty* arr_);
+
 /*----------------------------------------------------------------------------*/
 status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 {
@@ -79,8 +82,8 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* p
 	board_ = SetVisitedIMP(point_, board_);
 	/*add point to path*/
 	*path = point_;
-	/* fill in neighbours array (point_ty, degree)*/
-	/*sort neighbours array*/
+	/* FillNeighboursArray(neighbours, board)*/
+	/*SortNeighboursArray(neighbours)*/
 	
 	/* if all board visited:
 	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
@@ -93,9 +96,10 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* p
 	for(i = 0 ; i < DIRS ; i++)
 	{	/* compute next position:
 		   next = GetNextpointIMP(p_, i) */
-		   /*replace this with neightbour array [i]*/
 		   
+		   /*replace this with neightbour array [i]*/
 		next = GetNextPointIMP(point_, i);
+		
 		   /*if (CanVisitAllIMP(next, board_,path+1) == SUCCESS)*/
 		 if(CanVisitAllIMP(next, board_, path+1) == SUCCESS)  
 		  {
@@ -176,6 +180,15 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 bool_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
 	return (BitArrayCountOn(board_) == BOARD_SIZE * BOARD_SIZE);
+}
+/*----------------------------------------------------------------------------*/
+static void FillNeighboursArray(point_ty point_, neighbours_ty* arr_, bit_array_ty board_)
+{
+	/*declare var dir */
+	/*dir1 iterates from 0 to 7 */
+		/*call GetNextPointIMP(point_, dir1)*/
+		/*dir2 iterates from 0 to 7*/
+			/*call GetNextPoint(point_, dir2)*/
 }
 /*----------------------------------------------------------------------------*/
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
