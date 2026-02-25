@@ -2,9 +2,7 @@
 
 #include "bit_array.h"		/**/
 /*----------------------------------------------------------------------------*/
-TODO: 
-	 add IsAllBoardVisitedIMP(board_) function
-	 add offset_pair_ty for the (static const offset.. [8]) within the nextpoint func
+
 /*----------------------------------------------------------------------------*/
 typedef struct point
 {
