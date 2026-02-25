@@ -2,12 +2,22 @@
 
 #include "bit_array.h"		/**/
 /*----------------------------------------------------------------------------*/
-
+typedef enum 
+{
+	FALSE = 0,
+	TRUE = 1
+}bool_ty;
+	
+typedef enum
+{
+	FAIL = 0,
+	SUCCESS = 1
+}status_ty;
 /*----------------------------------------------------------------------------*/
 typedef struct point
 {
-	size_t row;
-	size_t col;
+	int row;
+	int col;
 } point_ty;
 /*----------------------------------------------------------------------------*/
 typedef struct offset_pair
