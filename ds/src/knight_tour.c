@@ -38,7 +38,7 @@ static IsValidCordinate(int cord_);
 
 int IsAllBoardVisitedIMP(bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
-int IsKnightTour(size_t row_, size_t col_)
+int IsKnightTour(int row_, int col_)
 {
 	/* assert row_ and col_ are within the board's range*/
 	
