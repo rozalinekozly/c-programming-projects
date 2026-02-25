@@ -4,11 +4,7 @@
 /*-------------------------magic numbers---------------------------------------*/
 enum
 {
-	BOARD_SIZE = 5
-};
-
-enum
-{
+	BOARD_SIZE = 5,
 	DIRS = 8
 };
 /*----------------------------------------------------------------------------*/
@@ -18,11 +14,7 @@ typedef enum
 	TRUE = 1
 }bool_ty;
 /*----------------------------------------------------------------------------*/
-typedef struct point
-{
-	int row;
-	int col;
-} point_ty;
+
 /*----------------------------------------------------------------------------*/
 typedef struct offset_pair
 {
@@ -40,14 +32,12 @@ static bool_ty IsValidPointIMP(point_ty p_);
 static bool_ty IsValidCordinate(int cord_);
 static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 /*----------------------------------------------------------------------------*/
-status_ty IsKnightTour(int row_, int col_)
+status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 {
 	/*create a point_ty instance set fields to row_ and col_*/
 	point_ty start_point;
 	/* create empty bit board for tracking visited by defining a bit_array instance*/
 	bit_array_ty board = 0;
-	/*declare on path array of size 64 (8*8)*/
-	point_ty path[64] = {0};
 	
 	start_point.row = row_;
 	start_point.col = col_;
@@ -57,7 +47,7 @@ status_ty IsKnightTour(int row_, int col_)
 
 	/* return recursive function:
 	   CanVisitAllIMP(start_point_, board, path) */
-	return CanVisitAllIMP(start_point, board, path);
+	return CanVisitAllIMP(start_point, board, path_);
 	/* return result of recursive call */
 }
 /*----------------------------------------------------------------------------*/
