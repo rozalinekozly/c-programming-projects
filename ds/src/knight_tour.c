@@ -1,6 +1,5 @@
-#include <assert.h>
+#include <assert.h>		/*assert()*/
 /*----------------------------------------------------------------------------*/
-
 #define BOARD_SIZE 8
 #define TOTAL_SQUARES (BOARD_SIZE * BOARD_SIZE)
 /*----------------------------------------------------------------------------*/
@@ -9,7 +8,17 @@ typedef struct point
 	size_t row;
 	size_t col;
 } point_ty;
-/*----------------------------------------------------------------------------*/
+/*--------------------------forward declarations-------------------------------*/
+static int CanVisitAllIMP(point_ty point_, bit_array_ty board_);
+
+static point_ty GetNextpointIMP(point_ty p_, size_t dir_);
+static int IsVisitedIMP(point_ty p_, bit_array_ty board_);
+static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_);
+static size_t PointToIndexIMP(point_ty p_);
+
+static int IsValidPointIMP(point_ty p_);
+static IsValidCordinate(int cord_);
+/*---------------------------LUT of valid moves--------------------------------*/
 static const offset_ty knight_moves[8] =
 {
 	{-2, -1},
@@ -35,7 +44,7 @@ int IsKnightTour(size_t row_, size_t col_)
 
 	/* return result of recursive call */
 }
-
+/*----------------------------------------------------------------------------*/
 static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
 	/* if all board visited:
@@ -54,7 +63,7 @@ static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 	/* for each direction i from 0 to 7 (valid direction from point_)*/
 	{
 		/* compute next position:
-		   next = GetNextStepIMP(p_, i) */
+		   next = GetNextpointIMP(p_, i) */
 
 		/* recursively call:
 		   if (CanVisitAllIMP(next, board_) == TRUE)
@@ -64,7 +73,20 @@ static int CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 	/* if none succeeded:
 	   return FALSE */
 }
-static int IsValidPosIMP(point_ty p_)
+
+static point_ty GetNextpointIMP(point_ty p_, size_t dir_)
+{
+	/*assert*/
+	/*cast to int before adding offsets, then check range before casting back*/
+	
+}
+static IsValidCordinate(int cord_)
+{
+	/*if cord_ < 0 OR cord_ > 8*/
+		/*return FALSE*/
+	/*return TRUE*/
+}
+static int IsValidPointIMP(point_ty p_)
 {
 	/* return TRUE if row and col are between 0 and 7 */
 }
