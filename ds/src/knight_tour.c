@@ -54,6 +54,7 @@ status_ty IsKnightTour(int row_, int col_)
 /*----------------------------------------------------------------------------*/
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
+	size_t i = 0;
 	/* if point_ is out of range:
 		(!IsValidPointIMP(point_)) return FAIL */
 	 if(!IsValidPointIMP(point_))
@@ -74,17 +75,21 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 		}
 	/* mark position as visited:
 	   board_ = SetVisitedIMP(p_, board_) */
-
+	board_ = SetVisitedIMP(p_, borad_);
 	/* for each direction i from 0 to 7 (valid direction from point_)*/
-	
-		/* compute next position:
+	for(i = 0 ; i < BOARD_SIZE ; i++)
+	{	/* compute next position:
 		   next = GetNextpointIMP(p_, i) */
-
+		next = GetNextPointIMP(p_, i);
 		   /*if (CanVisitAllIMP(next, board_) == TRUE)*/
-		      /* return SUCCESS */
-	
-
+		 if(CanVisitAllIMP(next, board_) == TRUE)  
+		  {
+		  	/* return SUCCESS */
+		  	return SUCCESS;
+		  }
+	}
 	/* return FAIL */
+	return FAIL;
 }
 /*----------------------------------------------------------------------------*/
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
