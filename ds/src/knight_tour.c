@@ -111,16 +111,21 @@ static IsValidCordinate(int cord_)
 /*----------------------------------------------------------------------------*/
 static status_ty IsVisitedIMP(point_ty p_, bit_array_ty board_)
 {
+	size_t index = 0;
 	/* assert*/
-	/*mapped_num = PointToIndex(p_) to get mapped number*/
-	/* ret =  BitArrayGetBitVal(mapped_num) */
-	/*return ret */
+	assert(IsValidPointIMP(p_));
+	/*index = PointToIndex(p_) to get mapped number*/
+	index = PointToIndex(p_);
+	/* return BitArrayGetBitVal(mapped_num) */
+	return (BitArrayGetBitVal(index));
 }
 /*----------------------------------------------------------------------------*/
 static size_t PointToIndexIMP(point_ty p_)
 {
 	/*assert*/
+	assert(IsValidPointIMP(p_));
 	/* return (8 * row + col) */
+	return (BOARD_SIZE * p_->row + p_->col);
 }
 /*----------------------------------------------------------------------------*/
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
