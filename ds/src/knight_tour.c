@@ -125,9 +125,13 @@ static size_t PointToIndexIMP(point_ty p_)
 /*----------------------------------------------------------------------------*/
 static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 {
+	size_t index = 0;
 	/* assert*/
+	assert(IsValidPointIMP(p_));
 	/*index = PointToIndex(p_)*/
-	/*BitArraySetOn(board_, index_)*/
+	index = PointToIndex(p_);
+	/*return BitArraySetOn(board_, index_)*/
+	return (BitArraySetOn(board_, index));
 }
 /*----------------------------------------------------------------------------*/
 status_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
