@@ -1,8 +1,39 @@
+#define BOARD_SIZE 8
+#define TOTAL_SQUARES (BOARD_SIZE * BOARD_SIZE)
+
+typedef struct point
+{
+	int row;
+	int col;
+} point_ty;
+
+typedef struct board
+{
+	bit_array_ty visited;
+} board_ty;
+
+typedef struct offset
+{
+	int drow;
+	int dcol;
+} offset_ty;
+
+static const offset_ty knight_moves[8] =
+{
+	{-2, -1},
+	{-2,  1},
+	{-1,  2},
+	{ 1,  2},
+	{ 2,  1},
+	{ 2, -1},
+	{ 1, -2},
+	{-1, -2}
+};
+
 int IsKnightTour(size_t row_, size_t col_)
 {
-	/* create empty bit board using BitArrayResetAll(0) */
-
 	/* assert valid input using assert(row_ < 8 && col_ < 8) */
+	/* create empty bit board using BitArrayResetAll(0) */
 
 	/* create start point: 
 	   point_ty start = {row_, col_} */
