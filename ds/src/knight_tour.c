@@ -55,14 +55,23 @@ status_ty IsKnightTour(int row_, int col_)
 static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 {
 	/* if point_ is out of range:
-		(!IsValidPointIMP(point_)) return FALSE */
-	
-	/* if position already visited:
-	   if (IsVisitedIMP(point_, board_)) return FALSE */
-	   	
+		(!IsValidPointIMP(point_)) return FAIL */
+	 if(!IsValidPointIMP(point_))
+	 {
+	 		return FAIL;
+	 }
 	/* if all board visited:
-	   if (IsAllBoardVisitedIMP(board_)) return TRUE */
-	   
+	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
+	  if(IsAllBoardVisitedIMP(board_))
+	  {
+	  	return SUCCESS;
+	  }
+	/* if position already visited:
+	   if (IsVisitedIMP(point_, board_)) return FAIL */
+		if(IsVisitedIMP(point_, board))
+		{
+			return FAIL;
+		}
 	/* mark position as visited:
 	   board_ = SetVisitedIMP(p_, board_) */
 
@@ -72,29 +81,36 @@ static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_)
 		   next = GetNextpointIMP(p_, i) */
 
 		   /*if (CanVisitAllIMP(next, board_) == TRUE)*/
-		      /* return TRUE */
+		      /* return SUCCESS */
 	
 
-	/* return FALSE */
+	/* return FAIL */
 }
 /*----------------------------------------------------------------------------*/
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
 {
-	/*assert dir is valid < 8*/
+	point_ty ret = {0, 0};
+	static const offset_ty knight_moves[8] =
+    {
+        {-2, -1},
+        {-2,  1},
+        {-1,  2}, 
+        { 1,  2},
+        { 2,  1}, 
+        { 2, -1},
+        { 1, -2}, 
+        {-1, -2}
+    };
+
+	/*assert dir is valid < BOARD_SIZE*/
+	assert(dir_ < BOARD_SIZE);
 	/*assert point is valid*/
-	/*const offset_pair_ty knight_moves[8] =
-	{
-		{-2, -1},
-		{-2,  1},
-		{-1,  2},
-		{ 1,  2},
-		{ 2,  1},
-		{ 2, -1},
-		{ 1, -2},
-		{-1, -2}
-	};*/
-	/*cast to int */
+	assert(IsValidPointIMP(p_));
+
 	/*add offset from knight_moves[dir]*/
+	ret = {p_.row + knight_moves[dir_].d_row,
+           p_.col + knight_moves[dir_].d_col};
+    return next;
 	/*check range */
 	/*cast back and set return point*/
 }
