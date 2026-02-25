@@ -43,11 +43,11 @@ static void TestValidStarts(void)
 
     if (failures == 0)
     {
-        printf("\nAll tests passed successfully.\n");
+        printf("\nAll tests executed successfully.\n");
     }
     else
     {
-        printf("\n%d tests failed.\n", failures);
+        printf("\n%d tests gave FAILED to find path.\n", failures);
     }
 }
 
