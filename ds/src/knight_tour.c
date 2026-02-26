@@ -247,10 +247,12 @@ static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
 /*----------------------------------------------------------------------------*/
 static void SortNeighboursArray(neighbours_ty* arr_, size_t size_)
 {
+{
     /* call qsort on arr_ */
     /* number of elements is size_ */
     /* size of each element is sizeof(neighbours_ty) */
     /* comparison function compares degree fields */
+    qsort(arr_, size_, sizeof(neighbours_ty), CompareDegree);
 }
 /*----------------------------------------------------------------------------*/
 static int CompareDegree(const void* a_, const void* b_)
