@@ -23,6 +23,7 @@ void PrintAllPermWrapped(char* str, char* letter_to_swap)
 	if('\0' == *letter_to_swap)
 	{
 		printf("%s\n", str);
+		return;
 	}
 	
 	while('\0' != *runner)
