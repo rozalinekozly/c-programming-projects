@@ -38,7 +38,7 @@ static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
                                   bit_array_ty board_);
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_);
-static void SortNeighboursArray(neighbours_ty* arr_);
+static void SortNeighboursArray(neighbours_ty* arr_, size_t size_);
 
 /*----------------------------------------------------------------------------*/
 status_ty IsKnightTour(int row_, int col_, point_ty* path_)
@@ -210,7 +210,7 @@ static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
     return count;
 }
 /*----------------------------------------------------------------------------*/
-static void SortNeighboursArray(neighbours_ty* arr_)
+static void SortNeighboursArray(neighbours_ty* arr_, size_t size_)
 {
 
 }
