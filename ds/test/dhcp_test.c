@@ -1,126 +1,157 @@
-#include <stdio.h>
-#include "dhcp.h"
+#include <string.h>  /* strcmp */
 
-void TestCreateDestroy()
+#include "dhcp.h"
+#include "test_utils.h"
+
+#define SUBNET_ID   0
+#define HOST_NUMB   8
+#define TOTAL_ADDRS 256
+#define RESERVED    3
+#define FREE_ADDRS  (TOTAL_ADDRS - RESERVED)
+/*---------------------------------------------------------------------------*/
+static void TestCreateDestroy(void);
+static void TestAllocateIp(void);
+static void TestFreeIp(void);
+static void TestCountFree(void);
+static void TestDemo(void);
+/*---------------------------------------------------------------------------*/
+int main()
 {
-    dhcp_ty* dhcp = DhcpCreate(0, 8);
-    
-    if (NULL == dhcp)
+    TestSuiteBegin("DHCP Tests");
+
+    TestPrintSection("Create Destroy Tests");
+    TestCreateDestroy();
+
+    TestPrintSection("Allocate IP Tests");
+    TestAllocateIp();
+
+    TestPrintSection("Free IP Tests");
+    TestFreeIp();
+
+    TestPrintSection("Count Free Tests");
+    TestCountFree();
+
+    TestPrintSection("Demo Tests");
+    TestDemo();
+
+    return TestSuiteEnd();
+}
+/*---------------------------------------------------------------------------*/
+static void TestCreateDestroy(void)
+{
+    dhcp_ty* dhcp = DhcpCreate(SUBNET_ID, HOST_NUMB);
+
+    if (!ASSERT_NOT_NULL(dhcp))
     {
-        printf("FAIL: DhcpCreate returned NULL\n");
         return;
     }
-    
-    printf("PASS: DhcpCreate succeeded\n");
-    
-    DhcpDestroy(dhcp);
-    printf("PASS: DhcpDestroy succeeded\n");
-}
 
-void TestAllocateIp()
+    ASSERT_SIZE(FREE_ADDRS, DhcpCountFree(dhcp));
+
+    DhcpDestroy(dhcp);
+}
+/*---------------------------------------------------------------------------*/
+static void TestAllocateIp(void)
 {
-    dhcp_ty* dhcp = DhcpCreate(0, 8);
+    dhcp_ty* dhcp = DhcpCreate(SUBNET_ID, HOST_NUMB);
     addr_ty ip = 0;
+
+    if (!ASSERT_NOT_NULL(dhcp))
+    {
+        return;
+    }
 
     /* allocate specific address */
     ip = DhcpAllocateIp(dhcp, 5);
-    if (5 == ip)
-    {
-        printf("PASS: allocated requested address\n");
-    }
-    else
-    {
-        printf("FAIL: expected 5, got %lu\n", ip);
-    }
+    ASSERT_SIZE(5, ip);
 
     /* allocate same address again - should get next available */
     ip = DhcpAllocateIp(dhcp, 5);
-    if (5 != ip && 0 != ip)
-    {
-        printf("PASS: got next available address\n");
-    }
-    else
-    {
-        printf("FAIL: expected next available, got %lu\n", ip);
-    }
+    ASSERT_TRUE(5 != ip && 0 != ip);
+
+    /* allocate arbitrary address */
+    ip = DhcpAllocateIp(dhcp, 0);
+    ASSERT_TRUE(0 != ip);
 
     DhcpDestroy(dhcp);
 }
-
-void TestFreeIp()
+/*---------------------------------------------------------------------------*/
+static void TestFreeIp(void)
 {
-    dhcp_ty* dhcp = DhcpCreate(0, 8);
+    dhcp_ty* dhcp = DhcpCreate(SUBNET_ID, HOST_NUMB);
     addr_ty ip = 0;
 
-    /* allocate address */
-    ip = DhcpAllocateIp(dhcp, 10);
-    if (10 != ip)
+    if (!ASSERT_NOT_NULL(dhcp))
     {
-        printf("FAIL: could not allocate address 10\n");
+        return;
+    }
+
+    ip = DhcpAllocateIp(dhcp, 10);
+    if (!ASSERT_SIZE(10, ip))
+    {
         DhcpDestroy(dhcp);
         return;
     }
 
-    /* free it */
     DhcpFreeIp(dhcp, 10);
 
-    /* allocate same address again - should get 10 back */
+    /* after free should get 10 back */
     ip = DhcpAllocateIp(dhcp, 10);
-    if (10 == ip)
-    {
-        printf("PASS: address freed and reallocated correctly\n");
-    }
-    else
-    {
-        printf("FAIL: expected 10 after free, got %lu\n", ip);
-    }
+    ASSERT_SIZE(10, ip);
 
     DhcpDestroy(dhcp);
 }
-
-void TestCountFree()
+/*---------------------------------------------------------------------------*/
+static void TestCountFree(void)
 {
-    dhcp_ty* dhcp = DhcpCreate(0, 8);
+    dhcp_ty* dhcp = DhcpCreate(SUBNET_ID, HOST_NUMB);
 
-    /* 256 - 3 reserved = 253 */
-    if (253 == DhcpCountFree(dhcp))
+    if (!ASSERT_NOT_NULL(dhcp))
     {
-        printf("PASS: count free correct after create\n");
-    }
-    else
-    {
-        printf("FAIL: expected 253, got %lu\n", DhcpCountFree(dhcp));
+        return;
     }
 
-    /* allocate one, count should drop by 1 */
+    /* after create */
+    ASSERT_SIZE(FREE_ADDRS, DhcpCountFree(dhcp));
+
+    /* after allocate */
     DhcpAllocateIp(dhcp, 10);
-    if (252 == DhcpCountFree(dhcp))
-    {
-        printf("PASS: count free correct after allocate\n");
-    }
-    else
-    {
-        printf("FAIL: expected 252, got %lu\n", DhcpCountFree(dhcp));
-    }
+    ASSERT_SIZE(FREE_ADDRS - 1, DhcpCountFree(dhcp));
 
-    /* free it, count should go back up */
+    /* after free */
     DhcpFreeIp(dhcp, 10);
-    if (253 == DhcpCountFree(dhcp))
-    {
-        printf("PASS: count free correct after free\n");
-    }
-    else
-    {
-        printf("FAIL: expected 253, got %lu\n", DhcpCountFree(dhcp));
-    }
+    ASSERT_SIZE(FREE_ADDRS, DhcpCountFree(dhcp));
 
     DhcpDestroy(dhcp);
 }
-int main()
+/*---------------------------------------------------------------------------*/
+static void TestDemo(void)
 {
-    TestCreateDestroy();
-    TestAllocateIp();
-    TestFreeIp();
-    TestCountFree();
-    return 0;
+    dhcp_ty* dhcp = DhcpCreate(SUBNET_ID, HOST_NUMB);
+    addr_ty ips[5] = {0};
+    size_t i = 0;
+
+    if (!ASSERT_NOT_NULL(dhcp))
+    {
+        return;
+    }
+
+    /* allocate 5 addresses */
+    for (i = 0; i < 5; ++i)
+    {
+        ips[i] = DhcpAllocateIp(dhcp, 0);
+        ASSERT_TRUE(0 != ips[i]);
+    }
+
+    ASSERT_SIZE(FREE_ADDRS - 5, DhcpCountFree(dhcp));
+
+    /* free all 5 */
+    for (i = 0; i < 5; ++i)
+    {
+        DhcpFreeIp(dhcp, ips[i]);
+    }
+
+    ASSERT_SIZE(FREE_ADDRS, DhcpCountFree(dhcp));
+
+    DhcpDestroy(dhcp);
 }
