@@ -1,28 +1,9 @@
-/*
-developer: rozaline
-*/
-/*----------------------------------------------------------------------------*/
-#include <stdio.h>   /* printf */
-#include <stddef.h>  /* size_t */
-
-#include "btrie.h"   /* API */
-/*----------------------------------------------------------------------------*/
-#define GREEN   "\033[0;32m"
-#define RED     "\033[0;31m"
-#define RESET   "\033[0m"
-
-#define TEST(name, condition)                                          \
-    do {                                                               \
-        if (condition)                                                 \
-        {                                                              \
-            printf(GREEN "[PASS]" RESET " %s\n", name);               \
-        }                                                              \
-        else                                                           \
-        {                                                              \
-            printf(RED "[FAIL]" RESET " %s (line %d)\n", name, __LINE__); \
-        }                                                              \
-    } while (0)
-/*----------------------------------------------------------------------------*/
+#include "btrie.h"
+#include "test_utils.h"
+/*---------------------------------------------------------------------------*/
+#define BITS_3  3
+#define BITS_4  4
+/*---------------------------------------------------------------------------*/
 static void TestCreateDestroy(void);
 static void TestGetBasic(void);
 static void TestGetNextAvailable(void);
@@ -31,198 +12,158 @@ static void TestRelease(void);
 static void TestReleaseAndReuse(void);
 static void TestCountAvailable(void);
 static void TestCountAfterGetAndRelease(void);
-/*static void TestNullSafety(void);*/
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 int main(void)
 {
-    printf("=== BTrieCreate / BTrieDestroy ===\n");
+    TestSuiteBegin("BTrié Tests");
+
+    TestPrintSection("Create Destroy Tests");
     TestCreateDestroy();
 
-    printf("\n=== BTrieGet Basic ===\n");
+    TestPrintSection("Get Basic Tests");
     TestGetBasic();
 
-    printf("\n=== BTrieGet Next Available ===\n");
+    TestPrintSection("Get Next Available Tests");
     TestGetNextAvailable();
 
-    printf("\n=== BTrieGet Full Trie ===\n");
+    TestPrintSection("Get Full Trie Tests");
     TestGetFullTrie();
 
-    printf("\n=== BTrieRelease ===\n");
+    TestPrintSection("Release Tests");
     TestRelease();
 
-    printf("\n=== BTrieRelease and Reuse ===\n");
+    TestPrintSection("Release And Reuse Tests");
     TestReleaseAndReuse();
 
-    printf("\n=== BTrieCountAvailable ===\n");
+    TestPrintSection("Count Available Tests");
     TestCountAvailable();
 
-    printf("\n=== BTrieCountAvailable After Get/Release ===\n");
+    TestPrintSection("Count After Get And Release Tests");
     TestCountAfterGetAndRelease();
 
-   /* printf("\n=== NULL Safety ===\n");
-    TestNullSafety();*/
-
-    printf("\n=== Done ===\n");
-
-    return 0;
+    return TestSuiteEnd();
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestCreateDestroy(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_4);
 
-    trie = BTrieCreate(4);
-    TEST("BTrieCreate returns non-NULL", trie != NULL);
+    ASSERT_NOT_NULL(trie);
 
     BTrieDestroy(trie);
-    TEST("BTrieDestroy does not crash", 1);
+    ASSERT_TRUE(1); /* destroy did not crash */
 
-    /* destroy NULL - should not crash */
     BTrieDestroy(NULL);
-    TEST("BTrieDestroy(NULL) does not crash", 1);
+    ASSERT_TRUE(1); /* destroy NULL did not crash */
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestGetBasic(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_4);
     num_ty result = 0;
 
-    trie = BTrieCreate(4);
-
-    /* address 0 is reserved at create time, first available should be 1 */
+    /* address 0 reserved at create, first available should be 1 */
     result = BTrieGet(trie, 1);
-    TEST("BTrieGet returns requested address when available", result == 1);
+    ASSERT_SIZE(1, result);
 
-    /* getting the same address again should return a different one */
+    /* same address again should return different one */
     result = BTrieGet(trie, 1);
-    TEST("BTrieGet doesn't return already-used address", result != 1);
+    ASSERT_TRUE(1 != result);
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestGetNextAvailable(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_4);
     num_ty result = 0;
 
-    trie = BTrieCreate(4);
-
-    /* fill addresses 1 and 2, ask for 1 again - should get 3 */
     BTrieGet(trie, 1);
     BTrieGet(trie, 2);
 
+    /* 1 and 2 taken, should get 3 */
     result = BTrieGet(trie, 1);
-    TEST("BTrieGet finds next available when requested is taken", result == 3);
+    ASSERT_SIZE(3, result);
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestGetFullTrie(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_3);
     num_ty result = 0;
     num_ty i = 0;
-    num_ty max = 0;
 
-    /* 3 bits = 8 addresses (0..7), 0 is reserved */
-    trie = BTrieCreate(3);
-    max = 7; /* 2^3 - 1 */
-
-    for (i = 1; i <= max; ++i)
+    /* 3 bits = 8 addresses, 0 reserved, fill 1..7 */
+    for (i = 1; i <= 7; ++i)
     {
         BTrieGet(trie, i);
     }
 
-    /* trie is now full, should return 0 */
+    /* trie full, should return 0 */
     result = BTrieGet(trie, 1);
-    TEST("BTrieGet returns 0 when trie is full", result == 0);
+    ASSERT_SIZE(0, result);
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestRelease(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_4);
     size_t before = 0;
     size_t after = 0;
-
-    trie = BTrieCreate(4);
 
     BTrieGet(trie, 1);
     BTrieGet(trie, 2);
     BTrieGet(trie, 3);
 
     before = BTrieCountAvailable(trie);
-
     BTrieRelease(trie, 2);
-
     after = BTrieCountAvailable(trie);
 
-    TEST("BTrieRelease increases available count by 1", after == before + 1);
+    ASSERT_SIZE(before + 1, after);
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestReleaseAndReuse(void)
 {
-    btrie_ty* trie = NULL;
+    btrie_ty* trie = BTrieCreate(BITS_4);
     num_ty result = 0;
-
-    trie = BTrieCreate(4);
 
     BTrieGet(trie, 5);
     BTrieRelease(trie, 5);
 
-    /* after release, requesting 5 should succeed and return 5 */
     result = BTrieGet(trie, 5);
-    TEST("Released address can be reused", result == 5);
+    ASSERT_SIZE(5, result);
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestCountAvailable(void)
 {
-    btrie_ty* trie = NULL;
-    size_t count = 0;
+    btrie_ty* trie = BTrieCreate(BITS_3);
 
-    /* 3 bits = 8 total, 1 reserved (address 0) = 7 available */
-    trie = BTrieCreate(3);
-
-    count = BTrieCountAvailable(trie);
-    TEST("BTrieCountAvailable after create = 2^bits - 1", count == 7);
+    /* 3 bits = 8 total, 1 reserved = 7 available */
+    ASSERT_SIZE(7, BTrieCountAvailable(trie));
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*/
 static void TestCountAfterGetAndRelease(void)
 {
-    btrie_ty* trie = NULL;
-    size_t count = 0;
-
-    /* 3 bits = 8 total, 1 reserved = 7 available */
-    trie = BTrieCreate(3);
+    btrie_ty* trie = BTrieCreate(BITS_3);
 
     BTrieGet(trie, 1);
     BTrieGet(trie, 2);
     BTrieGet(trie, 3);
 
-    count = BTrieCountAvailable(trie);
-    TEST("Count decreases by 3 after 3 gets", count == 4);
+    ASSERT_SIZE(4, BTrieCountAvailable(trie));
 
     BTrieRelease(trie, 1);
     BTrieRelease(trie, 2);
 
-    count = BTrieCountAvailable(trie);
-    TEST("Count increases by 2 after 2 releases", count == 6);
+    ASSERT_SIZE(6, BTrieCountAvailable(trie));
 
     BTrieDestroy(trie);
 }
-/*----------------------------------------------------------------------------*/
-/*static void TestNullSafety(void)
-{
-     BTrieDestroy(NULL) - already tested in TestCreateDestroy 
-     BTrieRelease(NULL) - should not crash 
-    BTrieRelease(NULL, 1);
-    TEST("BTrieRelease(NULL, ...) does not crash", 1);
-}*/
-/*----------------------------------------------------------------------------*/
