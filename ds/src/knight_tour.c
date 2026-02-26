@@ -1,4 +1,5 @@
 #include <assert.h>		/*assert()*/
+#include <stdlib.h> 	/*qsort()*/
 #include "knight_tour.h"
 #include "bit_array.h"		/**/
 /*-------------------------magic numbers---------------------------------------*/
@@ -59,57 +60,70 @@ status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 	return CanVisitAllIMP(start_point, board, path_);
 }
 /*----------------------------------------------------------------------------*/
-static status_ty CanVisitAllIMP(point_ty point_, bit_array_ty board_,point_ty* path)
+static status_ty CanVisitAllIMP(point_ty point_,
+                                bit_array_ty board_,
+                                point_ty* path)
 {
-	size_t i = 0;
-	point_ty next ={0, 0};
-	/*declare neighbours array (candidates to check will sort later)*/
-	
-	/* if point_ is out of range:
-		(!IsValidPointIMP(point_)) return FAIL */
-	 if(!IsValidPointIMP(point_))
-	 {
-	 		return FAIL;
-	 }
-	/* if position already visited:
-	   if (IsVisitedIMP(point_, board_)) return FAIL */
-		if(IsVisitedIMP(point_, board_))
-		{
-			return FAIL;
-		}
+    /* declare loop variable */
+    size_t i = 0;
 
-	/* mark position as visited:
-	   board_ = SetVisitedIMP(p_, board_) */
-	board_ = SetVisitedIMP(point_, board_);
-	/*add point to path*/
-	*path = point_;
-	/* FillNeighboursArray(neighbours, board)*/
-	/*SortNeighboursArray(neighbours)*/
-	
-	/* if all board visited:
-	   if (IsAllBoardVisitedIMP(board_)) return SUCCESS */
-	  if(IsAllBoardVisitedIMP(board_))
-	  {
-	  	return SUCCESS;
-	  }
-	  
-	/* for each direction i from 0 to 7 (valid direction from point_)*/
-	for(i = 0 ; i < DIRS ; i++)
-	{	/* compute next position:
-		   next = GetNextpointIMP(p_, i) */
-		   
-		   /*replace this with neightbour array [i]*/
-		next = GetNextPointIMP(point_, i);
-		
-		   /*if (CanVisitAllIMP(next, board_,path+1) == SUCCESS)*/
-		 if(CanVisitAllIMP(next, board_, path+1) == SUCCESS)  
-		  {
-		  	/* return SUCCESS */
-		  	return SUCCESS;
-		  }
-	}
-	/* return FAIL */
-	return FAIL;
+    /* declare neighbours array (candidates to check will sort later) */
+    neighbours_ty neighbours[DIRS];
+
+    /* declare neighbours count */
+    size_t neighbours_count = 0;
+
+    /* if point_ is out of range */
+    /* return FAIL */
+    if (!IsValidPointIMP(point_))
+    {
+        return FAIL;
+    }
+
+    /* if position already visited */
+    /* return FAIL */
+    if (IsVisitedIMP(point_, board_))
+    {
+        return FAIL;
+    }
+
+    /* mark position as visited */
+    board_ = SetVisitedIMP(point_, board_);
+
+    /* add point to path */
+    *path = point_;
+
+    /* if all board visited */
+    /* return SUCCESS */
+    if (IsAllBoardVisitedIMP(board_))
+    {
+        return SUCCESS;
+    }
+
+    /* FillNeighboursArray(point_, neighbours, board_) */
+    neighbours_count = FillNeighboursArray(point_,
+                                           neighbours,
+                                           board_);
+
+    /* SortNeighboursArray(neighbours, neighbours_count) */
+    SortNeighboursArray(neighbours,
+                        neighbours_count);
+
+    /* for each neighbour in sorted order */
+    for (i = 0; i < neighbours_count; ++i)
+    {
+        /* if recursive call on neighbour succeeds */
+        if (CanVisitAllIMP(neighbours[i].point,
+                           board_,
+                           path + 1) == SUCCESS)
+        {
+            /* return SUCCESS */
+            return SUCCESS;
+        }
+    }
+
+    /* return FAIL */
+    return FAIL;
 }
 /*----------------------------------------------------------------------------*/
 static point_ty GetNextPointIMP(point_ty p_, size_t dir_)
@@ -178,7 +192,7 @@ static bit_array_ty SetVisitedIMP(point_ty p_, bit_array_ty board_)
 	return (BitArraySetOn(board_, index));
 }
 /*----------------------------------------------------------------------------*/
-bool_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
+static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_) 
 {
 	return (BitArrayCountOn(board_) == BOARD_SIZE * BOARD_SIZE);
 }
@@ -246,7 +260,6 @@ static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
 }
 /*----------------------------------------------------------------------------*/
 static void SortNeighboursArray(neighbours_ty* arr_, size_t size_)
-{
 {
     /* call qsort on arr_ */
     /* number of elements is size_ */
