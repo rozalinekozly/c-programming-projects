@@ -1,5 +1,11 @@
 #ifndef __ILRD_KNIGHT_TOUR_H__
 #define __ILRD_KNIGHT_TOUR_H__
+
+enum
+{
+	BOARD_SIZE = 8,
+	PATH_LEN = BOARD_SIZE * BOARD_SIZE
+};
 typedef enum
 {
 	FAIL = 0,
