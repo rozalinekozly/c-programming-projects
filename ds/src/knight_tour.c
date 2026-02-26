@@ -256,10 +256,24 @@ static void SortNeighboursArray(neighbours_ty* arr_, size_t size_)
 static int CompareDegree(const void* a_, const void* b_)
 {
     /* cast a_ and b_ to neighbours_ty pointers */
+    const neighbours_ty* first = (const neighbours_ty*)a_;
+    const neighbours_ty* second = (const neighbours_ty*)b_;
+
     /* if first degree < second degree */
+    if (first->degree < second->degree)
+    {
         /* return negative value */
+        return -1;
+    }
+
     /* if first degree > second degree */
+    if (first->degree > second->degree)
+    {
         /* return positive value */
+        return 1;
+    }
+
     /* otherwise */
-        /* return 0 */
+    /* return 0 */
+    return 0;
 }
