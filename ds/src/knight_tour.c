@@ -35,7 +35,8 @@ static bool_ty IsValidPointIMP(point_ty p_);
 static bool_ty IsValidCordinate(int cord_);
 static bool_ty IsAllBoardVisitedIMP(bit_array_ty board_);
 /*phase 3*/
-static void FillNeighboursArray(point_ty point_, neighbours_ty* arr_, bit_array_ty board_);
+static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
+                                  bit_array_ty board_);
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_);
 static void SortNeighboursArray(neighbours_ty* arr_);
 
@@ -182,7 +183,8 @@ bool_ty IsAllBoardVisitedIMP(bit_array_ty board_)
 	return (BitArrayCountOn(board_) == BOARD_SIZE * BOARD_SIZE);
 }
 /*----------------------------------------------------------------------------*/
-static void FillNeighboursArray(point_ty point_, neighbours_ty* arr_, bit_array_ty board_)
+static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
+                                  bit_array_ty board_)
 {
 	/*declare var dir */
 	/*dir1 iterates from 0 to 7 */
@@ -208,4 +210,7 @@ static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
     return count;
 }
 /*----------------------------------------------------------------------------*/
+static void SortNeighboursArray(neighbours_ty* arr_)
+{
 
+}
