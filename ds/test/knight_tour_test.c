@@ -1,9 +1,5 @@
 #include <stdio.h>
 #include "knight_tour.h"
-
-#define BOARD_SIZE 5
-#define PATH_LEN (BOARD_SIZE * BOARD_SIZE)
-
 /* ------------------------------------------------------------ */
 static void PrintPath(point_ty* path);
 static void PrintBoard(point_ty* path);
