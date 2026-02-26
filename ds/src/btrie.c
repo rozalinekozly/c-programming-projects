@@ -1,6 +1,6 @@
 /*
 developer: rozaline
-reviewer: Itay
+reviewer: shalev
 */
 /*----------------------------------------------------------------------------*/
 #include <stdlib.h>	/*malloc, calloc, free, NULL*/
@@ -59,7 +59,6 @@ btrie_ty* BTrieCreate(size_t num_bits_)
 	if (NULL == root)
 	{
 		free(ret);
-		DEBUG_BAD_MEM(ret, btrie_ty*);
 		return NULL;
 	}
     
@@ -96,9 +95,6 @@ void BTrieDestroy(btrie_ty* trie_)
 	
 	/* free trie_ */
 	free(trie_);
-
-	/*handle dangling pointer*/
-	DEBUG_BAD_MEM(trie_, btrie_ty*);
 }
 /*----------------------------------------------------------------------------*/
 static void DestroyIMP(btrie_node_ty* node_)
