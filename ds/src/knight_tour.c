@@ -39,7 +39,7 @@ static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
                                   bit_array_ty board_);
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_);
 static void SortNeighboursArray(neighbours_ty* arr_, size_t size_);
-
+static int CompareDegree(const void* a_, const void* b_);
 /*----------------------------------------------------------------------------*/
 status_ty IsKnightTour(int row_, int col_, point_ty* path_)
 {
@@ -187,14 +187,33 @@ static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
                                   bit_array_ty board_)
 {
     /* declare count and initialize to 0 */
+    size_t count = 0;
+
     /* for each direction i from 0 to 7 */
+    size_t i = 0;
+    point_ty next = {0, 0};
+
+    for (i = 0; i < DIRS; ++i)
+    {
         /* compute next point using GetNextPointIMP(point_, i) */
+        next = GetNextPointIMP(point_, i);
+
         /* if next point is valid AND not visited */
+        if (IsValidPointIMP(next) && !IsVisitedIMP(next, board_))
+        {
             /* store next point in arr_[count].point */
+            arr_[count].point = next;
+
             /* compute degree using CountValidMovesIMP(next, board_) */
-            /* store degree in arr_[count].degree */
+            arr_[count].degree = CountValidMovesIMP(next, board_);
+
             /* increment count */
+            ++count;
+        }
+    }
+
     /* return count */
+    return count;
 }
 /*----------------------------------------------------------------------------*/
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
