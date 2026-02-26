@@ -186,31 +186,61 @@ bool_ty IsAllBoardVisitedIMP(bit_array_ty board_)
 static size_t FillNeighboursArray(point_ty point_, neighbours_ty* arr_,
                                   bit_array_ty board_)
 {
-	/*declare var dir */
-	/*dir1 iterates from 0 to 7 */
-		/*call GetNextPointIMP(point_, dir1)*/
-		/*dir2 iterates from 0 to 7*/
-			/*call GetNextPoint(point_, dir2)*/
+    /* declare count and initialize to 0 */
+    /* for each direction i from 0 to 7 */
+        /* compute next point using GetNextPointIMP(point_, i) */
+        /* if next point is valid AND not visited */
+            /* store next point in arr_[count].point */
+            /* compute degree using CountValidMovesIMP(next, board_) */
+            /* store degree in arr_[count].degree */
+            /* increment count */
+    /* return count */
 }
 /*----------------------------------------------------------------------------*/
 static int CountValidMovesIMP(point_ty p_, bit_array_ty board_)
 {
+    /* declare count and initialize to 0 */
     int count = 0;
+
+    /* declare loop variable i */
     size_t i = 0;
+
+    /* declare next point holder */
     point_ty next = {0, 0};
 
+    /* for each direction from 0 to 7 */
     for (i = 0; i < DIRS; ++i)
     {
+        /* compute next possible move from current point */
         next = GetNextPointIMP(p_, i);
+
+        /* if next move is inside board AND not visited */
         if (IsValidPointIMP(next) && !IsVisitedIMP(next, board_))
         {
+            /* increment count of valid onward moves */
             ++count;
         }
     }
+
+    /* return total number of valid onward moves */
     return count;
 }
 /*----------------------------------------------------------------------------*/
 static void SortNeighboursArray(neighbours_ty* arr_, size_t size_)
 {
-
+    /* call qsort on arr_ */
+    /* number of elements is size_ */
+    /* size of each element is sizeof(neighbours_ty) */
+    /* comparison function compares degree fields */
+}
+/*----------------------------------------------------------------------------*/
+static int CompareDegree(const void* a_, const void* b_)
+{
+    /* cast a_ and b_ to neighbours_ty pointers */
+    /* if first degree < second degree */
+        /* return negative value */
+    /* if first degree > second degree */
+        /* return positive value */
+    /* otherwise */
+        /* return 0 */
 }
