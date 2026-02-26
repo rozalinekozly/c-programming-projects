@@ -1,16 +1,23 @@
 #include <stdlib.h>  /* malloc, free */
 #include <assert.h>  /* assert */
+/*----------------------------------------------------------------------------*/
 #include "dhcp.h"
 #include "btrie.h"   /* BTrieCreate, BTrieGet, BTrieRelease, BTrieCountAvailable */
 #include "utils.h"   /* DEBUG_BAD_MEM */
-
+/*----------------------------------------------------------------------------*/
+enum
+{
+	IPV4 = 32,
+	IPV6  = 64
+};
+/*----------------------------------------------------------------------------*/
 struct dhcp
 {
     btrie_ty* trie;       /* tracks which host addresses are allocated/free */
     addr_ty subnet_id;    /* the network part of the address (the common part)*/
     addr_ty subnet_mask;  /* separates network bits from host bits*/
 };
-
+/*----------------------------------------------------------------------------*/
 dhcp_ty* DhcpCreate(addr_ty subnet_id_, unsigned int host_numb_)
 {
     dhcp_ty* ret = NULL;
@@ -18,18 +25,18 @@ dhcp_ty* DhcpCreate(addr_ty subnet_id_, unsigned int host_numb_)
     addr_ty server = 0;
     addr_ty broadcast = 0;
 
-    /* assert host_numb_ > 0 */
-    assert(host_numb_ > 0);
-    /* assert host_numb_ <= 32 */
-    assert(host_numb_ <= 32);
-
     /* allocate dhcp */
-    ret = malloc(sizeof(dhcp_ty));
+    ret = (dhcp_ty*)malloc(sizeof(dhcp_ty));
     /* if failed return NULL */
     if (NULL == ret)
     {
         return NULL;
     }
+    
+    /* assert host_numb_ > 0 */
+    assert(host_numb_ > 0);
+    /* assert host_numb_ <= IPV4 */
+    assert(host_numb_ <= IPV4);
 
     /* subnet_mask = all ones shifted left by host_numb_ bits */
     ret->subnet_mask = (~(addr_ty)0 << host_numb_);
@@ -90,9 +97,6 @@ void DhcpDestroy(dhcp_ty* dhcp_)
 
     /* free dhcp */
     free(dhcp_);
-    
-    /*handle dangling pointer*/
-    DEBUG_BAD_MEM(dhcp_, dhcp_ty*);
 }
 
 addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
@@ -102,7 +106,9 @@ addr_ty DhcpAllocateIp(dhcp_ty* dhcp_, addr_ty addr_)
 
     /* assert dhcp_ */
     assert(dhcp_);
-
+	/*assert that addr_ belongs to passed instance dhcp_*/
+	assert(dhcp_->subnet_id == (dhcp_->subnet_mask & addr_));
+	
     /* extract host part from addr_ */
     /* host = addr_ & ~dhcp_->subnet_mask */
     host = addr_ & ~dhcp_->subnet_mask;
@@ -133,7 +139,9 @@ void DhcpFreeIp(dhcp_ty* dhcp_, addr_ty addr_)
 
     /* assert dhcp_ */
     assert(dhcp_);
-
+	/*assert that addr_ belongs to passed instance dhcp_*/
+	assert(dhcp_->subnet_id == (dhcp_->subnet_mask & addr_));
+	
     /* extract host part: host = addr_ & ~dhcp_->subnet_mask */
     host = addr_ & ~dhcp_->subnet_mask;
 
