@@ -59,7 +59,7 @@ int ShellRun(void)
         /*split it into words (tokens)*/
         i = 0;
         token = strtok(input, " ");
-        while(NULL != token)
+        while(NULL != token && i < SHELL_MAX_ARGS - 1)
         {
         	args[i] = token;
         	token = strtok(NULL, " ");
