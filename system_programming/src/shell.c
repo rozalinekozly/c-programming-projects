@@ -1,4 +1,5 @@
-#include <limits.h>	   /*macros: HOST_NAME_MAX, PATH_MAX*/
+#define _GNU_SOURCE  /* exposes gethostname(), HOST_NAME_MAX */
+#include <limits.h>  /* HOST_NAME_MAX, PATH_MAX */
 #include <stdio.h>	   /*printf()*/
 #include <unistd.h>    /*getuid(), gethostname(), getcwd(), pid_t, fork()*/
 #include <pwd.h>  	   /*getpwuid()*/
@@ -9,8 +10,8 @@
 
 enum
 {
-	MAX_ARGS = 16,
-	MAX_INPUT = 256
+	SHELL_MAX_ARGS = 16,
+	SHELL_MAX_INPUT = 256
 };
 typedef enum
 {
@@ -22,7 +23,9 @@ enum
 	FAILED_TO_READ_INPUT = 1,
 	FAILED_TO_FORK = 2,
 	FAILED_EXECVP = 3,
-	FAILED_WAIT = 4
+	FAILED_WAIT = 4,
+	FAILED_TO_GET_CURR_DIR = 5,
+	FAILED_TO_GET_HOST_NAME = 6
 };
 
 /* return value : 0 = not an internal command
@@ -35,9 +38,9 @@ static void PrintFailure(int failure_status_);
 int ShellRun(void)
 {
 	int internal_cmd = NOT_INTERNAL_CMD;
-	char input[MAX_INPUT] = {0};
+	char input[SHELL_MAX_INPUT] = {0};
 	char* token = NULL;
-	char* args[MAX_ARGS] = {NULL};
+	char* args[SHELL_MAX_ARGS] = {NULL};
 	int i = 0;
 
     /* while 1 */
@@ -47,7 +50,7 @@ int ShellRun(void)
     	 PrintPrefixIMP();
 
         /* read input*/
-        if(NULL == fgets(input, MAX_INPUT, stdin))
+        if(NULL == fgets(input, SHELL_MAX_INPUT, stdin))
         {
          	PrintFailure(FAILED_TO_READ_INPUT);
         }
@@ -118,8 +121,14 @@ static void PrintPrefixIMP(void)
 	
 	/*extract them using proper sys calls*/
     username = getpwuid(getuid())->pw_name;
-    gethostname(machine_name, sizeof(machine_name));
-    getcwd(curr_dir, sizeof(curr_dir));
+    if(-1 == gethostname(machine_name, sizeof(machine_name)))
+    {
+    	PrintFailure(FAILED_TO_GET_HOST_NAME);
+    }
+    if(NULL == getcwd(curr_dir, sizeof(curr_dir)))
+    {
+    	PrintFailure(FAILED_TO_GET_CURR_DIR);
+    }
     
     /*print prefix with the order username@machine name:current_dir$*/
     printf("%s@%s:%s$ ", username, machine_name, curr_dir);
@@ -152,6 +161,7 @@ static void RunInternalIMP(int internal_cmd_)
 
 static void PrintFailure(int failure_status_)
 {
+	/*according to each failure code print appropriate msg to stderr*/
     if(FAILED_TO_READ_INPUT == failure_status_)
     {
         perror("failed to read input");
@@ -167,6 +177,14 @@ static void PrintFailure(int failure_status_)
     else if(FAILED_WAIT == failure_status_)
     {
         perror("failed to wait");
+    }
+    else if(FAILED_TO_GET_CURR_DIR == failure_status_)
+    {
+    	perror("getcwd failed");
+    }
+    else if(FAILED_TO_GET_HOST_NAME == failure_status_)
+    {
+    	perror("gethostname failed");
     }
     exit(1);
 }
