@@ -68,7 +68,12 @@ int ShellRun(void)
         	++i;
         }
         args[i] = NULL;
-
+		
+		/*if command is enter continue (print prefix and new line)*/
+		if(NULL == args[0])
+		{
+   			 continue;
+		}
         /* if input is an internal command*/
         internal_cmd = IsInternalCmdIMP(args[0]);
         if(internal_cmd)
