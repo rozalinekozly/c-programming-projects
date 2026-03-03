@@ -4,22 +4,21 @@
 #include <pwd.h>  	   /*getpwuid()*/
 #include <string.h>	   /*strtok()*/
 #include <sys/wait.h>  /* wait() */
-#include <stdlib.h>		/*exit()*/
+#include <stdlib.h>	   /*exit()*/
+#include "shell.h"
+
 enum
 {
 	MAX_ARGS = 16,
 	MAX_INPUT = 256
 };
-
 typedef enum
 {
 	NOT_INTERNAL_CMD = 0,
 	EXIT = 1
 }internal_cmd_ty;
-
 enum
 {
-
 	FAILED_TO_READ_INPUT = 1,
 	FAILED_TO_FORK = 2,
 	FAILED_EXECVP = 3,
@@ -29,26 +28,24 @@ enum
 /* return value : 0 = not an internal command
 				  other value = relevant internal command number*/
 static int IsInternalCmdIMP(char* cmd_);
-
 static void RunInternalIMP(int internal_cmd_);
-
 static void PrintPrefixIMP(void);
-
 static void PrintFailure(int failure_status_);
 
-int main()
+int ShellRun(void)
 {
 	int internal_cmd = NOT_INTERNAL_CMD;
 	char input[MAX_INPUT] = {0};
 	char* token = NULL;
 	char* args[MAX_ARGS] = {NULL};
 	int i = 0;
-	pid_t pid = -1;
+
     /* while 1 */
     while(1)
 	{
     	 /* print prefix <username>@<machine_name>:<current_dir>$ */
     	 PrintPrefixIMP();
+
         /* read input*/
         if(NULL == fgets(input, MAX_INPUT, stdin))
         {
@@ -66,6 +63,7 @@ int main()
         	++i;
         }
         args[i] = NULL;
+
         /* if input is an internal command*/
         internal_cmd = IsInternalCmdIMP(args[0]);
         if(internal_cmd)
@@ -73,48 +71,45 @@ int main()
         	/*call relevant function*/
         	RunInternalIMP(internal_cmd);
         }
-        /*else */
 		else
 		{
 	  		  /* fork */
-	  		  pid = fork();
+	  		  pid_t pid = fork();
+
 			/* if fork failed */
 			if(-1 == pid)
 		   	{
-		   		 	/* print error to stderr */
-		   		 	PrintFailure(FAILED_TO_FORK);
+		   		PrintFailure(FAILED_TO_FORK);
 		   	}
-		   	
 			/* if child (pid == 0) */
 			else if(0 == pid)
 		  	{
-		  		 	/* execvp(args[0], args) */
-		  		 	execvp(args[0], args);
-		  		    /* if we reach here execvp failed */
-						/* print error to stderr */
-						PrintFailure(FAILED_EXECVP);
-			   		    /* exit child */
-			   		    exit(1);
+		  		/* execvp(args[0], args) */
+		  		execvp(args[0], args);
+		  		/* if we reach here execvp failed */
+				PrintFailure(FAILED_EXECVP);
 		  	}
-		  	
-	   		 /* if parent (pid > 0) (else) */
-	   		 else
-	   		 {
-	   		 	 /* wait and save status */
-		    	  /* if wait failed */
-		    	  if(-1 == wait(NULL))
-		        	{
-		        		/* print error to stderr */
-		        		PrintFailure(FAILED_WAIT);
-		        	}
-	   		 }
-        	 
+	   		/* if parent (pid > 0) (else) */
+	   		else
+	   		{
+	   		 	/* wait and save status */
+		    	/* if wait failed */
+		    	if(-1 == wait(NULL))
+		        {
+		        	PrintFailure(FAILED_WAIT);
+		        }
+	   		}
 		}
     }
     return 0;
 }
 
-static void PrintPrefixIMP()
+int main()
+{
+	return ShellRun();
+}
+
+static void PrintPrefixIMP(void)
 {
 	/*declare prefix's paths'*/
 	char machine_name[HOST_NAME_MAX] = {0};
@@ -144,7 +139,6 @@ static int IsInternalCmdIMP(char* cmd_)
 		/*return NOT_INTERNAL_CMD */
 		return NOT_INTERNAL_CMD;
 	}
-		
 }
 
 static void RunInternalIMP(int internal_cmd_)
@@ -176,4 +170,3 @@ static void PrintFailure(int failure_status_)
     }
     exit(1);
 }
-
