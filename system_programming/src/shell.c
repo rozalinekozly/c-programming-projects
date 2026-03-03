@@ -26,11 +26,11 @@ enum
 				  other value = relevant internal command number*/
 static int IsInternalCmdIMP(char* cmd_);
 
-static void RunInternalIMP(internal_cmd_);
+static void RunInternalIMP(int internal_cmd_);
 
 static void PrintPrefixIMP(void);
 
-static void PrintFailure(failure_status_);
+static void PrintFailure(int failure_status_);
 
 int main()
 {
@@ -122,12 +122,16 @@ static int IsInternalCmdIMP(char* cmd_)
 		
 }
 
-static void RunInternalIMP(internal_cmd_)
+static void RunInternalIMP(int internal_cmd_)
 {
 	/*run internal command according to the passed code*/
+	if(EXIT == internal_cmd_)
+	{
+		exit(0);
+	}
 }
 
-static void PrintFailure(failure_status_)
+static void PrintFailure(int failure_status_)
 {
     if(FAILED_TO_READ_INPUT == failure_status_)
     {
