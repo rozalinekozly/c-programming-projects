@@ -70,9 +70,21 @@ int main()
         	RunInternalIMP(internal_cmd);
         }
         /*else */
-			/* hand the command to the OS to run and save return status*/
-			/*if running command failed*/
-				/*print to stderr proper error massage*/
+		else
+		{
+  		  /* fork */
+    	/* if fork failed */
+       		 /* print error to stderr */
+    	/* if child (pid == 0) */
+      		  /* execvp(args[0], args) */
+      		  /* if we reach here execvp failed */
+        		/* print error to stderr */
+       		    /* exit child */
+   		 /* if parent (pid > 0) */
+        	  /* wait and save status */
+        	  /* if wait failed */
+            	/* print error to stderr */
+		}
     }
     return 0;
 }
