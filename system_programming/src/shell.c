@@ -1,9 +1,10 @@
 #include <limits.h>	   /*macros: HOST_NAME_MAX, PATH_MAX*/
 #include <stdio.h>	   /*printf()*/
-#include <unistd.h>    /*getuid(), gethostname(), getcwd()*/
+#include <unistd.h>    /*getuid(), gethostname(), getcwd(), pid_t, fork()*/
 #include <pwd.h>  	   /*getpwuid()*/
 #include <string.h>	   /*strtok()*/
-
+#include <sys/wait.h>  /* wait() */
+#include <stdlib.h>		/*exit()*/
 enum
 {
 	MAX_ARGS = 16,
@@ -19,7 +20,10 @@ typedef enum
 enum
 {
 
-	FAILED_TO_READ_INPUT = 1
+	FAILED_TO_READ_INPUT = 1,
+	FAILED_TO_FORK = 2,
+	FAILED_EXECVP = 3,
+	FAILED_WAIT = 4
 };
 
 /* return value : 0 = not an internal command
@@ -39,10 +43,10 @@ int main()
 	char* token = NULL;
 	char* args[MAX_ARGS] = {NULL};
 	int i = 0;
-	
+	pid_t pid = -1;
     /* while 1 */
     while(1)
-    {
+	{
     	 /* print prefix <username>@<machine_name>:<current_dir>$ */
     	 PrintPrefixIMP();
         /* read input*/
@@ -72,18 +76,39 @@ int main()
         /*else */
 		else
 		{
-  		  /* fork */
-    	/* if fork failed */
-       		 /* print error to stderr */
-    	/* if child (pid == 0) */
-      		  /* execvp(args[0], args) */
-      		  /* if we reach here execvp failed */
-        		/* print error to stderr */
-       		    /* exit child */
-   		 /* if parent (pid > 0) */
-        	  /* wait and save status */
-        	  /* if wait failed */
-            	/* print error to stderr */
+	  		  /* fork */
+	  		  pid = fork();
+			/* if fork failed */
+			if(-1 == pid)
+		   	{
+		   		 	/* print error to stderr */
+		   		 	PrintFailure(FAILED_TO_FORK);
+		   	}
+		   	
+			/* if child (pid == 0) */
+			else if(0 == pid)
+		  	{
+		  		 	/* execvp(args[0], args) */
+		  		 	execvp(args[0], args);
+		  		    /* if we reach here execvp failed */
+						/* print error to stderr */
+						PrintFailure(FAILED_EXECVP);
+			   		    /* exit child */
+			   		    exit(1);
+		  	}
+		  	
+	   		 /* if parent (pid > 0) (else) */
+	   		 else
+	   		 {
+	   		 	 /* wait and save status */
+		    	  /* if wait failed */
+		    	  if(-1 == wait(NULL))
+		        	{
+		        		/* print error to stderr */
+		        		PrintFailure(FAILED_WAIT);
+		        	}
+	   		 }
+        	 
 		}
     }
     return 0;
@@ -136,7 +161,19 @@ static void PrintFailure(int failure_status_)
     if(FAILED_TO_READ_INPUT == failure_status_)
     {
         perror("failed to read input");
-        exit(1);
     }
+    else if(FAILED_TO_FORK == failure_status_)
+    {
+        perror("failed to fork");
+    }
+    else if(FAILED_EXECVP == failure_status_)
+    {
+        perror("failed to execvp");
+    }
+    else if(FAILED_WAIT == failure_status_)
+    {
+        perror("failed to wait");
+    }
+    exit(1);
 }
 
