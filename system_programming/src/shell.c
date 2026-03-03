@@ -1,4 +1,5 @@
-#define _GNU_SOURCE  /* exposes gethostname(), HOST_NAME_MAX */
+#define _GNU_SOURCE  /*defined before any include to expose GNU/Linux extensions
+					  such as gethostname() and HOST_NAME_MAX */
 #include <limits.h>  /* HOST_NAME_MAX, PATH_MAX */
 #include <stdio.h>	   /*printf()*/
 #include <unistd.h>    /*getuid(), gethostname(), getcwd(), pid_t, fork(),
