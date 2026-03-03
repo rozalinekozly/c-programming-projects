@@ -1,4 +1,4 @@
-#define _GNU_SOURCE  /* defined before any include to expose GNU/Linux extensions */
+#define _GNU_SOURCE  /*defined before any include to expose GNU/Linux extensions*/
 #include <limits.h>  /* HOST_NAME_MAX, PATH_MAX */
 #include <stdio.h>   /* printf(), perror() */
 #include <unistd.h>  /* getuid(), gethostname(), getcwd(), fork(), execvp() */
@@ -25,6 +25,7 @@ typedef enum
 static int IsInternalCmdIMP(char* cmd_);
 static void RunInternalIMP(int internal_cmd_);
 static void PrintPrefixIMP(void);
+static void PrintFailure(const char* msg_);
 
 int ShellRun(void)
 {
@@ -33,6 +34,8 @@ int ShellRun(void)
 	char* token = NULL;
 	char* args[SHELL_MAX_ARGS] = {NULL};
 	int i = 0;
+	pid_t pid = 0;
+	int status = 0;
 
     /* while 1 */
     while(1)
@@ -40,18 +43,16 @@ int ShellRun(void)
     	/* print prefix <username>@<machine_name>:<current_dir>$ */
     	PrintPrefixIMP();
 
-        /* read input */
+        /* read input*/
         if(NULL == fgets(input, SHELL_MAX_INPUT, stdin))
         {
-        	/* Ctrl+D → exit cleanly */
         	printf("\n");
         	break;
         }
 
-        /* remove newline */
         input[strcspn(input, "\n")] = '\0';
         
-        /* split it into words (tokens) */
+        /* split it into words (tokens)*/
         i = 0;
         token = strtok(input, " ");
         while(NULL != token && i < SHELL_MAX_ARGS - 1)
@@ -68,7 +69,7 @@ int ShellRun(void)
    			continue;
 		}
 
-        /* if input is an internal command */
+        /* if input is an internal command*/
         internal_cmd = IsInternalCmdIMP(args[0]);
         if(internal_cmd)
         {
@@ -78,15 +79,14 @@ int ShellRun(void)
         }
 
 		/* fork */
-		pid_t pid = fork();
+		pid = fork();
 
 		/* if fork failed */
 		if(-1 == pid)
 	   	{
-	   		perror("fork failed");
-	   		continue; /* do not kill shell */
+	   		PrintFailure("fork failed");
+	   		continue;
 	   	}
-
 		/* if child (pid == 0) */
 		else if(0 == pid)
 	  	{
@@ -94,19 +94,16 @@ int ShellRun(void)
 	  		execvp(args[0], args);
 
 	  		/* if we reach here execvp failed */
-			perror("execvp failed");
-			exit(1); /* child exits */
+			PrintFailure("execvp failed");
+			exit(1); /* child exits only */
 	  	}
-
    		/* if parent (pid > 0) */
    		else
    		{
-   			int status = 0;
-
-   		 	/* wait for specific child */
+   		 	/* wait and save status */
 	    	if(-1 == waitpid(pid, &status, 0))
 	        {
-	        	perror("waitpid failed");
+	        	PrintFailure("waitpid failed");
 	        	continue;
 	        }
 
@@ -132,7 +129,7 @@ int ShellRun(void)
     return 0;
 }
 
-int main()
+int main(void)
 {
 	return ShellRun();
 }
@@ -148,19 +145,19 @@ static void PrintPrefixIMP(void)
 	pw = getpwuid(getuid());
 	if(NULL == pw)
 	{
-		perror("getpwuid failed");
+		PrintFailure("getpwuid failed");
 		return;
 	}
 
     if(-1 == gethostname(machine_name, sizeof(machine_name)))
     {
-    	perror("gethostname failed");
+    	PrintFailure("gethostname failed");
     	return;
     }
 
     if(NULL == getcwd(curr_dir, sizeof(curr_dir)))
     {
-    	perror("getcwd failed");
+    	PrintFailure("getcwd failed");
     	return;
     }
     
@@ -189,4 +186,10 @@ static void RunInternalIMP(int internal_cmd_)
 	{
 		exit(0);
 	}
+}
+
+static void PrintFailure(const char* msg_)
+{
+	assert(msg_);
+	perror(msg_);
 }
