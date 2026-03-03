@@ -24,7 +24,7 @@ enum
 
 /* return value : 0 = not an internal command
 				  other value = relevant internal command number*/
-static int IsInternalCmdIMP(command_);
+static int IsInternalCmdIMP(char* cmd_);
 
 static void RunInternalIMP(internal_cmd_);
 
@@ -63,7 +63,7 @@ int main()
         }
         args[i] = NULL;
         /* if input is an internal command*/
-        internal_cmd = IsInternalCmdIMP(command);
+        internal_cmd = IsInternalCmdIMP(args[0]);
         if(internal_cmd)
         {
         	/*call relevant function*/
@@ -105,12 +105,21 @@ static void PrintPrefixIMP()
     printf("%s@%s:%s$ ", username, machine_name, curr_dir);
 }
 
-static int IsInternalCmdIMP(command_)
+static int IsInternalCmdIMP(char* cmd_)
 {
 	/*if command is one of internal_cmd_ty*/
+	if(0 == strcmp(cmd_, "exit"))
+	{
 		/*return command's code*/
+		return EXIT;
+	}	
 	/*else*/
+	else
+	{
 		/*return NOT_INTERNAL_CMD */
+		return NOT_INTERNAL_CMD;
+	}
+		
 }
 
 static void RunInternalIMP(internal_cmd_)
