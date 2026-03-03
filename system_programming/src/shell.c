@@ -1,13 +1,15 @@
 #define _GNU_SOURCE  /* exposes gethostname(), HOST_NAME_MAX */
 #include <limits.h>  /* HOST_NAME_MAX, PATH_MAX */
 #include <stdio.h>	   /*printf()*/
-#include <unistd.h>    /*getuid(), gethostname(), getcwd(), pid_t, fork()*/
+#include <unistd.h>    /*getuid(), gethostname(), getcwd(), pid_t, fork(),
+						execvp()*/
 #include <pwd.h>  	   /*getpwuid()*/
-#include <string.h>	   /*strtok()*/
+#include <string.h>	   /*strtok(), strcmp()*/
 #include <sys/wait.h>  /* wait() */
 #include <stdlib.h>	   /*exit()*/
-#include "shell.h"
+#include <assert.h>		/*assert()*/
 
+#include "shell.h"
 enum
 {
 	SHELL_MAX_ARGS = 16,
@@ -136,6 +138,7 @@ static void PrintPrefixIMP(void)
 
 static int IsInternalCmdIMP(char* cmd_)
 {
+	assert(cmd_);
 	/*if command is one of internal_cmd_ty*/
 	if(0 == strcmp(cmd_, "exit"))
 	{
