@@ -2,12 +2,25 @@
 #include <stdio.h>	   /*printf()*/
 #include <unistd.h>    /*getuid(), gethostname(), getcwd()*/
 #include <pwd.h>  	   /*getpwuid()*/
+#include <string.h>	   /*strtok()*/
+
+enum
+{
+	MAX_ARGS = 16,
+	MAX_INPUT = 256
+};
 
 typedef enum
 {
 	NOT_INTERNAL_CMD = 0,
 	EXIT = 1
 }internal_cmd_ty;
+
+enum
+{
+
+	FAILED_TO_READ_INPUT = 1
+};
 
 /* return value : 0 = not an internal command
 				  other value = relevant internal command number*/
@@ -16,15 +29,39 @@ static int IsInternalCmdIMP(command_);
 static void RunInternalIMP(internal_cmd_);
 
 static void PrintPrefixIMP(void);
+
+static void PrintFailure(failure_status_);
+
 int main()
 {
 	int internal_cmd = NOT_INTERNAL_CMD;
+	char input[MAX_INPUT] = {0};
+	char* token = NULL;
+	char* args[MAX_ARGS] = {NULL};
+	int i = 0;
+	
     /* while 1 */
     while(1)
     {
     	 /* print prefix <username>@<machine_name>:<current_dir>$ */
     	 PrintPrefixIMP();
-        /* read input and split it into words */
+        /* read input*/
+        if(NULL == fgets(input, MAX_INPUT, stdin))
+        {
+         	PrintFailure(FAILED_TO_READ_INPUT);
+        }
+        input[strcspn(input, "\n")] = '\0';
+        
+        /*split it into words (tokens)*/
+        i = 0;
+        token = strtok(input, " ");
+        while(NULL != token)
+        {
+        	args[i] = token;
+        	token = strtok(NULL, " ");
+        	++i;
+        }
+        args[i] = NULL;
         /* if input is an internal command*/
         internal_cmd = IsInternalCmdIMP(command);
         if(internal_cmd)
@@ -67,5 +104,14 @@ static int IsInternalCmdIMP(command_)
 static void RunInternalIMP(internal_cmd_)
 {
 	/*run internal command according to the passed code*/
+}
+
+static void PrintFailure(failure_status_)
+{
+    if(FAILED_TO_READ_INPUT == failure_status_)
+    {
+        perror("failed to read input");
+        exit(1);
+    }
 }
 
