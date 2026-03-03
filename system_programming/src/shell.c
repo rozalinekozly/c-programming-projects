@@ -6,9 +6,9 @@ typedef enum
 
 /* return value : 0 = not an internal command
 				  other value = relevant internal command number*/
-int IsInternalCmd(command);
+static int IsInternalCmdIMP(command_);
 
-void RunInternal(internal_cmd);
+static void RunInternalIMP(internal_cmd_);
 
 int main()
 {
@@ -17,11 +17,11 @@ int main()
         /* print prefix <username>@<machine_name>:<current_dir>$ */
         /* read input and split it into words */
         /* if input is an internal command*/
-        internal_cmd = IsInternalCmd(command);
+        internal_cmd = IsInternalCmdIMP(command);
         if(internal_cmd)
         {
         	/*call relevant function*/
-        	RunInternal(internal_cmd);
+        	RunInternalIMP(internal_cmd);
         }
         /*else */
 			/* hand the command to the OS to run and save return status*/
@@ -31,7 +31,7 @@ int main()
     return 0;
 }
 
-int IsInternalCmd(command)
+static int IsInternalCmdIMP(command_)
 {
 	/*if command is one of internal_cmd_ty*/
 		/*return command's code*/
@@ -39,7 +39,7 @@ int IsInternalCmd(command)
 		/*return NOT_INTERNAL_CMD */
 }
 
-void RunInternal(internal_cmd)
+static void RunInternalIMP(internal_cmd_)
 {
 	/*run internal command according to the passed code*/
 }
