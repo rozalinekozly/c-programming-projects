@@ -1,10 +1,10 @@
 /*child code*/
 #define _POSIX_C_SOURCE 200809L
 
-#include <signal.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdio.h>
+#include <signal.h>     /* sigaction(), kill(), SIGUSR1 */
+#include <sys/types.h>  /* pid_t */
+#include <unistd.h>     /* getppid(), sleep() */
+#include <stdio.h>      /* printf(), perror() */
 
 static int g_was_recieved = 0;
 
