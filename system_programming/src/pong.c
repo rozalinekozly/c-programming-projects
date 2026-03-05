@@ -1,11 +1,11 @@
 /*contains spawn*/
 #define _POSIX_C_SOURCE 200809L
 
-#include <signal.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>		/*exit*/
+#include <signal.h>     /* sigaction(), kill(), SIGUSR1, SIGUSR2 */
+#include <sys/types.h>  /* pid_t */
+#include <unistd.h>     /* fork(), execvp(), sleep() */
+#include <stdio.h>      /* printf(), perror() */
+#include <stdlib.h>     /* exit() */
 
 static int g_was_recieved = 0;
 
