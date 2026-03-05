@@ -43,7 +43,6 @@ int main(void)
     if (0 == pid)
     {
     	/*intiate a signal from child */
-        printf("child: Sending initial Ping\n");
         kill(getppid(), SIGUSR2);
 		
 		/*run an infinite loop (child's main body)*/
