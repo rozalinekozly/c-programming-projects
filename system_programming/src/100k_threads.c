@@ -10,15 +10,19 @@ enum
 int arr[SIZE] = {0};
 
 void* AssignIndexIMP(void* idx_);
+void InitIdxArrIMP(int idx[]);
 
 int main()
 {
 	pthread_t threads[SIZE];
 	int i = 0;
+	int idx[SIZE] ={0};
+	
+	InitIdxArrIMP(idx);
 
 	for(i = 0 ; i < SIZE ; i++)
 	{
-		pthread_create(&threads[i], NULL, AssignIndexIMP, (void*)&i);
+		pthread_create(&threads[i], NULL, AssignIndexIMP, (void*)&idx[i]);
 	}
 	
 	for(i = 0 ; i < SIZE ; i++)
@@ -32,7 +36,6 @@ int main()
 		{
 			printf("success %d\n", i);
 		}
-
 	}
 	
 	return 0;
@@ -42,6 +45,14 @@ int main()
                           void *(*start_routine)(void *),
                           void *restrict arg);*/
 
+void InitIdxArrIMP(int idx[])
+{
+	int i = 0;
+	for(i = 0 ; i < SIZE ; i++)
+	{
+		idx[i] = i;
+	}
+}
 
 
 void* AssignIndexIMP(void* idx_)
