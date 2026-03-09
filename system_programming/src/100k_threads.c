@@ -17,7 +17,7 @@ int main()
 
 void* AssignIndexIMP(void* idx_)
 {
-	size_t idx = (size_t)idx_;
+	int idx = (int)idx_;
 	
 	arr[idx] = (int)idx;
 	return NULL;
