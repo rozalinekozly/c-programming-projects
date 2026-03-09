@@ -10,19 +10,19 @@ enum
 int arr[SIZE] = {0};
 
 void* AssignIndexIMP(void* idx_);
-void InitIdxArrIMP(int idx[]);
+/*void InitIdxArrIMP(int idx[]);*/
 
 int main()
 {
 	pthread_t threads[SIZE];
 	int i = 0;
-	int idx[SIZE] ={0};
 	
-	InitIdxArrIMP(idx);
+	/*int idx[SIZE] ={0};
+	InitIdxArrIMP(idx);*/
 
 	for(i = 0 ; i < SIZE ; i++)
 	{
-		pthread_create(&threads[i], NULL, AssignIndexIMP, (void*)&idx[i]);
+		pthread_create(&threads[i], NULL, AssignIndexIMP, (void*)&i);
 	}
 	
 	for(i = 0 ; i < SIZE ; i++)
@@ -40,10 +40,14 @@ int main()
 	
 	return 0;
 }
- /*int pthread_create(pthread_t *restrict thread,
-                          const pthread_attr_t *restrict attr,
-                          void *(*start_routine)(void *),
-                          void *restrict arg);*/
+
+void* AssignIndexIMP(void* idx_)
+{
+	int idx = *(int*)idx_;
+	
+	arr[idx] = (int)idx;
+	return NULL;
+}
 
 void InitIdxArrIMP(int idx[])
 {
@@ -55,10 +59,4 @@ void InitIdxArrIMP(int idx[])
 }
 
 
-void* AssignIndexIMP(void* idx_)
-{
-	int idx = *(int*)idx_;
-	
-	arr[idx] = (int)idx;
-	return NULL;
-}
+
