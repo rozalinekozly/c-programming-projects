@@ -1,6 +1,7 @@
 /* 100k thread */
 #include <pthread.h>		/*pthread_create*/
 #include <stdio.h>			/*printf()*/
+#include <time.h>			/*time()*/
 
 enum
 {
@@ -14,7 +15,7 @@ void InitIdxArrIMP(int idx[]);
 
 int main()
 {
-	pthread_t threads[SIZE];
+	pthread_t thread;
 	int i = 0;
 	
 	int idx[SIZE] ={0};
@@ -22,7 +23,7 @@ int main()
 
 	for(i = 0 ; i < SIZE ; i++)
 	{
-		pthread_create(&threads[i], NULL, AssignIndexIMP, (void*)&idx[i]);
+		pthread_create(&thread, NULL, AssignIndexIMP, (void*)&idx[i]);
 	}
 	
 	for(i = 0 ; i < SIZE ; i++)
