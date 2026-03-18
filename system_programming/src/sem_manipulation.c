@@ -8,7 +8,7 @@ typedef enum
     VIEW,
     EXIT,
     INVALID
-} command_t;
+} cmd_ty;
 
 key_t ConstructKeyIMP(const char* name)
 {
@@ -30,6 +30,39 @@ int CreateConnectToSemIMP(key_t key)
 		/*initialize semaphore and set it's value to somevalue*/
 	/*return semid*/
 }
+
+cmd_ty IdentifyOperationIMP(int* number)
+{
+    /*declare line buffer*/
+    /*declare cmd char*/
+    /*declare undo_str buffer*/
+    /*declare tokens_count int*/
+    
+    /*read whole line with fgets into line*/
+    /*parse line with sscanf into cmd, number, undo_str*/
+    /*store result in tokens_count*/
+    
+    /*if cmd == v*/
+        /*return VIEW*/
+    
+    /*if cmd == x*/
+        /*return EXIT*/
+    
+    /*if cmd == D*/
+        /*if tokens_count == 2*/
+            /*return DECREMENT*/
+        /*if tokens_count == 3 and undo_str == undo*/
+            /*return DECREMENT_UNDO*/
+    
+    /*if cmd == I*/
+        /*if tokens_count == 2*/
+            /*return INCREMENT*/
+        /*if tokens_count == 3 and undo_str == undo*/
+            /*return INCREMENT_UNDO*/
+    
+    /*return INVALID*/
+}
+
 int main(int argc, char* argv[])
 {
 	/*validate argc value is 2*/
@@ -40,9 +73,8 @@ int main(int argc, char* argv[])
 	/*semid = create/connect to semaphore by calling CreateConnectToSemIMP*/
 		
 	/*loop while 1*/
-		/*read whole line with fgets*/
-		/*parse with sscanf, cmd, number, undo_str*/
-		/*check how many tokens returned store it in tokens_count var*/
+		/*identify user's request'*/
+			/*cmd = IdentifyOperationIMP(&num)*/
 		
 		/*switch cmd*/
 		    /*case VIEW*/
