@@ -1,10 +1,21 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
-
 #include <stddef.h> /* size_t */
+#include <stdio.h>  /* perror */
+#include <stdlib.h> /* exit */
 
 /* Casts a pointer to a bad memory address for debugging */
 #define BAD_MEM(type) ((type)0xDEADBEEF)
+
+#define EXIT_IF_BAD(condition, status, msg)	\
+	do					\
+	{					\
+		if (!(condition))		\
+		{				\
+			perror((msg));		\
+			exit((status));		\
+		}				\
+	} while (0)
 
 /* Executes code only in debug mode (when NDEBUG is not defined) */
 #ifdef NDEBUG
@@ -14,5 +25,4 @@
     #define DEBUG_ONLY(x) (x)
     #define DEBUG_BAD_MEM(ptr, type) ((ptr) = BAD_MEM(type))
 #endif
-
 #endif /* __UTILS_H__ */
