@@ -12,10 +12,18 @@ typedef enum
 
 key_t ConstructKeyIMP(const char* name)
 {
+	key_t key;
+	FILE* f;
+	/*create file if not exists*/
+	f = fopen(name, "a");
+	EXIT_IF_BAD((NULL != f), 1, "fopen failed");
+	fclose(f);
 	/*construct a key*/
 	/*create file with arv[1] if not exist open*/
-	/*get key file is argv[1]*/
+	key = ftok(name, 1);
+	EXIT_IF_BAD((-1 != key), 1, "ftok failed");
 	/*return key*/
+	return key;
 }
 
 int CreateConnectToSemIMP(key_t key)
