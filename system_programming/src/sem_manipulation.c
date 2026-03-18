@@ -1,3 +1,16 @@
+#include <sys/ipc.h>	/*ftok(), key_t*/
+#include <stddef.h>		/*NULL*/
+#include <stdio.h>		/*FILE, fopen(), fclose()*/
+#include <errno.h>		/*EEXIST, errno*/
+#include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL*/
+#include "utils.h"
+
+union semun {
+    int              val;
+    struct semid_ds *buf;
+    unsigned short  *array;
+};
+
 
 typedef enum
 {
@@ -28,14 +41,30 @@ key_t ConstructKeyIMP(const char* name)
 
 int CreateConnectToSemIMP(key_t key)
 {
+	int semid = -1;
+	union semun arg;
+	
 	/*create/connect to semaphore*/
+	semid = semget(key, 1, IPC_CREAT | IPC_EXCL | 0666);
 	/*if failed*/
 		/*if with errno EEXIST*/
 			/*connect process to semaphore*/
 		/*otherwise*/
 			/*exit, and print failure or whatever*/
+	if(-1 == semid)
+	{
+		EXIT_IF_BAD ( EEXIST != errno, 1, "failed to connect/create");
+		semid = semget(key, 1, 0666);
+		EXIT_IF_BAD(-1 != semid, 1, "semget failed");
+	}
 	/*else (then it's the creator)*/
+	else
+	{
 		/*initialize semaphore and set it's value to somevalue*/
+		arg.val = 3;
+		semctl(semid, 0, SETVAL, arg);
+	}
+	return semid;
 	/*return semid*/
 }
 
@@ -73,13 +102,17 @@ cmd_ty IdentifyOperationIMP(int* number)
 
 int main(int argc, char* argv[])
 {
+	key_t key;
+	int semid = -1;
 	/*validate argc value is 2*/
 		/*if not exit*/
 	
 	/*key = construct a key by calling ConstructKeyIMP*/
-	
+	key = ConstructKeyIMP("testing");
+	printf("key is %d\n", key);
 	/*semid = create/connect to semaphore by calling CreateConnectToSemIMP*/
-		
+	semid = CreateConnectToSemIMP(key);
+	printf("semid is %d\n", semid);
 	/*loop while 1*/
 		/*identify user's request'*/
 			/*cmd = IdentifyOperationIMP(&num)*/
