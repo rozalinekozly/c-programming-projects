@@ -1,11 +1,20 @@
+
+
+
+key_t ConstructKeyIMP(const char* name)
+{
+	/*construct a key*/
+	/*create file with arv[1] if not exist open*/
+	/*get key file is argv[1]*/
+	/*return key*/
+
+}
 int main(int argc, char* argv[])
 {
 	/*validate argc value is 2*/
 		/*if not exit*/
 	
-	/*construct a key*/
-	/*create file with arv[1] if not exist open*/
-	/*get key file is argv[1]*/
+	/*construct a key by calling ConstructKeyIMP*/
 	
 	/*create/connect to semaphore*/
 	/*if failed*/
