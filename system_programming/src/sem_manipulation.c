@@ -7,15 +7,10 @@ key_t ConstructKeyIMP(const char* name)
 	/*create file with arv[1] if not exist open*/
 	/*get key file is argv[1]*/
 	/*return key*/
-
 }
-int main(int argc, char* argv[])
+
+int CreateConnectToSemIMP(key_t key)
 {
-	/*validate argc value is 2*/
-		/*if not exit*/
-	
-	/*construct a key by calling ConstructKeyIMP*/
-	
 	/*create/connect to semaphore*/
 	/*if failed*/
 		/*if with errno EEXIST*/
@@ -24,6 +19,16 @@ int main(int argc, char* argv[])
 			/*exit, and print failure or whatever*/
 	/*else (then it's the creator)*/
 		/*initialize semaphore and set it's value to somevalue*/
+	/*return semid*/
+}
+int main(int argc, char* argv[])
+{
+	/*validate argc value is 2*/
+		/*if not exit*/
+	
+	/*key = construct a key by calling ConstructKeyIMP*/
+	
+	/*semid = create/connect to semaphore by calling CreateConnectToSemIMP*/
 		
 	/*loop while 1*/
 		/*read whole line with fgets*/
