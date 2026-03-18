@@ -1,5 +1,14 @@
 
-
+typedef enum
+{
+    DECREMENT,
+    DECREMENT_UNDO,
+    INCREMENT,
+    INCREMENT_UNDO,
+    VIEW,
+    EXIT,
+    INVALID
+} command_t;
 
 key_t ConstructKeyIMP(const char* name)
 {
