@@ -45,36 +45,30 @@ int main(int argc, char* argv[])
 		/*check how many tokens returned store it in tokens_count var*/
 		
 		/*switch cmd*/
-		    /*case v*/
+		    /*case VIEW*/
 		        /*print value*/
 		    
-		    /*case x*/
+		    /*case EXIT*/
 		        /*cleanup*/
 		        /*exit*/
 		    
-		    /*case D*/
-		    	/*if tokens = 3*/
-		    		/*vlaidate input correctness (undo_str = undo)*/
-		    		/*if wrong*/
-		    			/*print messgae to user*/
-		    			/*continue*/
-		    		/*else*/
-		    			/*set sem_flg to be SEM_UNDO*/
-				/*else*/
-					/*set sem_flg = 0 (no undo)*/
+		    /*case DECREMENT*/
+		    	/*set sem_flg = 0 (no undo)*/
 		        /*set sem_op to be -number*/
 		        /*call semop with op*/
-		    
-		    /*case I*/
-		    	/*if tokens = 3*/
-		    		/*vlaidate input correctness (undo_str = undo)*/
-		    		/*if wrong*/
-		    			/*print messgae to user*/
-		    			/*continue*/
-		    		/*else*/
-		    			/*set sem_flg to be SEM_UNDO*/
-				/*else*/
-					/*set sem_flg = 0 (no undo)*/
-		        /*set sem_op to be number*/
+		        
+		    /*case DECREMENT_UNDO*/
+		    	/*set sem_flg to be SEM_UNDO*/
+				/*set sem_op to be -number*/
 		        /*call semop with op*/
-}
+		        
+			/*case INCREMENT*/
+				/*set sem_flg = 0*/
+				/*set sem_op to be number*/
+				/*call semop with op*/
+
+			/*case INCREMENT_UNDO*/
+				/*set sem_flg = SEM_UNDO*/
+				/*set sem_op to be number*/
+				/*call semop with op*/
+	}
