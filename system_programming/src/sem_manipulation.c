@@ -1,6 +1,6 @@
 #include <sys/ipc.h>	/*ftok(), key_t*/
 #include <stddef.h>		/*NULL*/
-#include <stdio.h>		/*FILE, fopen(), fclose()*/
+#include <stdio.h>		/*FILE, fopen(), fclose(), fgets()*/
 #include <errno.h>		/*EEXIST, errno*/
 #include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL*/
 #include "utils.h"
@@ -71,11 +71,16 @@ int CreateConnectToSemIMP(key_t key)
 cmd_ty IdentifyOperationIMP(int* number)
 {
     /*declare line buffer*/
+    char line_buffer[100];
     /*declare cmd char*/
+    char cmd;
     /*declare undo_str buffer*/
+    char undo_buffer[10];
     /*declare tokens_count int*/
+    int tokens_count = 0;
     
     /*read whole line with fgets into line*/
+    EXIT_IF_BAD(NULL != fgets(line_buffer, sizeof(line_buffer), stdin), 1, "failed fgets");
     /*parse line with sscanf into cmd, number, undo_str*/
     /*store result in tokens_count*/
     
