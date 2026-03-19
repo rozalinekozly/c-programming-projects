@@ -2,7 +2,7 @@
 #include <stddef.h>		/*NULL*/
 #include <stdio.h>		/*FILE, fopen(), fclose(), fgets()*/
 #include <errno.h>		/*EEXIST, errno*/
-#include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL*/
+#include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL, struct sembuf*/
 #include <string.h>		/*strcmp()*/
 #include "utils.h"
 
@@ -63,7 +63,7 @@ int CreateConnectToSemIMP(key_t key)
 	{
 		/*initialize semaphore and set it's value to somevalue*/
 		arg.val = 3;
-		semctl(semid, 0, SETVAL, arg);
+		EXIT_IF_BAD(-1 != semctl(semid, 0, SETVAL, arg), 1, "semctl GETVAL failed");
 	}
 	return semid;
 	/*return semid*/
@@ -148,6 +148,25 @@ void View(int semid)
 	EXIT_IF_BAD(-1 != val, 1, "semctl GETVAL failed");
 	printf("semaphore value: %d\n", val);
 }
+
+void Exit(int semid)
+{
+	exit(0);
+}
+
+void Decrement(int semid, int number)
+{
+    struct sembuf op;
+	/* first semaphore */
+    op.sem_num = 0;
+    /* decrement */          
+    op.sem_op  = -number;
+    /* no SEM_UNDO */    
+    op.sem_flg = 0;          
+
+    EXIT_IF_BAD(-1 != semop(semid, &op, 1), 1, "semop failed");
+}
+
 int main(int argc, char* argv[])
 {
 	key_t key;
@@ -155,6 +174,7 @@ int main(int argc, char* argv[])
 	int number;
 	cmd_ty cmd;
 	
+	struct sembuf op;
 	/*validate argc value is 2*/
 		/*if not exit*/
 	EXIT_IF_BAD(2 == argc, 1, "wrong arguments");
@@ -179,14 +199,16 @@ int main(int argc, char* argv[])
 		        View(semid);
 		    
 		    /*case EXIT*/
-		        /*cleanup*/
-		        /*exit*/
+		    if(EXIT == cmd)
+		    	/*exit*/
+		    	Exit(semid);
+
 		    
 		    /*case DECREMENT*/
-		    	/*set sem_flg = 0 (no undo)*/
-		        /*set sem_op to be -number*/
-		        /*call semop with op*/
-		        
+		    if(DECREMENT == cmd)
+		    {
+		    	Decrement(semid, number);
+		    }
 		    /*case DECREMENT_UNDO*/
 		    	/*set sem_flg to be SEM_UNDO*/
 				/*set sem_op to be -number*/
