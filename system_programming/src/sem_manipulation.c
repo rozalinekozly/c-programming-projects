@@ -5,6 +5,14 @@
 #include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL, struct sembuf*/
 #include <string.h>		/*strcmp()*/
 #include "utils.h"
+TODO:
+1- evald: add static to helper functions and make sure they end in IMP
+2- evald: rename func's arguments to end with _
+3- evald: rename return arguement to ret
+4- modularity: sepperate handling operations into a new function (the while 1 loop)
+5- code duplication: encapulate handling INCREMENT, INCREMENT_UNDO, DECREMENT, DECREMENT_UNDO into one function 
+6- check: who's responsible for cleanup? 
+-------------------------------------------------------------------------------
 
 union semun {
     int              val;
