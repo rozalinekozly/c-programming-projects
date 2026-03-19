@@ -153,13 +153,12 @@ int main(int argc, char* argv[])
 		/*if not exit*/
 	EXIT_IF_BAD(2 == argc, 1, "wrong arguments");
 
-	
 	/*key = construct a key by calling ConstructKeyIMP*/
 	key = ConstructKeyIMP("testing");
-	printf("key is %d\n", key);
+
 	/*semid = create/connect to semaphore by calling CreateConnectToSemIMP*/
 	semid = CreateConnectToSemIMP(key);
-	printf("semid is %d\n", semid);
+
 	/*loop while 1*/
 	while(1)
 	{
