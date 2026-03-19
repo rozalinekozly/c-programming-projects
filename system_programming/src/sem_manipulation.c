@@ -167,6 +167,19 @@ void Decrement(int semid, int number)
     EXIT_IF_BAD(-1 != semop(semid, &op, 1), 1, "semop failed");
 }
 
+void DecrementUndo(int semid, int number)
+{
+    struct sembuf op;
+	/* first semaphore */
+    op.sem_num = 0;
+    /* decrement */          
+    op.sem_op  = -number;
+    /*  SEM_UNDO */    
+    op.sem_flg = SEM_UNDO;          
+
+    EXIT_IF_BAD(-1 != semop(semid, &op, 1), 1, "semop failed");
+}
+
 int main(int argc, char* argv[])
 {
 	key_t key;
@@ -199,20 +212,22 @@ int main(int argc, char* argv[])
 		        View(semid);
 		    
 		    /*case EXIT*/
-		    if(EXIT == cmd)
+		    else if(EXIT == cmd)
 		    	/*exit*/
 		    	Exit(semid);
 
 		    
 		    /*case DECREMENT*/
-		    if(DECREMENT == cmd)
+		    else if(DECREMENT == cmd)
 		    {
 		    	Decrement(semid, number);
 		    }
+		    
 		    /*case DECREMENT_UNDO*/
-		    	/*set sem_flg to be SEM_UNDO*/
-				/*set sem_op to be -number*/
-		        /*call semop with op*/
+		    else if(DECREMENT_UNDO == cmd)
+		    {
+		    	DecrementUndo(semid, number);
+		    }
 		        
 			/*case INCREMENT*/
 				/*set sem_flg = 0*/
