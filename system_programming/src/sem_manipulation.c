@@ -86,6 +86,7 @@ cmd_ty IdentifyOperationIMP(int* number)
     /*store result in tokens_count*/
     tokens_count = sscanf(line_buffer, "%c %d %s", &cmd, number, undo_buffer);
     
+    /*switch on allcases of cmd*/
     /*if cmd == v*/
     if('V' == cmd)
     {
