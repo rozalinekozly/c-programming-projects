@@ -142,6 +142,12 @@ cmd_ty IdentifyOperationIMP(int* number)
     return INVALID;
 }
 
+void View(int semid)
+{
+	int val = semctl(semid, 0 , GETVAL);
+	EXIT_IF_BAD(-1 != val, 1, "semctl GETVAL failed");
+	printf("semaphore value: %d\n", val);
+}
 int main(int argc, char* argv[])
 {
 	key_t key;
@@ -165,10 +171,12 @@ int main(int argc, char* argv[])
 		/*identify user's request'*/
 			/*cmd = IdentifyOperationIMP(&num)*/
 			cmd = IdentifyOperationIMP(&number);
-			printf("cmd is %d\n", cmd);
+			
 		/*switch cmd*/
 		    /*case VIEW*/
+		    if(VIEW == cmd)
 		        /*print value*/
+		        View(semid);
 		    
 		    /*case EXIT*/
 		        /*cleanup*/
