@@ -148,8 +148,11 @@ int main(int argc, char* argv[])
 	int semid = -1;
 	int number;
 	cmd_ty cmd;
+	
 	/*validate argc value is 2*/
 		/*if not exit*/
+	EXIT_IF_BAD(2 == argc, 1, "wrong arguments");
+
 	
 	/*key = construct a key by calling ConstructKeyIMP*/
 	key = ConstructKeyIMP("testing");
