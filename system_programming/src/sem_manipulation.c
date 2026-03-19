@@ -3,6 +3,7 @@
 #include <stdio.h>		/*FILE, fopen(), fclose(), fgets()*/
 #include <errno.h>		/*EEXIST, errno*/
 #include <sys/sem.h>	/*semget(), semctl(), IPC_CREAT, IPC_EXCL*/
+#include <string.h>		/*strcmp()*/
 #include "utils.h"
 
 union semun {
@@ -53,7 +54,7 @@ int CreateConnectToSemIMP(key_t key)
 			/*exit, and print failure or whatever*/
 	if(-1 == semid)
 	{
-		EXIT_IF_BAD ( EEXIST != errno, 1, "failed to connect/create");
+		EXIT_IF_BAD ( EEXIST == errno, 1, "failed to connect/create");
 		semid = semget(key, 1, 0666);
 		EXIT_IF_BAD(-1 != semid, 1, "semget failed");
 	}
@@ -78,37 +79,74 @@ cmd_ty IdentifyOperationIMP(int* number)
     char undo_buffer[10];
     /*declare tokens_count int*/
     int tokens_count = 0;
-    
+
     /*read whole line with fgets into line*/
     EXIT_IF_BAD(NULL != fgets(line_buffer, sizeof(line_buffer), stdin), 1, "failed fgets");
     /*parse line with sscanf into cmd, number, undo_str*/
     /*store result in tokens_count*/
+    tokens_count = sscanf(line_buffer, "%c %d %s", &cmd, number, undo_buffer);
     
     /*if cmd == v*/
-        /*return VIEW*/
-    
+    if('V' == cmd)
+    {
+       /*return VIEW*/
+        return VIEW;
+    }
+      
     /*if cmd == x*/
+    if('X' == cmd)
+    {
         /*return EXIT*/
-    
+        return EXIT;
+     }
+     
     /*if cmd == D*/
-        /*if tokens_count == 2*/
-            /*return DECREMENT*/
+    if('D' == cmd)
+    {
+       /*if tokens_count == 2*/
+       if(2 == tokens_count)
+       {
+       		/*return DECREMENT*/
+       		return DECREMENT;
+       }
+
         /*if tokens_count == 3 and undo_str == undo*/
-            /*return DECREMENT_UNDO*/
-    
+        if(3 == tokens_count && (0 == strcmp(undo_buffer, "undo")))
+    	{
+    		/*return DECREMENT_UNDO*/
+    		return DECREMENT_UNDO;
+    	}
+    	/*otherwise return invalid*/
+    	return INVALID;
+    }
     /*if cmd == I*/
-        /*if tokens_count == 2*/
-            /*return INCREMENT*/
-        /*if tokens_count == 3 and undo_str == undo*/
-            /*return INCREMENT_UNDO*/
-    
+    if('I' == cmd)
+     {
+     	   /*if tokens_count == 2*/
+     	   if(2 == tokens_count)
+            {
+            	/*return INCREMENT*/
+            	return INCREMENT;
+            }
+            /*if tokens_count == 3 and undo_str == undo*/
+            if(3 == tokens_count && (0 == strcmp(undo_buffer, "undo")))
+			{
+				/*return INCREMENT_UNDO*/
+				return INCREMENT_UNDO;
+			}
+			/*OYHERWISE RETURN INVALID*/
+			return INVALID;
+     }
     /*return INVALID*/
+    return INVALID;
 }
 
 int main(int argc, char* argv[])
 {
 	key_t key;
 	int semid = -1;
+	int number;
+	cmd_ty cmd;
 	/*validate argc value is 2*/
 		/*if not exit*/
 	
@@ -119,9 +157,12 @@ int main(int argc, char* argv[])
 	semid = CreateConnectToSemIMP(key);
 	printf("semid is %d\n", semid);
 	/*loop while 1*/
+	while(1)
+	{
 		/*identify user's request'*/
 			/*cmd = IdentifyOperationIMP(&num)*/
-		
+			cmd = IdentifyOperationIMP(&number);
+			printf("cmd is %d\n", cmd);
 		/*switch cmd*/
 		    /*case VIEW*/
 		        /*print value*/
@@ -150,3 +191,5 @@ int main(int argc, char* argv[])
 				/*set sem_op to be number*/
 				/*call semop with op*/
 	}
+	return 0;
+}
