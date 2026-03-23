@@ -19,13 +19,13 @@ spinlock_ty g_is_locked = NOT_LOCKED;
 /*declare on a "shared" memory*/
 /*producer : increments shared_resource
  cosumer reads and print the value*/
-int shared_resource = 0;
+int g_shared_counter = 0;
 /*-------------------------- forward declarations ----------------------------*/
 static void* ProducerThreadIMP(void* arg);
 static void* ConsumerThreadIMP(void* arg);
 
 static int ProduceIMP(void);
-static void ConsumeIMP(int product);
+static void ConsumeIMP(void);
 
 static void SpinLockIMP(void);
 static void SpinUnlockIMP(void);
@@ -44,11 +44,12 @@ int main()
     EXIT_IF_BAD(0 == pthread_join(producer, NULL), 1, "failed to join producer");
     EXIT_IF_BAD(0 == pthread_join(consumer, NULL), 1, "failed to join consumer");
 
+	
     return 0;
 }
 /*----------------------------------------------------------------------------*/
 /*acquire lock*/
-void SpinLock()
+static void SpinLockIMP()
 {
     while (__atomic_exchange_n(&g_is_locked, LOCKED, __ATOMIC_ACQUIRE) == LOCKED)
     {
@@ -57,7 +58,7 @@ void SpinLock()
 }
 /*----------------------------------------------------------------------------*/
 /*release lock*/
-void SpinUnlock()
+static void SpinUnlockIMP()
 {
     __atomic_store_n(&g_is_locked, NOT_LOCKED, __ATOMIC_RELEASE);
 }
@@ -65,38 +66,44 @@ void SpinUnlock()
 static void* ProducerThreadIMP(void* arg)
 {
 	UNUSED(arg);
+	
+	while(1)
+	{
+		/*aquire lock*/
+		SpinLockIMP();
+		/*perform critical section*/
+		ProduceIMP();
+		/*free lock*/
+		SpinUnlockIMP();
+	}
 }
 /*----------------------------------------------------------------------------*/
 static void* ConsumerThreadIMP(void* arg)
 {
 	UNUSED(arg);
+	
+	while(1)
+	{
+		/*aquire lock*/
+		SpinLockIMP();
+		/*perform critical section*/
+		ConsumeIMP();
+		/*free lock*/
+		SpinUnlockIMP();
+	}
 }
 /*----------------------------------------------------------------------------*/
 static int ProduceIMP(void)
 {
-
+	/*increment g_shared_counter (atomic increment)*/
+	__atomic_fetch_add(&g_shared_counter,1, __ATOMIC_SEQ_CST);
 }
 /*----------------------------------------------------------------------------*/
-static void ConsumeIMP(int product)
+static void ConsumeIMP(void)
 {
-
+	/*print g_shared_counter value*/
+	int val = __atomic_load_n(&g_shared_counter, __ATOMIC_SEQ_CST);
+	printf("consumer read %d\n", val);
 }
 /*----------------------------------------------------------------------------*/
-/*rmv later*/
-void* Routine(void* arg)
-{
-    int i;
-
-    for(i = 0; i < 100000; ++i)
-    {
-        SpinLock();
-
-        shared_resource++;
-
-        SpinUnlock();
-    }
-
-    return NULL;
-}
-
 
